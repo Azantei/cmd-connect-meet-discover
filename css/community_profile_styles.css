@@ -1,0 +1,286 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f0ede8;
+    min-height: 100vh;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #2e3a4e;
+    padding: 0 24px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.nav-left { display: flex; align-items: center; gap: 32px; }
+.brand { color: #c0522a; font-weight: bold; font-size: 1.1rem; }
+.nav-links { display: flex; gap: 20px; }
+.nav-links span { color: #ccc; font-size: 0.9rem; cursor: pointer; }
+.nav-right { display: flex; gap: 16px; }
+.nav-right span { color: #ccc; font-size: 0.9rem; }
+.logout { cursor: pointer; }
+
+/* Profile Header */
+.profile-header {
+    background-color: #2e3a4e;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.profile-left { display: flex; align-items: center; gap: 20px; }
+.avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 6px;
+    background-color: #c0522a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+.profile-name-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+.profile-name { color: #fff; font-weight: 700; font-size: 1.2rem; }
+.profile-handle { color: #aaa; font-size: 0.85rem; margin-bottom: 10px; }
+.profile-stats { display: flex; gap: 28px; }
+.stat-num { color: #fff; font-weight: 700; font-size: 1rem; }
+.stat-label { color: #c0522a; font-size: 0.82rem; margin-left: 4px; cursor: pointer; }
+.btn-edit {
+    padding: 8px 18px;
+    background-color: #c0522a;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+}
+.settings-sep { font-size: 0.75rem; opacity: 0.8; }
+
+/* Tabs */
+.tabs {
+    display: flex;
+    border-bottom: 1px solid #ccc;
+    background-color: #f5f2ec;
+}
+.tab {
+    padding: 12px 28px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background-color: transparent;
+    color: #666;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+    transition: color 0.15s;
+}
+.tab.active {
+    border-bottom: 2px solid #c0522a;
+    background-color: #fff;
+    color: #c0522a;
+    font-weight: 600;
+}
+
+/* Main Layout */
+.main-layout {
+    display: flex;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 200px;
+    flex-shrink: 0;
+    padding: 20px 16px;
+    background-color: #f0ede8;
+    border-right: 1px solid #ddd;
+    min-height: calc(100vh - 200px);
+}
+.sidebar-section-title {
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: #444;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+}
+.ph-line {
+    height: 10px;
+    background-color: #ccc;
+    border-radius: 3px;
+    margin-bottom: 8px;
+}
+.interests-box {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.interest-tag {
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    padding: 3px 10px;
+    font-size: 0.8rem;
+    color: #555;
+    background-color: #fff;
+    text-align: center;
+}
+
+/* Posts Area */
+.posts-area {
+    flex: 1;
+    padding: 16px 20px;
+}
+
+/* Toolbar */
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+.dropdown-wrap { position: relative; }
+.toolbar-btn {
+    padding: 7px 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    font-size: 0.85rem;
+    color: #444;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+}
+.toolbar-btn.active-filter {
+    background-color: #fff3ee;
+    border-color: #c0522a;
+    color: #c0522a;
+}
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 36px;
+    left: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    z-index: 10;
+    min-width: 150px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.dropdown.open { display: block; }
+.dropdown-item {
+    padding: 9px 14px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    color: #444;
+}
+.dropdown-item:hover { background-color: #f5f5f5; }
+.dropdown-item.active-item { color: #c0522a; font-weight: 600; background-color: #fff3ee; }
+.clear-btn {
+    padding: 7px 12px;
+    border: none;
+    border-radius: 4px;
+    background-color: transparent;
+    font-size: 0.82rem;
+    color: #c0522a;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Filter Panel */
+.filter-panel {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+}
+.filter-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #555;
+    letter-spacing: 0.04em;
+    margin-bottom: 10px;
+}
+.filter-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.fpill {
+    padding: 5px 14px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #444;
+    font-size: 0.82rem;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+}
+.fpill.active {
+    background-color: #c0522a;
+    color: #fff;
+    border: none;
+    font-weight: 600;
+}
+
+/* Cards Grid */
+.cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+.card {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+.card-img {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.card-img-icon {
+    width: 28px;
+    height: 28px;
+    border: 2px solid rgba(255,255,255,0.5);
+    background-color: rgba(255,255,255,0.15);
+}
+.card-tags { padding: 8px 12px 4px; display: flex; gap: 6px; flex-wrap: wrap; }
+.card-tag {
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    padding: 2px 8px;
+    font-size: 0.72rem;
+    color: #555;
+}
+.card-body { padding: 6px 12px 10px; }
+.card-title { font-weight: 600; font-size: 0.9rem; color: #222; margin-bottom: 4px; }
+.card-desc { font-size: 0.78rem; color: #888; line-height: 1.5; }
+.card-footer {
+    margin-top: auto;
+    border-top: 1px solid #eee;
+    padding: 7px 12px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #666;
+}
+
+/* No Results */
+.no-results {
+    text-align: center;
+    padding: 48px;
+    color: #aaa;
+    font-size: 0.95rem;
+}

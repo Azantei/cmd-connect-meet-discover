@@ -1,0 +1,191 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #2e3a4e;
+    padding: 0 24px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.nav-left { display: flex; align-items: center; gap: 32px; }
+.brand { color: #c0522a; font-weight: bold; font-size: 1.1rem; }
+.nav-links { display: flex; gap: 20px; }
+.nav-links span { color: #ccc; font-size: 0.9rem; cursor: pointer; }
+.nav-right { display: flex; gap: 16px; }
+.nav-right span { color: #ccc; font-size: 0.9rem; }
+.logout { cursor: pointer; }
+
+/* Back Bar */
+.back-bar {
+    padding: 10px 24px;
+    border-bottom: 1px solid #ddd;
+    background-color: #fff;
+}
+.back-link {
+    color: #c0522a;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+/* Banner */
+.banner {
+    background-color: #2e3a4e;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+.banner-icon {
+    width: 28px;
+    height: 28px;
+    border: 2px solid rgba(255,255,255,0.5);
+    background-color: rgba(255,255,255,0.15);
+}
+.banner-text {
+    color: rgba(255,255,255,0.7);
+    font-size: 1.2rem;
+}
+
+/* Content */
+.content {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* Tags */
+.tags {
+    display: flex;
+    gap: 8px;
+    padding: 16px 0 10px;
+}
+.tag {
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    padding: 3px 10px;
+    font-size: 0.8rem;
+    color: #555;
+    background-color: #fff;
+}
+
+/* Event Title */
+.event-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #222;
+    line-height: 1.2;
+    margin-bottom: 8px;
+}
+
+/* Info Boxes */
+.info-boxes {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: #fff;
+    margin-bottom: 24px;
+}
+.info-box {
+    padding: 12px 16px;
+}
+.info-box + .info-box {
+    border-left: 1px solid #ccc;
+}
+.info-box--blue { background-color: #dce4f0; }
+.info-box--cream { background-color: #faf8f2; }
+.info-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #444;
+    margin-bottom: 6px;
+}
+.info-value {
+    font-size: 0.9rem;
+    color: #222;
+}
+
+/* Description Lines */
+.desc-lines { margin-bottom: 24px; }
+
+/* Action Row */
+.action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+.btn-rsvp {
+    padding: 14px;
+    background-color: #c0522a;
+    color: #fff;
+    border: none;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+    transition: background-color 0.2s;
+}
+.btn-rsvp:hover { background-color: #a8451f; }
+.btn-rsvp.active { background-color: #a8451f; }
+.btn-report {
+    padding: 14px;
+    background-color: #faf8f2;
+    color: #555;
+    border: none;
+    border-left: 1px solid #ccc;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+}
+.btn-report:hover { background-color: #f0ede0; }
+
+/* Host Card */
+.host-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background-color: #fefce8;
+    border: 1px solid #e5e0c8;
+    border-radius: 4px;
+    margin-bottom: 32px;
+}
+.host-left { display: flex; align-items: center; gap: 12px; }
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    background-color: #c0522a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+.host-name { font-weight: 700; font-size: 0.95rem; color: #222; }
+.host-meta { font-size: 0.8rem; color: #777; }
+.view-profile { color: #c0522a; cursor: pointer; }
+.verified-badge {
+    border: 1px solid #b5b090;
+    border-radius: 4px;
+    padding: 5px 14px;
+    font-size: 0.82rem;
+    color: #666;
+    background-color: #fff;
+}

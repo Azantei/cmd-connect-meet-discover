@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C.M.D. - Your Community Starts Here</title>
+    <link rel="stylesheet" href="../css/login_styles.css">
+</head>
+<body>
+    <!-- Left Panel -->
+    <div class="left-panel">
+        <h1>C.M.D.</h1>
+        <h2>Your community<br>starts here.</h2>
+        <ul>
+            <li>• Discover activities near you</li>
+            <li>• Create events with RSVP</li>
+            <li>• Connect with your community</li>
+            <li>• Filter by interests &amp; distance</li>
+        </ul>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="right-panel">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('signin')">Sign In ←</button>
+            <button class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
+        </div>
+
+        <div class="form-container">
+            <!-- Sign In Form -->
+            <div id="signin" class="tab-content active">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="you@example.com" style="text-align:center; color:#aaa;">
+                </div>
+                <div class="form-group">
+                    <label style="font-weight:400;">Password</label>
+                    <input type="password" placeholder="••••••••" style="text-align:center;">
+                </div>
+                <button class="btn-primary">Sign In →</button>
+                <p class="form-footer">Don't have an account? <a onclick="switchTab('signup')">Sign up</a></p>
+                <p class="form-footer"><a href="#">Forgot password?</a></p>
+            </div>
+
+            <!-- Sign Up Form -->
+            <div id="signup" class="tab-content">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" placeholder="Jane Doe">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="you@example.com">
+                </div>
+                <div class="form-group">
+                    <label style="font-weight:400;">Password</label>
+                    <input type="password" placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" placeholder="City, State">
+                </div>
+                <button class="btn-primary">Create Account →</button>
+                <p class="form-footer">Already have an account? <a onclick="switchTab('signin')">Sign in</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/login_script.js"></script>
+</body>
+</html>

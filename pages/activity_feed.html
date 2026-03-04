@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C.M.D. - Explore</title>
+    <link rel="stylesheet" href="../css/activity_feed_styles.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <span class="brand">C.M.D.</span>
+            <div class="nav-links">
+                <span>Explore</span>
+                <span>Create</span>
+                <span>Profile</span>
+            </div>
+        </div>
+        <div class="nav-right">
+            <span>Alex J.</span>
+            <span class="logout">Log Out</span>
+        </div>
+    </nav>
+
+    <!-- Search + Create -->
+    <div class="search-bar">
+        <input type="text" placeholder="🔍  Search activities, events, or people..." />
+        <button class="btn-create">+ Create Post</button>
+    </div>
+
+    <!-- Category Pills -->
+    <div class="categories">
+        <button class="pill active" onclick="setCategory(this)">All</button>
+        <button class="pill" onclick="setCategory(this)">Outdoors</button>
+        <button class="pill" onclick="setCategory(this)">Music</button>
+        <button class="pill" onclick="setCategory(this)">Sports</button>
+        <button class="pill" onclick="setCategory(this)">Food</button>
+        <button class="pill" onclick="setCategory(this)">Arts</button>
+        <button class="pill" onclick="setCategory(this)">Tech</button>
+        <button class="pill" onclick="setCategory(this)">Fitness</button>
+        <button class="pill" onclick="setCategory(this)">Games</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <!-- Left: Event Cards -->
+        <div class="cards-panel">
+            <div class="cards-grid">
+
+                <div class="card">
+                    <div class="card-img" style="background-color:#2e3a4e;"><div class="img-placeholder"></div></div>
+                    <div class="card-tags"><span class="tag">Outdoors</span><span class="tag">1.2 mi</span></div>
+                    <div class="card-body">
+                        <div class="card-title">Morning Trail Hike</div>
+                        <div class="card-desc">Join us for a scenic morning hike through the local trails. All skill levels welcome.</div>
+                    </div>
+                    <div class="card-footer"><span>📅 Sat Mar 7</span><span>👥 12 going</span></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-img" style="background-color:#3b4a2e;"><div class="img-placeholder"></div></div>
+                    <div class="card-tags"><span class="tag">Outdoors</span><span class="tag">1.2 mi</span></div>
+                    <div class="card-body">
+                        <div class="card-title">Acoustic Jam Session</div>
+                        <div class="card-desc">Bring your instrument or just your ears. Casual outdoor music gathering.</div>
+                    </div>
+                    <div class="card-footer"><span>📅 Sat Mar 7</span><span>👥 12 going</span></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-img" style="background-color:#3b2e4a;"><div class="img-placeholder"></div></div>
+                    <div class="card-tags"><span class="tag">Outdoors</span><span class="tag">1.2 mi</span></div>
+                    <div class="card-body">
+                        <div class="card-title">Community Picnic</div>
+                        <div class="card-desc">A relaxed afternoon picnic in the park. Food, games, and good company.</div>
+                    </div>
+                    <div class="card-footer"><span>📅 Sat Mar 7</span><span>👥 12 going</span></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-img" style="background-color:#2e3a4e;"><div class="img-placeholder"></div></div>
+                    <div class="card-tags"><span class="tag">Outdoors</span><span class="tag">1.2 mi</span></div>
+                    <div class="card-body">
+                        <div class="card-title">Sunset Yoga</div>
+                        <div class="card-desc">Wind down with a group yoga session as the sun sets over the park.</div>
+                    </div>
+                    <div class="card-footer"><span>📅 Sat Mar 7</span><span>👥 12 going</span></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Right: Map -->
+        <div class="map-panel">
+            <svg width="100%" height="100%" viewBox="0 0 800 900" preserveAspectRatio="none"></svg>
+            <div class="map-label">Map View</div>
+        </div>
+
+    </div>
+
+    <script src="../js/activity_feed_script.js"></script>
+</body>
+</html>

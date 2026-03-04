@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C.M.D. - Create a Post</title>
+    <link rel="stylesheet" href="../css/create_post_styles.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <span class="brand">C.M.D.</span>
+            <div class="nav-links">
+                <span>Explore</span>
+                <span>Create</span>
+                <span>Profile</span>
+            </div>
+        </div>
+        <div class="nav-right">
+            <span>Alex J.</span>
+            <span class="logout">Log Out</span>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="content">
+
+        <h1 class="page-title">Create a Post</h1>
+
+        <!-- Post Type Selector -->
+        <div class="type-selector">
+            <button class="type-btn active" id="btn-casual" onclick="setType('casual')">
+                <div class="type-icon"></div>
+                <div class="type-name">Casual Activity</div>
+                <div class="type-sub">(spontaneous, informal)</div>
+            </button>
+            <button class="type-btn" id="btn-formal" onclick="setType('formal')">
+                <div class="type-icon"></div>
+                <div class="type-name">Formal Event</div>
+                <div class="type-sub">(organized, optional RSVP)</div>
+            </button>
+        </div>
+
+        <!-- Form Fields -->
+        <div class="form-box">
+            <div class="form-row border-bottom">
+                <label>Title <span class="req">*</span></label>
+                <input type="text" placeholder="Enter a title..." />
+            </div>
+            <div class="form-row border-bottom textarea-row">
+                <label>Description <span class="req">*</span></label>
+                <textarea rows="3" placeholder="Describe your event or activity..."></textarea>
+            </div>
+            <div class="form-row-split border-bottom">
+                <div class="form-row">
+                    <label>Date <span class="req">*</span></label>
+                    <input type="date" />
+                </div>
+                <div class="form-row">
+                    <label>Start Time <span class="req">*</span></label>
+                    <input type="time" />
+                </div>
+            </div>
+            <div class="form-row">
+                <label>Location <span class="req">*</span></label>
+                <input type="text" placeholder="Enter a location..." />
+            </div>
+        </div>
+
+        <!-- Categories & Tags -->
+        <div class="categories-section">
+            <div class="categories-label">CATEGORIES &amp; TAGS <span class="req">*</span></div>
+            <div class="pills" id="categoryPills">
+                <button class="pill active" onclick="toggleCat(this)">Outdoors</button>
+                <button class="pill" onclick="toggleCat(this)">Music</button>
+                <button class="pill" onclick="toggleCat(this)">Sports</button>
+                <button class="pill" onclick="toggleCat(this)">Food</button>
+                <button class="pill" onclick="toggleCat(this)">Arts</button>
+                <button class="pill" onclick="toggleCat(this)">Tech</button>
+                <button class="pill" onclick="toggleCat(this)">Fitness</button>
+                <button class="pill" onclick="toggleCat(this)">Games</button>
+                <button class="pill" onclick="toggleCat(this)">Education</button>
+                <button class="pill" onclick="toggleCat(this)">Social</button>
+            </div>
+        </div>
+
+        <!-- RSVP Settings -->
+        <div class="rsvp-wrapper" id="rsvpWrapper">
+            <div class="rsvp-box">
+                <span class="rsvp-label">RSVP SETTINGS — only shown when 'Formal Event' selected</span>
+                <span class="rsvp-divider">|</span>
+                <div class="rsvp-control">
+                    <span>Enable RSVP</span>
+                    <div class="toggle" id="rsvpToggle" onclick="toggleRsvp()">
+                        <div class="toggle-knob" id="toggleKnob"></div>
+                    </div>
+                </div>
+                <div class="rsvp-control">
+                    <span>Max Attendees</span>
+                    <input type="number" class="attendees-input" placeholder="—" />
+                </div>
+            </div>
+            <div class="rsvp-note">↑ This section slides in/out based on post type selection</div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+            <button class="btn-cancel">Cancel</button>
+            <button class="btn-post">Post</button>
+        </div>
+
+    </div>
+
+    <script src="../js/create_post_script.js"></script>
+</body>
+</html>
