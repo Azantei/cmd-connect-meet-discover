@@ -78,6 +78,13 @@ body {
     font-size: 1.25rem;
     font-weight: 700;
     font-family: 'Playfair Display', serif;
+}
+
+.logo-light {
+    color: white;
+}
+
+.logo-accent {
     color: var(--primary-orange);
 }
 
