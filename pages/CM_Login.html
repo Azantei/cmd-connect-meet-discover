@@ -19,19 +19,18 @@
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
+            background: hsl(215, 20%, 30%);
+            padding: 0 2rem;
+            height: 60px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
         .login-nav .logo {
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: 700;
-            color: #2c3e50;
             font-family: 'Playfair Display', serif;
         }
         .login-nav .logo-light {
@@ -43,14 +42,16 @@
         .login-nav .nav-links {
             display: flex;
             gap: 2rem;
+            font-size: 0.875rem;
         }
         .login-nav .nav-links a {
-            color: rgba(250, 245, 240, 0.7);
+            color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
             font-weight: 500;
+            transition: color 0.2s ease;
         }
         .login-nav .nav-links a:hover {
-            color: hsl(30, 33%, 97%);
+            color: white;
         }
         body {
             padding-top: 60px;
@@ -71,14 +72,20 @@
 
     <!-- Left Panel -->
     <div class="left-panel">
-        <h1>C.M.D.</h1>
-        <h2>Your community<br>starts here.</h2>
-        <ul>
-            <li>• Discover activities near you</li>
-            <li>• Create events with RSVP</li>
-            <li>• Connect with your community</li>
-            <li>• Filter by interests &amp; distance</li>
-        </ul>
+        <div class="left-content">
+            <h1>C.M.D.</h1>
+            <h2>Your community<br>starts here.</h2>
+            <ul>
+                <li>• Discover activities near you</li>
+                <li>• Create events with RSVP</li>
+                <li>• Connect with your community</li>
+                <li>• Filter by interests &amp; distance</li>
+            </ul>
+        </div>
+        <div class="left-footer">
+            <span class="logo">C.M.D.</span>
+            <p>Connect. Meet. Discover. © 2026</p>
+        </div>
     </div>
 
     <!-- Right Panel -->
@@ -127,17 +134,6 @@
             </div>
         </div>
     </div>
-
-    <!-- ========================================
-         FOOTER
-         Simple footer with branding and copyright
-    ======================================== -->
-    <footer>
-        <div class="container">
-            <span class="logo">C.M.D.</span>
-            <p>Connect. Meet. Discover. © 2026</p>
-        </div>
-    </footer>
 
     <script src="../js/CM_Login.js"></script>
 </body>
