@@ -1,0 +1,481 @@
+/* ==========================================
+   RESET & BASE STYLES
+========================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* CSS Custom Properties (Variables) for consistent theming */
+:root {
+    /* Color Palette */
+    --bg-color: hsl(30, 33%, 97%);           /* Light cream background */
+    --text-color: hsl(220, 40%, 13%);        /* Dark blue-gray text */
+    --card-bg: hsl(30, 25%, 95%);            /* Slightly darker cream for cards */
+    --primary: hsl(12, 80%, 60%);            /* Coral/orange primary color */
+    --primary-light: hsl(12, 80%, 60%, 0.1); /* Transparent primary for backgrounds */
+    --secondary: hsl(220, 40%, 13%);         /* Dark blue-gray */
+    --secondary-fg: hsl(30, 33%, 97%);       /* Light text on dark backgrounds */
+    --muted: hsl(220, 15%, 45%);             /* Muted text color */
+    --border: hsl(30, 15%, 85%);             /* Light border color */
+}
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* All headings use Playfair Display serif font */
+h1, h2, h3 {
+    font-family: 'Playfair Display', serif;
+}
+
+/* Standard container with max width and centered */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* ==========================================
+   NAVIGATION BAR
+   Fixed header with logo, links, and CTA button
+========================================== */
+
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background: rgba(31, 41, 55, 0.8);  /* Semi-transparent dark background */
+    backdrop-filter: blur(12px);         /* Blur effect for glass morphism */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+nav .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+}
+
+nav .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--secondary-fg);
+    letter-spacing: 0.05em;
+}
+
+nav .nav-links {
+    display: none;
+    gap: 2rem;
+    font-size: 0.875rem;
+    color: rgba(250, 245, 240, 0.7);
+}
+
+nav .nav-links a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+nav .nav-links a:hover {
+    color: var(--secondary-fg);
+}
+
+nav .btn {
+    padding: 0.5rem 1.5rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 9999px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+nav .btn:hover {
+    transform: translateY(-2px);
+}
+
+@media (min-width: 768px) {
+    nav .nav-links {
+        display: flex;  /* Show nav links on desktop */
+    }
+}
+
+/* ==========================================
+   HERO SECTION
+   Full-screen banner with image slideshow
+========================================== */
+.hero {
+    position: relative;
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    overflow: hidden;
+}
+
+.hero .container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.hero-bg {
+    position: absolute;
+    inset: 0;
+}
+
+.slideshow {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+}
+
+.slide {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;  /* Hidden by default */
+    transition: opacity 2s ease-in-out;  /* Smooth fade transition */
+}
+
+.slide.active {
+    opacity: 1;  /* Visible slide */
+}
+
+/* Dark gradient overlay for text readability */
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(31, 41, 55, 0.9), rgba(31, 41, 55, 0.7), rgba(31, 41, 55, 0.3));
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 10;  /* Above overlay */
+    padding: 5rem 0;
+    max-width: 42rem;
+    animation: fadeInUp 0.8s ease-out;
+    text-align: left;
+}
+
+/* Small badge above main heading */
+.hero-badge {
+    display: inline-block;
+    padding: 0.375rem 1rem;
+    border-radius: 9999px;
+    background: rgba(225, 85, 63, 0.2);
+    color: var(--secondary-fg);
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(225, 85, 63, 0.3);
+    backdrop-filter: blur(4px);
+}
+
+.hero h1 {
+    font-size: clamp(2.5rem, 8vw, 4.5rem);  /* Responsive sizing */
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    color: var(--secondary-fg);
+}
+
+/* Orange highlight on "Discover" */
+.hero h1 .highlight {
+    color: var(--primary);
+}
+
+.hero p {
+    font-size: clamp(1rem, 2vw, 1.25rem);
+    color: rgba(250, 245, 240, 0.8);
+    margin-bottom: 2rem;
+    max-width: 32rem;
+}
+
+.hero-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* ==========================================
+   BUTTON STYLES
+========================================== */
+
+/* Primary CTA button (coral/orange) */
+.btn-primary {
+    padding: 1rem 2rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 9999px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 24px -4px rgba(225, 85, 63, 0.15);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 32px -4px rgba(225, 85, 63, 0.25);
+}
+
+/* Outline/ghost button style */
+.btn-outline {
+    padding: 1rem 2rem;
+    background: transparent;
+    color: var(--secondary-fg);
+    border: 1px solid rgba(250, 245, 240, 0.3);
+    border-radius: 9999px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-outline:hover {
+    background: rgba(250, 245, 240, 0.1);
+}
+
+/* ==========================================
+   FEATURES SECTION
+   Grid of 4 feature cards with icons
+========================================== */
+
+.features {
+    padding: 6rem 0;
+    background: var(--bg-color);
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.section-header h2 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.section-header .highlight {
+    color: var(--primary);
+}
+
+.section-header p {
+    font-size: 1.125rem;
+    color: var(--muted);
+    max-width: 42rem;
+    margin: 0 auto;
+}
+
+/* Responsive grid - adjusts from 1-4 columns based on screen size */
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Individual feature card */
+.feature-card {
+    padding: 1.5rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    transition: all 0.3s;
+    animation: fadeInUp 0.6s ease-out backwards;
+}
+
+/* Staggered animation delays for each card */
+.feature-card:nth-child(1) { animation-delay: 0s; }
+.feature-card:nth-child(2) { animation-delay: 0.1s; }
+.feature-card:nth-child(3) { animation-delay: 0.2s; }
+.feature-card:nth-child(4) { animation-delay: 0.3s; }
+
+/* Lift effect on hover */
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 2px 16px -2px rgba(31, 41, 55, 0.08);
+}
+
+.feature-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.75rem;
+    background: var(--primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    transition: background 0.3s;
+}
+
+.feature-card:hover .feature-icon {
+    background: rgba(225, 85, 63, 0.2);
+}
+
+.feature-icon svg {
+    width: 24px;
+    height: 24px;
+    color: var(--primary);
+}
+
+.feature-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.feature-card p {
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+/* ==========================================
+   HOW IT WORKS SECTION
+   3-step process with large numbers
+========================================== */
+
+.how-it-works {
+    padding: 6rem 0;
+    background: var(--card-bg);
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    max-width: 56rem;
+    margin: 0 auto;
+}
+
+.step {
+    text-align: center;
+    animation: fadeInUp 0.6s ease-out backwards;
+}
+
+/* Staggered animation for steps */
+.step:nth-child(1) { animation-delay: 0s; }
+.step:nth-child(2) { animation-delay: 0.15s; }
+.step:nth-child(3) { animation-delay: 0.3s; }
+
+/* Large decorative step numbers */
+.step-number {
+    font-size: 4rem;
+    font-weight: 700;
+    color: rgba(225, 85, 63, 0.2);
+}
+
+.step h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0.5rem 0 0.75rem;
+}
+
+.step p {
+    color: var(--muted);
+}
+
+/* ==========================================
+   CALL TO ACTION SECTION
+   Dark section with final conversion push
+========================================== */
+
+.cta {
+    padding: 6rem 0;
+    background: var(--secondary);
+    color: var(--secondary-fg);
+    text-align: center;
+}
+
+.cta h2 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    animation: fadeInScale 0.6s ease-out;
+}
+
+.cta p {
+    font-size: 1.125rem;
+    color: rgba(250, 245, 240, 0.7);
+    max-width: 36rem;
+    margin: 0 auto 2rem;
+}
+
+/* ==========================================
+   FOOTER
+   Simple centered footer with branding
+========================================== */
+
+footer {
+    padding: 3rem 0;
+    background: var(--secondary);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+}
+
+footer .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: rgba(250, 245, 240, 0.6);
+}
+
+footer p {
+    font-size: 0.875rem;
+    color: rgba(250, 245, 240, 0.4);
+    margin-top: 0.5rem;
+}
+
+/* ==========================================
+   ANIMATIONS
+   Reusable keyframe animations
+========================================== */
+
+/* Fade in from bottom - used for cards and sections */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scale and fade in - used for CTA section */
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ==========================================
+   SMOOTH SCROLLING
+========================================== */
+
+html {
+    scroll-behavior: smooth;  /* Smooth scrolling for anchor links */
+}
