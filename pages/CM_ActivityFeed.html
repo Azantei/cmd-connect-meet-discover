@@ -34,12 +34,12 @@
     </nav>
 
     <!-- ========================================
-         SEARCH BAR & CREATE BUTTON
-         Search input and quick-access create button
+         SEARCH BAR & SEARCH BUTTON
+         Search input and search button
     ======================================== -->
     <div class="search-bar">
-        <input type="text" placeholder="🔍  Search activities, events, or people..." />
-        <button class="btn-create">+ Create Post</button>
+        <input type="text" id="search-input" placeholder="🔍  Search activities, events, or people..." onkeypress="handleSearchKeypress(event)" />
+        <button class="btn-create" onclick="performSearch()">Search</button>
     </div>
 
     <!-- ========================================
@@ -73,7 +73,14 @@
 
                 <div class="card">
                     <div class="card-img" style="background-color:#2e3a4e;"><div class="img-placeholder"></div></div>
-                    <div class="card-tags"><span class="tag">Outdoors</span><span class="tag">1.2 mi</span></div>
+                    <div class="card-tags">
+                        <div class="tags-left"><span class="tag">Outdoors</span><span class="tag">1.2 mi</span></div>
+                        <button class="star-btn" onclick="toggleStar(this, 'Morning Trail Hike')" aria-label="Mark as interested">
+                            <svg class="star-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </button>
+                    </div>
                     <div class="card-body">
                         <div class="card-title">Morning Trail Hike</div>
                         <div class="card-desc">Join us for a scenic morning hike through the local trails. All skill levels welcome.</div>
@@ -83,7 +90,14 @@
 
                 <div class="card">
                     <div class="card-img" style="background-color:#3b4a2e;"><div class="img-placeholder"></div></div>
-                    <div class="card-tags"><span class="tag">Outdoors</span><span class="tag">1.2 mi</span></div>
+                    <div class="card-tags">
+                        <div class="tags-left"><span class="tag">Outdoors</span><span class="tag">1.2 mi</span></div>
+                        <button class="star-btn" onclick="toggleStar(this, 'Acoustic Jam Session')" aria-label="Mark as interested">
+                            <svg class="star-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </button>
+                    </div>
                     <div class="card-body">
                         <div class="card-title">Acoustic Jam Session</div>
                         <div class="card-desc">Bring your instrument or just your ears. Casual outdoor music gathering.</div>
@@ -93,7 +107,14 @@
 
                 <div class="card">
                     <div class="card-img" style="background-color:#3b2e4a;"><div class="img-placeholder"></div></div>
-                    <div class="card-tags"><span class="tag">Outdoors</span><span class="tag">1.2 mi</span></div>
+                    <div class="card-tags">
+                        <div class="tags-left"><span class="tag">Outdoors</span><span class="tag">1.2 mi</span></div>
+                        <button class="star-btn" onclick="toggleStar(this, 'Community Picnic')" aria-label="Mark as interested">
+                            <svg class="star-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </button>
+                    </div>
                     <div class="card-body">
                         <div class="card-title">Community Picnic</div>
                         <div class="card-desc">A relaxed afternoon picnic in the park. Food, games, and good company.</div>
@@ -103,7 +124,14 @@
 
                 <div class="card">
                     <div class="card-img" style="background-color:#2e3a4e;"><div class="img-placeholder"></div></div>
-                    <div class="card-tags"><span class="tag">Outdoors</span><span class="tag">1.2 mi</span></div>
+                    <div class="card-tags">
+                        <div class="tags-left"><span class="tag">Outdoors</span><span class="tag">1.2 mi</span></div>
+                        <button class="star-btn" onclick="toggleStar(this, 'Sunset Yoga')" aria-label="Mark as interested">
+                            <svg class="star-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </button>
+                    </div>
                     <div class="card-body">
                         <div class="card-title">Sunset Yoga</div>
                         <div class="card-desc">Wind down with a group yoga session as the sun sets over the park.</div>

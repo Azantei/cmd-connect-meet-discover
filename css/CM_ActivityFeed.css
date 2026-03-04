@@ -185,7 +185,14 @@ body {
 .card-tags {
     padding: 10px 12px 4px;
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     gap: 6px;
+}
+.tags-left {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
 }
 .tag {
     border: 1px solid #aaa;
@@ -193,6 +200,31 @@ body {
     padding: 2px 8px;
     font-size: 0.75rem;
     color: #555;
+}
+.star-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+.star-btn:hover {
+    transform: scale(1.15);
+}
+.star-icon {
+    color: #aaa;
+    transition: all 0.2s;
+}
+.star-btn:hover .star-icon {
+    color: #d4af37;
+}
+.star-btn.starred .star-icon {
+    fill: #ffd700;
+    color: #ffd700;
+    stroke: #d4af37;
 }
 .card-body { padding: 6px 12px 12px; }
 .card-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; color: #222; }

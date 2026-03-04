@@ -264,9 +264,13 @@ body {
 /* Actions */
 .actions {
     display: flex;
-    justify-content: flex-end;
-    gap: 12px;
+    justify-content: space-between;
+    align-items: center;
     margin-top: 8px;
+}
+.actions-right {
+    display: flex;
+    gap: 12px;
 }
 .btn-cancel {
     padding: 10px 24px;
@@ -279,6 +283,21 @@ body {
     font-family: 'Segoe UI', sans-serif;
 }
 .btn-cancel:hover { background-color: #f0f0f0; }
+.btn-draft {
+    padding: 10px 24px;
+    border: 1px solid #c0522a;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #c0522a;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+    transition: background-color 0.2s, color 0.2s;
+}
+.btn-draft:hover { 
+    background-color: #fff3ee; 
+}
 .btn-post {
     padding: 10px 24px;
     border: none;
