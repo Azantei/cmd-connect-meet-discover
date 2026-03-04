@@ -110,6 +110,8 @@ body {
     font-size: 1.25rem;
     font-weight: 700;
     font-family: 'Playfair Display', serif;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 .logo-light {

@@ -37,6 +37,8 @@ body {
     font-weight: 700;
     font-size: 1.25rem;
     font-family: 'Playfair Display', serif;
+    text-decoration: none;
+    cursor: pointer;
 }
 .brand-light {
     color: white;

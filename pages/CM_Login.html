@@ -32,26 +32,14 @@
             font-size: 1.25rem;
             font-weight: 700;
             font-family: 'Playfair Display', serif;
+            text-decoration: none;
+            cursor: pointer;
         }
         .login-nav .logo-light {
             color: white;
         }
         .login-nav .logo-accent {
             color: hsl(20, 90%, 55%);
-        }
-        .login-nav .nav-links {
-            display: flex;
-            gap: 2rem;
-            font-size: 0.875rem;
-        }
-        .login-nav .nav-links a {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s ease;
-        }
-        .login-nav .nav-links a:hover {
-            color: white;
         }
         body {
             padding-top: 60px;
@@ -61,10 +49,7 @@
 <body>
     <!-- Navigation -->
     <nav class="login-nav">
-        <span class="logo"><span class="logo-light">C.M.</span><span class="logo-accent">D.</span></span>
-        <div class="nav-links">
-            <a href="index.html">Home</a>
-        </div>
+        <a href="index.html" class="logo"><span class="logo-light">C.M.</span><span class="logo-accent">D.</span></a>
     </nav>
 
     <!-- Left Panel -->
