@@ -3,11 +3,11 @@
    Layout, sidebar, report cards, and actions
 ========================================== */
 
-/* Light green sidebar accent (from mockup) */
+/* Sidebar color scheme matching admin pages */
 :root {
-    --mod-sidebar-bg: hsl(85, 35%, 95%);
-    --mod-sidebar-active: hsl(45, 90%, 95%);
-    --mod-sidebar-border: hsl(12, 80%, 60%);
+    --mod-sidebar-bg: hsl(45, 40%, 88%);
+    --mod-sidebar-active: hsl(0, 0%, 100%);
+    --mod-sidebar-border: hsl(20, 90%, 55%);
 }
 
 /* ==========================================
@@ -34,6 +34,11 @@
     align-items: center;
     font-size: 0.875rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
 
 .mod-role {
@@ -51,6 +56,11 @@
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 38px;
+    left: 0;
+    right: 0;
+    z-index: 999;
 }
 
 .mod-nav-inner {
@@ -117,21 +127,23 @@
 ========================================= */
 
 .mod-layout {
-    display: flex;
     min-height: calc(100vh - 120px);
 }
 
 /* ==========================================
    SIDEBAR
-   Light green background, nav items with active state
+   Beige background, nav items with active state matching admin pages
 ========================================= */
 
 .mod-sidebar {
-    width: 220px;
-    min-width: 220px;
+    width: 200px;
     background: var(--mod-sidebar-bg);
-    border-right: 1px solid var(--border);
-    padding: 1.5rem 0;
+    border-right: 1px solid hsl(0, 0%, 70%);
+    padding: 0;
+    position: fixed;
+    left: 0;
+    top: 98px;
+    bottom: 0;
 }
 
 .mod-nav-item {
@@ -139,20 +151,20 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: 0.75rem 1.25rem;
-    background: none;
+    padding: 0.875rem 1.5rem;
+    background: var(--mod-sidebar-bg);
     border: none;
-    border-left: 4px solid transparent;
+    border-left: 3px solid transparent;
     font-family: 'DM Sans', sans-serif;
-    font-size: 0.9375rem;
-    color: var(--text-color);
+    font-size: 0.875rem;
+    color: hsl(0, 0%, 15%);
     text-align: left;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .mod-nav-item:hover {
-    background: rgba(225, 85, 63, 0.08);
+    background: white;
 }
 
 .mod-nav-item.active {
@@ -181,10 +193,10 @@
 ========================================= */
 
 .mod-content {
-    flex: 1;
+    margin-left: 200px;
+    margin-top: 98px;
     padding: 2rem;
     background: var(--bg-color);
-    overflow-y: auto;
 }
 
 .mod-content-header {
@@ -482,19 +494,19 @@
 ========================================= */
 
 @media (max-width: 768px) {
-    .mod-layout {
-        flex-direction: column;
-    }
-
     .mod-sidebar {
         width: 100%;
-        min-width: 100%;
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
         padding: 1rem;
         border-right: none;
         border-bottom: 1px solid var(--border);
+        position: static;
+    }
+
+    .mod-content {
+        margin-left: 0;
     }
 
     .mod-nav-item {

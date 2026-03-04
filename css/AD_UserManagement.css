@@ -51,6 +51,32 @@ body {
 }
 
 /* ==========================================
+   TOP BAR
+   Dashboard title and role indicator
+========================================== */
+
+.admin-topbar {
+    background: var(--navbar-bg);
+    color: white;
+    padding: 0.5rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+}
+
+.admin-role {
+    font-weight: 600;
+    color: hsl(20, 90%, 55%);
+}
+
+/* ==========================================
    TOP NAVIGATION BAR
 ========================================== */
 
@@ -59,7 +85,7 @@ body {
     color: white;
     height: 60px;
     position: fixed;
-    top: 0;
+    top: 38px;
     left: 0;
     right: 0;
     z-index: 1000;
@@ -123,7 +149,7 @@ body {
     background-color: var(--sidebar-bg);
     position: fixed;
     left: 0;
-    top: 60px;
+    top: 98px;
     bottom: 0;
     border-right: 1px solid var(--sidebar-border);
 }
@@ -165,7 +191,7 @@ body {
 
 .main-content {
     margin-left: 200px;
-    margin-top: 60px;
+    margin-top: 98px;
     padding: 1.5rem;
 }
 
