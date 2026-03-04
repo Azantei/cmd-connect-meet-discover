@@ -52,56 +52,65 @@ nav {
     left: 0;
     right: 0;
     z-index: 50;
-    background: rgba(31, 41, 55, 0.8);  /* Semi-transparent dark background */
-    backdrop-filter: blur(12px);         /* Blur effect for glass morphism */
+    background: hsl(215, 20%, 30%);
+    backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 nav .container {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 64px;
+    height: 60px;
+    padding: 0 2rem;
 }
 
 nav .logo {
     font-family: 'Playfair Display', serif;
     font-size: 1.25rem;
     font-weight: 700;
-    color: var(--secondary-fg);
     letter-spacing: 0.05em;
 }
 
+nav .logo-light {
+    color: white;
+}
+
+nav .logo-accent {
+    color: hsl(20, 90%, 55%);
+}
+
 nav .nav-links {
-    display: none;
+    display: flex;
     gap: 2rem;
     font-size: 0.875rem;
-    color: rgba(250, 245, 240, 0.7);
 }
 
 nav .nav-links a {
-    color: inherit;
+    color: rgba(250, 245, 240, 0.7);
     text-decoration: none;
     transition: color 0.3s;
 }
 
 nav .nav-links a:hover {
-    color: var(--secondary-fg);
+    color: hsl(30, 33%, 97%);
 }
 
 nav .btn {
     padding: 0.5rem 1.5rem;
-    background: var(--primary);
+    background: hsl(20, 90%, 55%);
     color: white;
     border: none;
-    border-radius: 9999px;
+    border-radius: 4px;
     font-weight: 600;
     cursor: pointer;
-    transition: transform 0.2s;
+    transition: background 0.2s;
+    font-size: 0.875rem;
 }
 
 nav .btn:hover {
-    transform: translateY(-2px);
+    background: hsl(20, 80%, 45%);
 }
 
 @media (min-width: 768px) {

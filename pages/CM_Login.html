@@ -4,9 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>C.M.D. - Your Community Starts Here</title>
-    <link rel="stylesheet" href="../css/login_styles.css">
+    <link rel="stylesheet" href="../css/CM_Login.css">
+    <style>
+        /* Simple header for login page */
+        .login-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .login-nav .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            font-family: 'Playfair Display', serif;
+        }
+        .login-nav .logo-light {
+            color: white;
+        }
+        .login-nav .logo-accent {
+            color: hsl(20, 90%, 55%);
+        }
+        .login-nav .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        .login-nav .nav-links a {
+            color: rgba(250, 245, 240, 0.7);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .login-nav .nav-links a:hover {
+            color: hsl(30, 33%, 97%);
+        }
+        body {
+            padding-top: 60px;
+        }
+    </style>
 </head>
 <body>
+    <!-- Navigation -->
+    <nav class="login-nav">
+        <span class="logo"><span class="logo-light">C.M.</span><span class="logo-accent">D.</span></span>
+        <div class="nav-links">
+            <a href="index.html">Explore</a>
+            <a href="#create">Create</a>
+            <a href="#profile">Profile</a>
+            <a href="index.html#about">About Us</a>
+        </div>
+    </nav>
+
     <!-- Left Panel -->
     <div class="left-panel">
         <h1>C.M.D.</h1>
@@ -66,6 +121,6 @@
         </div>
     </div>
 
-    <script src="../js/login_script.js"></script>
+    <script src="../js/CM_Login.js"></script>
 </body>
 </html>
