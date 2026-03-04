@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Users | C.M.D.</title>
+    <title>Admin Dashboard - Escalated Reports | C.M.D.</title>
     
     <!-- Google Fonts: DM Sans (body text) and Playfair Display (headings) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Admin User Management Stylesheet -->
-    <link rel="stylesheet" href="../css/AD_UserManagement.css">
+    <!-- Admin Escalated Reports Stylesheet -->
+    <link rel="stylesheet" href="../css/AD_EscalatedReports.css">
 </head>
 <body>
     <!-- ========================================
@@ -34,10 +34,10 @@
     ======================================== -->
     <aside class="left-sidebar">
         <nav class="sidebar-nav">
-            <a href="AD_UserManagement.html" class="nav-item active">
+            <a href="AD_UserManagement.html" class="nav-item">
                 <span>Users</span>
             </a>
-            <a href="AD_EscalatedReports.html" class="nav-item">
+            <a href="AD_EscalatedReports.html" class="nav-item active">
                 <span>Escalated</span>
             </a>
             <a href="AD_Analytics.html" class="nav-item">
@@ -53,48 +53,26 @@
          MAIN CONTENT AREA
     ======================================== -->
     <main class="main-content">
-        <!-- Statistics Cards -->
-        <section class="stats-section">
-            <div class="stat-card">
-                <div class="stat-label">Total Users</div>
-                <div class="stat-value" id="totalUsers">2,847</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Active Posts</div>
-                <div class="stat-value" id="activePosts">391</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Reports</div>
-                <div class="stat-value" id="reports">7</div>
+        <!-- Page Header -->
+        <section class="page-header">
+            <h1>Escalated Reports</h1>
+            <div class="filter-group">
+                <label for="statusFilter">Status:</label>
+                <select id="statusFilter" class="status-filter">
+                    <option value="all">All</option>
+                    <option value="open">Open</option>
+                    <option value="resolved">Resolved</option>
+                </select>
             </div>
         </section>
 
-        <!-- Search Bar -->
-        <section class="search-section">
-            <input type="text" id="searchInput" placeholder="Search by name or email" class="search-input">
-            <button class="search-btn">Search</button>
-        </section>
-
-        <!-- Users Table -->
-        <section class="table-section">
-            <table class="users-table">
-                <thead>
-                    <tr>
-                        <th>User (name + email)</th>
-                        <th>Role</th>
-                        <th>Status</th>
-                        <th>Joined</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="usersTableBody">
-                    <!-- Users will be dynamically populated via JavaScript -->
-                </tbody>
-            </table>
+        <!-- Reports List -->
+        <section class="reports-list" id="reportsList">
+            <!-- Reports will be dynamically populated via JavaScript -->
         </section>
     </main>
 
-    <!-- Admin User Management JavaScript -->
-    <script src="../js/AD_UserManagement.js"></script>
+    <!-- Admin Escalated Reports JavaScript -->
+    <script src="../js/AD_EscalatedReports.js"></script>
 </body>
 </html>

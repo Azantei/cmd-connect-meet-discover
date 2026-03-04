@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Analytics | C.M.D.</title>
+    
+    <!-- Google Fonts: DM Sans (body text) and Playfair Display (headings) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Admin Analytics Stylesheet -->
+    <link rel="stylesheet" href="../css/AD_Analytics.css">
+</head>
+<body>
+    <!-- ========================================
+         TOP NAVIGATION BAR
+    ======================================== -->
+    <nav class="top-navbar">
+        <div class="navbar-content">
+            <span class="logo"><span class="logo-light">C.M.</span><span class="logo-accent">D.</span></span>
+            <div class="nav-links">
+                <a href="#explore">Explore</a>
+                <a href="#create">Create</a>
+                <a href="#profile">Profile</a>
+            </div>
+            <div class="admin-info">Admin: [Name]</div>
+        </div>
+    </nav>
+
+    <!-- ========================================
+         LEFT SIDEBAR
+    ======================================== -->
+    <aside class="left-sidebar">
+        <nav class="sidebar-nav">
+            <a href="AD_UserManagement.html" class="nav-item">
+                <span>Users</span>
+            </a>
+            <a href="AD_EscalatedReports.html" class="nav-item">
+                <span>Escalated</span>
+            </a>
+            <a href="AD_Analytics.html" class="nav-item active">
+                <span>Analytics</span>
+            </a>
+            <a href="#settings" class="nav-item">
+                <span>Settings</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- ========================================
+         MAIN CONTENT AREA
+    ======================================== -->
+    <main class="main-content">
+        <!-- Page Header -->
+        <section class="page-header">
+            <h1>Analytics</h1>
+            <div class="date-selector">
+                <label for="dateRange">Date range:</label>
+                <select id="dateRange" class="date-filter">
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                    <option value="quarter">This Quarter</option>
+                    <option value="year">This Year</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Statistics Cards -->
+        <section class="stats-grid">
+            <div class="stat-card orange">
+                <div class="stat-label">Total Users</div>
+                <div class="stat-value" id="totalUsers">2,847</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-label">Active Posts</div>
+                <div class="stat-value" id="activePosts">391</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-label">RSVPs</div>
+                <div class="stat-value" id="rsvps">1,204</div>
+            </div>
+            <div class="stat-card gray">
+                <div class="stat-label">Reports</div>
+                <div class="stat-value" id="reports">7</div>
+            </div>
+        </section>
+
+        <!-- User Growth Chart -->
+        <section class="chart-section">
+            <div class="chart-header">
+                <span class="chart-icon">■</span>
+                <h2>User Growth Chart (bar/line — new users per day)</h2>
+            </div>
+            <div class="chart-container" id="userGrowthChart">
+                <!-- Chart placeholder - will be populated by backend -->
+                <div class="chart-placeholder">
+                    <div class="bar-chart">
+                        <div class="bar" style="height: 40%"></div>
+                        <div class="bar" style="height: 45%"></div>
+                        <div class="bar" style="height: 50%"></div>
+                        <div class="bar" style="height: 55%"></div>
+                        <div class="bar" style="height: 60%"></div>
+                        <div class="bar" style="height: 65%"></div>
+                        <div class="bar" style="height: 70%"></div>
+                        <div class="bar" style="height: 75%"></div>
+                        <div class="bar" style="height: 80%"></div>
+                        <div class="bar" style="height: 85%"></div>
+                        <div class="bar" style="height: 90%"></div>
+                        <div class="bar" style="height: 95%"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom Row: Categories and Activity Log -->
+        <section class="bottom-grid">
+            <!-- Top Categories -->
+            <div class="section-card">
+                <div class="section-header">
+                    <span class="section-icon">■</span>
+                    <h3>Top Categories</h3>
+                </div>
+                <div class="categories-list">
+                    <div class="category-item">
+                        <span class="category-label">Outdoors</span>
+                        <div class="category-bar" style="width: 100%"></div>
+                    </div>
+                    <div class="category-item">
+                        <span class="category-label">Music</span>
+                        <div class="category-bar" style="width: 75%"></div>
+                    </div>
+                    <div class="category-item">
+                        <span class="category-label">Food & Drink</span>
+                        <div class="category-bar" style="width: 60%"></div>
+                    </div>
+                    <div class="category-item">
+                        <span class="category-label">Sports</span>
+                        <div class="category-bar" style="width: 50%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity Log -->
+            <div class="section-card">
+                <div class="section-header">
+                    <span class="section-icon">■</span>
+                    <h3>Recent Activity Log</h3>
+                </div>
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <span class="activity-date">Mar 3</span>
+                        <span class="activity-separator">—</span>
+                        <span class="activity-text">User registered</span>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-date">Mar 3</span>
+                        <span class="activity-separator">—</span>
+                        <span class="activity-text">Post published</span>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-date">Mar 2</span>
+                        <span class="activity-separator">—</span>
+                        <span class="activity-text">Report escalated</span>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-date">Mar 2</span>
+                        <span class="activity-separator">—</span>
+                        <span class="activity-text">User verified</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Admin Analytics JavaScript -->
+    <script src="../js/AD_Analytics.js"></script>
+</body>
+</html>
