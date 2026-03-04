@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C.M.D. - Profile</title>
+    <link rel="stylesheet" href="css/community_profile_styles.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <span class="brand">C.M.D.</span>
+            <div class="nav-links">
+                <span>Explore</span>
+                <span>Create</span>
+                <span>Profile</span>
+            </div>
+        </div>
+        <div class="nav-right">
+            <span>Alex J.</span>
+            <span class="logout">Log Out</span>
+        </div>
+    </nav>
+
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="profile-left">
+            <div class="avatar">AJ</div>
+            <div class="profile-info">
+                <div class="profile-name-row">
+                    <span class="profile-name">Alex Johnson</span>
+                </div>
+                <div class="profile-handle">@alexj · Capitol Hill, Seattle</div>
+                <div class="profile-stats">
+                    <div><span class="stat-num">24</span><span class="stat-label">Posts</span></div>
+                    <div><span class="stat-num">142</span><span class="stat-label">RSVPs</span></div>
+                    <div><span class="stat-num">89</span><span class="stat-label">Followers</span></div>
+                </div>
+            </div>
+        </div>
+        <button class="btn-edit">Edit Profile <span class="settings-sep">| ⚙ Settings</span></button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab active" onclick="setTab(this, 'my-posts')">My Posts</button>
+        <button class="tab" onclick="setTab(this, 'upcoming')">Upcoming Events</button>
+        <button class="tab" onclick="setTab(this, 'drafts')">Drafts</button>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-section-title">ABOUT</div>
+            <div class="placeholder-lines">Example Bio</div>
+            <div class="sidebar-section-title" style="margin-top:20px;">INTERESTS</div>
+            <div class="interests-box">
+                <span class="interest-tag">Outdoors</span>
+                <span class="interest-tag">Running</span>
+                <span class="interest-tag">Coffee</span>
+                <span class="interest-tag">Music</span>
+            </div>
+        </div>
+
+        <!-- Posts Area -->
+        <div class="posts-area">
+
+            <!-- Sort + Filter Bar -->
+            <div class="toolbar">
+                <div class="dropdown-wrap">
+                    <button class="toolbar-btn" onclick="toggleSort()">↕ Sort: <span id="sortLabel">Newest</span> ▾</button>
+                    <div class="dropdown" id="sortDropdown">
+                        <div class="dropdown-item active-item" onclick="setSort(this, 'Newest')">Newest</div>
+                        <div class="dropdown-item" onclick="setSort(this, 'Oldest')">Oldest</div>
+                        <div class="dropdown-item" onclick="setSort(this, 'Most Popular')">Most Popular</div>
+                        <div class="dropdown-item" onclick="setSort(this, 'Upcoming')">Upcoming</div>
+                    </div>
+                </div>
+                <button class="toolbar-btn" id="filterBtn" onclick="toggleFilter()">⚙ Filter by Interests <span id="filterCount"></span> ▾</button>
+                <button class="clear-btn" id="clearBtn" onclick="clearFilters()" style="display:none;">✕ Clear</button>
+            </div>
+
+            <!-- Filter Panel -->
+            <div class="filter-panel" id="filterPanel" style="display:none;">
+                <div class="filter-title">FILTER BY INTERESTS</div>
+                <div class="filter-pills">
+                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Outdoors">Outdoors</button>
+                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Music">Music</button>
+                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Sports">Sports</button>
+                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Food">Food</button>
+                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Arts">Arts</button>
+                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Tech">Tech</button>
+                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Fitness">Fitness</button>
+                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Games">Games</button>
+                </div>
+            </div>
+
+            <!-- Cards Grid -->
+            <div class="cards-grid" id="cardsGrid">
+                <!-- Cards injected by JS -->
+            </div>
+
+            <div class="no-results" id="noResults" style="display:none;">No posts match the selected filters.</div>
+        </div>
+    </div>
+
+    <script src="js/community_profile_script.js"></script>
+</body>
+</html>
