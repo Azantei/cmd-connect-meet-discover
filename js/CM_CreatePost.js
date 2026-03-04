@@ -1,4 +1,13 @@
-// Post type toggle
+/* ==========================================
+   C.M.D. - CREATE POST
+   Post type toggle and form interaction logic
+========================================== */
+
+/**
+ * Toggle between casual and formal post types
+ * Shows/hides RSVP options for formal events
+ * @param {string} type - Either 'casual' or 'formal'
+ */
 function setType(type) {
     document.getElementById('btn-casual').classList.remove('active');
     document.getElementById('btn-formal').classList.remove('active');
@@ -12,12 +21,19 @@ function setType(type) {
     }
 }
 
-// Category pill toggle
+/**
+ * Toggle category pill selection
+ * Allows multiple categories to be selected
+ * @param {HTMLElement} el - The clicked category pill element
+ */
 function toggleCat(el) {
     el.classList.toggle('active');
 }
 
-// RSVP toggle
+/**
+ * Toggle RSVP required setting
+ * Visual feedback for RSVP toggle button
+ */
 function toggleRsvp() {
     var toggle = document.getElementById('rsvpToggle');
     toggle.classList.toggle('on');

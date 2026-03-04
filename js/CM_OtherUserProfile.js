@@ -1,3 +1,9 @@
+/* ==========================================
+   C.M.D. - OTHER USER PROFILE
+   View another user's profile, report functionality
+========================================== */
+
+// Mock event data for other user's posts
 var CARDS = [
     { title: "Morning Trail Hike", desc: "Join us for a scenic morning hike through the local trails. All skill levels welcome.", date: "Sat Mar 7", going: 12, color: "#2e3a4e", tags: ["Outdoors"] },
     { title: "Acoustic Jam Session", desc: "Bring your instrument or just your ears. Casual outdoor music gathering.", date: "Sun Mar 8", going: 8, color: "#3b4a2e", tags: ["Music"] },
@@ -5,6 +11,10 @@ var CARDS = [
     { title: "Sunset Yoga", desc: "Wind down with a group yoga session as the sun sets over the park.", date: "Fri Mar 13", going: 15, color: "#2e3a4e", tags: ["Fitness"] },
 ];
 
+/**
+ * Render event cards for the viewed user
+ * Displays all posts from the user being viewed
+ */
 function renderCards() {
     var grid = document.getElementById('cardsGrid');
     grid.innerHTML = CARDS.map(function(card) {
@@ -17,16 +27,27 @@ function renderCards() {
     }).join('');
 }
 
+/**
+ * Open report user modal
+ * Prevents opening if user already reported
+ */
 function openReportModal() {
     var btn = document.getElementById('reportBtn');
     if (btn.classList.contains('reported')) return;
     document.getElementById('reportModal').style.display = 'flex';
 }
 
+/**
+ * Close report user modal
+ */
 function closeReportModal() {
     document.getElementById('reportModal').style.display = 'none';
 }
 
+/**
+ * Submit report for this user
+ * Updates button to show reported state
+ */
 function submitReport() {
     closeReportModal();
     var btn = document.getElementById('reportBtn');

@@ -4,14 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>C.M.D. - Create a Post</title>
+    
+    <!-- Google Fonts: DM Sans (body text) and Playfair Display (headings) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Create Post Stylesheet -->
     <link rel="stylesheet" href="../css/CM_CreatePost.css">
 </head>
 <body>
 
-    <!-- Navbar -->
+    <!-- ========================================
+         NAVIGATION BAR
+         Fixed header with logo, centered links, and user info
+    ======================================== -->
     <nav class="navbar">
         <span class="brand"><span class="brand-light">C.M.</span><span class="brand-accent">D.</span></span>
         <div class="nav-links">
@@ -26,12 +33,18 @@
         </div>
     </nav>
 
-    <!-- Content -->
+    <!-- ========================================
+         MAIN CONTENT AREA
+         Post creation form with type selector
+    ======================================== -->
     <div class="content">
 
         <h1 class="page-title">Create a Post</h1>
 
-        <!-- Post Type Selector -->
+        <!-- ========================================
+             POST TYPE SELECTOR
+             Choose between casual activity or formal event
+        ======================================== -->
         <div class="type-selector">
             <button class="type-btn active" id="btn-casual" onclick="setType('casual')">
                 <div class="type-icon"></div>

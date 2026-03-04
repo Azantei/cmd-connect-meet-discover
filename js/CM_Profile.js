@@ -1,3 +1,9 @@
+/* ==========================================
+   C.M.D. - USER PROFILE
+   Mock event cards, filtering, and tab switching
+========================================== */
+
+// Mock event data for profile cards
 var CARDS = [
     { title: "Morning Trail Hike", desc: "Join us for a scenic morning hike through the local trails. All skill levels welcome.", date: "Sat Mar 7", going: 12, color: "#2e3a4e", tags: ["Outdoors"] },
     { title: "Acoustic Jam Session", desc: "Bring your instrument or just your ears. Casual outdoor music gathering.", date: "Sun Mar 8", going: 8, color: "#3b4a2e", tags: ["Music"] },
@@ -7,8 +13,13 @@ var CARDS = [
     { title: "Coffee Tasting", desc: "Explore local roasters and taste a variety of single-origin coffees.", date: "Sun Mar 22", going: 10, color: "#4a3b2e", tags: ["Coffee"] },
 ];
 
+// Active filter categories
 var activeFilters = [];
 
+/**
+ * Render event cards based on active filters
+ * Filters cards by selected categories and updates display
+ */
 function renderCards() {
     var grid = document.getElementById('cardsGrid');
     var noResults = document.getElementById('noResults');
@@ -33,17 +44,31 @@ function renderCards() {
     }
 }
 
+/**
+ * Switch between profile tabs
+ * @param {HTMLElement} el - The clicked tab element
+ * @param {string} id - Tab identifier
+ */
 function setTab(el, id) {
     document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
     el.classList.add('active');
 }
 
+/**
+ * Toggle sort dropdown visibility
+ * Closes filter panel if open
+ */
 function toggleSort() {
     var dd = document.getElementById('sortDropdown');
     dd.classList.toggle('open');
     document.getElementById('filterPanel').style.display = 'none';
 }
 
+/**
+ * Set selected sort option
+ * @param {HTMLElement} el - The clicked dropdown item
+ * @param {string} val - Sort option label
+ */
 function setSort(el, val) {
     document.getElementById('sortLabel').textContent = val;
     document.querySelectorAll('.dropdown-item').forEach(function(i) { i.classList.remove('active-item'); });
@@ -51,12 +76,21 @@ function setSort(el, val) {
     document.getElementById('sortDropdown').classList.remove('open');
 }
 
+/**
+ * Toggle filter panel visibility
+ * Closes sort dropdown if open
+ */
 function toggleFilter() {
     var panel = document.getElementById('filterPanel');
     panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
     document.getElementById('sortDropdown').classList.remove('open');
 }
 
+/**
+ * Toggle category filter selection
+ * Updates active filters and re-renders cards
+ * @param {HTMLElement} el - The clicked filter pill element
+ */
 function toggleCatFilter(el) {
     var cat = el.getAttribute('data-cat');
     el.classList.toggle('active');
