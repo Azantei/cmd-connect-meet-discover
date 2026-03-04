@@ -6,19 +6,19 @@ A simple landing page for a community events platform.
 
 Just open `index.html` in your web browser. That's it!
 
-Double-click the file or right-click → "Open with" and select your browser.
+Double-click the file or right-click "Open with" and select your browser.
 
 ## Project Structure
 
 ```
 📁 proposal-palette-quick/
-├── 📄 index.html              ← Main landing page
+├── 📄 index.html              Main landing page
 ├── 📁 css/
-│   └── home.css               ← Styles for index.html
+│   └── home.css               Styles for index.html
 ├── 📁 js/
-│   └── home.js                ← JavaScript for index.html
-├── 📁 pages/                  ← Future pages go here
-├── 📁 public/                 ← Images and assets
+│   └── home.js                JavaScript for index.html
+├── 📁 pages/                  Future pages go here
+├── 📁 public/                 Images and assets
 │   ├── favicon.ico
 │   ├── robots.txt
 │   └── *.jpg (hero images)

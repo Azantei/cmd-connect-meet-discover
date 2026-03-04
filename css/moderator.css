@@ -54,13 +54,12 @@
 }
 
 .mod-nav-inner {
-    max-width: 1200px;
-    margin: 0 auto;
     padding: 0 2rem;
     height: 60px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: relative;
 }
 
 .mod-nav .logo {
@@ -83,6 +82,9 @@
     display: flex;
     gap: 2rem;
     font-size: 0.875rem;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .mod-nav-links a {
