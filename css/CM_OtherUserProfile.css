@@ -284,3 +284,33 @@ body {
     font-size: 0.85rem;
     font-weight: 600;
 }
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+footer {
+    padding: 3rem 0;
+    background: #2e3a4e;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+footer .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+footer .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+}
+
+footer p {
+    font-size: 0.875rem;
+}
