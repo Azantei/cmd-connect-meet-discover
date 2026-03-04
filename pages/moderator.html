@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moderation Dashboard - C.M.D.</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/home.css">
+    <link rel="stylesheet" href="../css/moderator.css">
+</head>
+<body class="mod-body">
+    <!-- Top bar -->
+    <header class="mod-topbar">
+        <span>Moderation Dashboard</span>
+        <span class="mod-role">Moderator</span>
+    </header>
+
+    <!-- Secondary navigation -->
+    <nav class="mod-nav">
+        <div class="mod-nav-inner">
+            <a href="../index.html" class="logo">C.M.D.</a>
+            <div class="mod-nav-links">
+                <a href="../index.html#events">Explore</a>
+                <a href="#">Create</a>
+                <a href="#">Profile</a>
+            </div>
+            <span class="mod-user">Moderator: Sara M.</span>
+        </div>
+    </nav>
+
+    <!-- Main layout: sidebar + content -->
+    <div class="mod-layout">
+        <aside class="mod-sidebar">
+            <button class="mod-nav-item active" data-view="reports">
+                Reports Queue
+                <span class="mod-badge" id="reportCount">7</span>
+            </button>
+            <button class="mod-nav-item" data-view="history">Moderation History</button>
+            <button class="mod-nav-item" data-view="hidden">Hidden Posts</button>
+        </aside>
+
+        <main class="mod-content">
+            <div class="mod-content-header">
+                <h1>Reports Queue</h1>
+                <div class="mod-filter">
+                    <label for="reportFilter">Filter:</label>
+                    <select id="reportFilter">
+                        <option value="all">All Types</option>
+                        <option value="post">Posts</option>
+                        <option value="user">Users</option>
+                        <option value="spam">Spam</option>
+                        <option value="harassment">Harassment</option>
+                        <option value="inappropriate">Inappropriate</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="report-cards" id="reportCards">
+                <!-- Report cards rendered by JS -->
+            </div>
+
+            <div class="mod-empty" id="emptyState" style="display: none;">
+                <p>No reports match your filter. Great job keeping the community safe!</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Escalate modal -->
+    <div class="mod-modal" id="escalateModal">
+        <div class="mod-modal-backdrop"></div>
+        <div class="mod-modal-content">
+            <h3>Escalate to System Admin</h3>
+            <p class="mod-modal-desc">Add a note for the system administrator about this report.</p>
+            <textarea id="escalateNote" placeholder="Enter your note for the system admin..." rows="4"></textarea>
+            <div class="mod-modal-actions">
+                <button class="btn-mod btn-cancel" id="escalateCancel">Cancel</button>
+                <button class="btn-mod btn-escalate-submit" id="escalateSubmit">Escalate</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/moderator.js"></script>
+</body>
+</html>
