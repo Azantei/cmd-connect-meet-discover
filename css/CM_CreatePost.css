@@ -296,7 +296,7 @@ body {
 
 footer {
     padding: 3rem 0;
-    background: #2e3a4e;
+    background: hsl(215, 20%, 30%);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     text-align: center;
     color: rgba(255, 255, 255, 0.7);

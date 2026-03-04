@@ -13,7 +13,7 @@ body { display: flex; min-height: 100vh; font-family: 'Segoe UI', sans-serif; }
 /* Left Panel */
 .left-panel {
     width: 45%;
-    background-color: #2e3a4e;
+    background-color: hsl(215, 20%, 30%);
     padding: 60px 40px;
     display: flex;
     flex-direction: column;

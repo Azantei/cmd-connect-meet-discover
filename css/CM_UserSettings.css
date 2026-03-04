@@ -126,7 +126,7 @@ body {
 .nav-dot {
     width: 10px;
     height: 10px;
-    background-color: #2e3a4e;
+    background-color: hsl(215, 20%, 30%);
     display: inline-block;
     border-radius: 1px;
     flex-shrink: 0;
@@ -275,7 +275,7 @@ body {
     bottom: 28px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: #2e3a4e;
+    background-color: hsl(215, 20%, 30%);
     color: #fff;
     padding: 12px 24px;
     border-radius: 6px;
@@ -293,7 +293,7 @@ body {
 
 footer {
     padding: 3rem 0;
-    background: #2e3a4e;
+    background: hsl(215, 20%, 30%);
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     text-align: center;
     color: rgba(255, 255, 255, 0.7);
