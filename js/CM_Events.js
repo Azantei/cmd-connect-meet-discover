@@ -3,14 +3,29 @@
    Category filtering and search functionality
 ========================================== */
 
+// Active filter categories
+var activeFilters = [];
+
 /**
- * Set active category filter
- * Removes active class from all pills and adds to selected
+ * Toggle category filter selection
+ * Allows multiple categories to be selected at once
  * @param {HTMLElement} el - The clicked pill element
  */
-function setCategory(el) {
-    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-    el.classList.add('active');
+function toggleCategory(el) {
+    var cat = el.getAttribute('data-cat');
+    el.classList.toggle('active');
+    
+    if (activeFilters.includes(cat)) {
+        // Remove from active filters
+        activeFilters = activeFilters.filter(function(c) { return c !== cat; });
+    } else {
+        // Add to active filters
+        activeFilters.push(cat);
+    }
+    
+    console.log('Active filters:', activeFilters);
+    // TODO: Filter displayed cards based on activeFilters array
+    // In a real implementation, this would filter the event cards shown
 }
 
 /**

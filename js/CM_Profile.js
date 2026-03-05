@@ -29,6 +29,24 @@ var DRAFTS = [
     { title: "Neighborhood Clean-up", desc: "Help keep our community beautiful. Supplies provided.", date: "TBD", going: 0, color: "#2e4a3b", tags: ["Outdoors"], status: "Draft" },
 ];
 
+// Mock event data for "Previous Events" - past events user created or attended
+var PREVIOUS_EVENTS = [
+    { title: "Morning Trail Hike", desc: "Join us for a scenic morning hike through the local trails. All skill levels welcome.", date: "Sat Feb 28", going: 12, color: "#2e3a4e", tags: ["Outdoors"], type: "attended" },
+    { title: "Coffee & Coding Workshop", desc: "Learn the basics of web development in this beginner-friendly workshop.", date: "Thu Feb 26", going: 18, color: "#4a3b2e", tags: ["Tech", "Coffee"], type: "created" },
+    { title: "Acoustic Jam Session", desc: "Bring your instrument or just your ears. Casual outdoor music gathering.", date: "Sun Feb 22", going: 8, color: "#3b4a2e", tags: ["Music"], type: "attended" },
+    { title: "Community Picnic", desc: "A relaxed afternoon picnic in the park. Food, games, and good company.", date: "Sat Feb 14", going: 20, color: "#3b2e4a", tags: ["Food"], type: "created" },
+    { title: "Sunset Yoga", desc: "Wind down with a group yoga session as the sun sets over the park.", date: "Fri Feb 6", going: 15, color: "#2e3a4e", tags: ["Fitness"], type: "attended" },
+    { title: "Tech Meetup: AI in 2026", desc: "Discussion on AI trends and practical applications in our daily lives.", date: "Wed Jan 28", going: 35, color: "#2e4a4e", tags: ["Tech"], type: "created" },
+];
+
+// Mock event data for "Previously Attended Events" - used in guest view
+var ATTENDED_EVENTS = [
+    { title: "Morning Trail Hike", desc: "Join us for a scenic morning hike through the local trails. All skill levels welcome.", date: "Sat Feb 28", going: 12, color: "#2e3a4e", tags: ["Outdoors"] },
+    { title: "Acoustic Jam Session", desc: "Bring your instrument or just your ears. Casual outdoor music gathering.", date: "Sun Feb 22", going: 8, color: "#3b4a2e", tags: ["Music"] },
+    { title: "Community Picnic", desc: "A relaxed afternoon picnic in the park. Food, games, and good company.", date: "Sat Feb 14", going: 20, color: "#3b2e4a", tags: ["Food"] },
+    { title: "Sunset Yoga", desc: "Wind down with a group yoga session as the sun sets over the park.", date: "Fri Feb 6", going: 15, color: "#2e3a4e", tags: ["Fitness"] },
+];
+
 // Active filter categories
 var activeFilters = [];
 var currentTab = 'my-posts';
@@ -45,6 +63,8 @@ function getCurrentData() {
             return UPCOMING_EVENTS;
         case 'interested':
             return INTERESTED_EVENTS;
+        case 'previous':
+            return PREVIOUS_EVENTS;
         case 'drafts':
             return DRAFTS;
         default:
@@ -77,6 +97,8 @@ function renderCards() {
                 noResults.textContent = "You haven't RSVPed to any events yet.";
             } else if (currentTab === 'interested') {
                 noResults.textContent = "You haven't marked any events as interested yet.";
+            } else if (currentTab === 'previous') {
+                noResults.textContent = "You haven't attended or created any past events yet.";
             } else if (currentTab === 'drafts') {
                 noResults.textContent = "You don't have any drafts.";
             }
@@ -100,6 +122,14 @@ function renderCards() {
             } else if (currentTab === 'interested') {
                 statusBadge = '<span class="status-badge" style="background-color: #f57c00;">⭐ Interested</span>';
                 footer = '<span>📅 ' + card.date + '</span><span style="color: #d32f2f; font-weight: 600; cursor: pointer;" onclick="removeEvent(\'' + currentTab + '\', ' + index + ')">✕ Remove</span>';
+            } else if (currentTab === 'previous') {
+                // Previous Events - show if created or attended
+                if (card.type === 'created') {
+                    statusBadge = '<span class="status-badge" style="background-color: #5a7a9e;">👤 Created</span>';
+                } else if (card.type === 'attended') {
+                    statusBadge = '<span class="status-badge" style="background-color: #2e7d32;">✓ Attended</span>';
+                }
+                footer = '<span>📅 ' + card.date + '</span><span>👥 ' + card.going + ' attended</span>';
             } else if (currentTab === 'drafts') {
                 statusBadge = '<span class="status-badge" style="background-color: #888;">Not published</span>';
                 footer = '<span style="color: #888;">📝 Draft</span><span style="color: #d32f2f; font-weight: 600; cursor: pointer;" onclick="removeEvent(\'' + currentTab + '\', ' + index + ')">✕ Remove</span>';
@@ -275,4 +305,5 @@ document.addEventListener('click', function(e) {
     }
 });
 
+// Initial render on page load
 renderCards();

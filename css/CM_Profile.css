@@ -158,7 +158,7 @@ body {
     width: 200px;
     flex-shrink: 0;
     padding: 20px 16px;
-    background-color: #f0ede8;
+    background-color: hsl(45, 40%, 88%);
     border-right: 1px solid #ddd;
     overflow-y: auto;
 }
@@ -191,6 +191,7 @@ body {
 .interest-tag {
     border: 1px solid #bbb;
     border-radius: 3px;
+    border-left: 3px solid hsl(20, 90%, 55%);
     padding: 3px 10px;
     font-size: 0.8rem;
     color: #555;

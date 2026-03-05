@@ -53,31 +53,73 @@
             </div>
         </div>
         <button class="btn-report" id="reportBtn" onclick="openReportModal()">
-            <span class="report-dot"></span> Report User
+            Report User
         </button>
     </div>
-
-    <!-- Activity Banner -->
-    <div class="activity-banner">Activity (public posts only)</div>
 
     <!-- Main Layout -->
     <div class="main-layout">
 
         <!-- Sidebar -->
         <div class="sidebar">
-            <div class="sidebar-section-title">ABOUT (if public)</div>
+            <div class="sidebar-section-title">ABOUT</div>
             <div class="placeholder-lines">Example Bio</div>
-            <div class="sidebar-section-title" style="margin-top:20px;">INTERESTS</div>
-            <div class="interests-list">
+            <hr class="sidebar-divider">
+            <div class="sidebar-section-title">INTERESTS</div>
+            <div class="interests-box">
                 <span class="interest-tag">Music</span>
                 <span class="interest-tag">Sports</span>
                 <span class="interest-tag">Tech</span>
             </div>
         </div>
 
-        <!-- Cards Grid -->
+        <!-- Posts Area -->
         <div class="posts-area">
-            <div class="cards-grid" id="cardsGrid"></div>
+
+            <!-- Section Title -->
+            <div class="section-header">
+                <h2 class="section-title">Previously Attended Events</h2>
+                <p class="section-subtitle">Only visible if privacy settings allow</p>
+            </div>
+
+            <!-- Sort + Filter Bar -->
+            <div class="toolbar">
+                <div class="dropdown-wrap">
+                    <button class="toolbar-btn" onclick="toggleSort()">↕ Sort: <span id="sortLabel">Newest</span> ▾</button>
+                    <div class="dropdown" id="sortDropdown">
+                        <div class="dropdown-item active-item" onclick="setSort(this, 'Newest')">Newest</div>
+                        <div class="dropdown-item" onclick="setSort(this, 'Oldest')">Oldest</div>
+                        <div class="dropdown-item" onclick="setSort(this, 'Most Popular')">Most Popular</div>
+                    </div>
+                </div>
+                <button class="toolbar-btn" id="filterBtn" onclick="toggleFilter()">⚙ Filter by Interests <span id="filterCount"></span> ▾</button>
+                <button class="clear-btn" id="clearBtn" onclick="clearFilters()" style="display:none;">✕ Clear</button>
+            </div>
+
+            <!-- Filter Panel -->
+            <div class="filter-panel" id="filterPanel" style="display:none;">
+                <div class="filter-title">FILTER BY INTERESTS</div>
+                <div class="filter-pills">
+                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Outdoors">Outdoors</button>
+                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Music">Music</button>
+                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Sports">Sports</button>
+                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Food">Food</button>
+                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Arts">Arts</button>
+                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Tech">Tech</button>
+                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Fitness">Fitness</button>
+                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Games">Games</button>
+                </div>
+            </div>
+
+            <!-- Scrollable Content Area -->
+            <div class="scrollable-content">
+                <!-- Cards Grid -->
+                <div class="cards-grid" id="cardsGrid">
+                    <!-- Cards injected by JS -->
+                </div>
+
+                <div class="no-results" id="noResults" style="display:none;">This user's previously attended events are not public.</div>
+            </div>
         </div>
     </div>
 
