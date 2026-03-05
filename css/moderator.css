@@ -432,6 +432,9 @@
     padding: 1.5rem;
     max-width: 28rem;
     width: 100%;
+    max-height: calc(100vh - 14rem);
+    margin-top: 2rem;
+    overflow-y: auto;
     box-shadow: 0 20px 40px rgba(31, 41, 55, 0.2);
 }
 
@@ -444,6 +447,56 @@
     font-size: 0.9375rem;
     color: var(--muted);
     margin-bottom: 1rem;
+}
+
+.mod-modal-warning {
+    background: rgba(234, 179, 8, 0.1);
+    border: 1px solid rgba(234, 179, 8, 0.3);
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 0.875rem;
+    color: hsl(38, 92%, 30%);
+}
+
+.mod-modal-warning strong {
+    font-weight: 600;
+}
+
+.mod-modal-reasons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.reason-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.reason-label:hover {
+    background: var(--card-bg);
+    border-color: var(--primary);
+}
+
+.reason-label input[type="radio"] {
+    cursor: pointer;
+}
+
+.note-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
 }
 
 .mod-modal-content textarea {

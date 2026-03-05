@@ -131,9 +131,6 @@ function renderHiddenPostCard(post) {
 function renderReportCard(report) {
     const typeLabel = report.type === 'post' ? 'Post' : 'User';
     const displayTitle = report.type === 'post' ? `'${report.title}'` : report.title;
-    const hideButton = report.type === 'post'
-        ? `<button class="btn-mod btn-hide" data-action="hide" data-id="${report.id}">Hide</button>`
-        : '';
 
     return `
         <div class="report-card" data-id="${report.id}">
@@ -142,7 +139,6 @@ function renderReportCard(report) {
             <div class="report-card-preview">${report.note || "Reporter's note / quoted content preview"}</div>
             <div class="report-card-actions">
                 <button class="btn-mod btn-warn" data-action="warn" data-id="${report.id}">Warn</button>
-                ${hideButton}
                 <button class="btn-mod btn-escalate" data-action="escalate" data-id="${report.id}">Escalate</button>
                 <button class="btn-mod btn-dismiss" data-action="dismiss" data-id="${report.id}">Dismiss</button>
             </div>
@@ -265,17 +261,16 @@ function handleAction(e) {
     if (action === 'escalate') {
         pendingEscalateReport = report;
         document.getElementById('escalateNote').value = '';
+        // Clear any previously selected reason
+        document.querySelectorAll('input[name="escalateReason"]').forEach(radio => {
+            radio.checked = false;
+        });
         document.getElementById('escalateModal').classList.add('is-open');
         return;
     }
 
     // Remove from active queue
     activeReports = activeReports.filter(r => r.id !== id);
-
-    // If Hide was clicked, move to hidden posts
-    if (action === 'hide') {
-        hiddenPosts.unshift({ ...report, hiddenAt: new Date().toISOString() });
-    }
 
     // Log to moderation history
     logModerationAction(action, report);
@@ -287,32 +282,54 @@ function handleAction(e) {
 }
 
 /**
- * Complete escalation process with note
- * Moves report to escalated queue with moderator's note
+ * Complete escalation process with reason and note
+ * Moves report to escalated queue and hidden posts with moderator's note
  */
 // Complete escalate (called when modal Submit is clicked)
 function completeEscalate() {
     if (!pendingEscalateReport) return;
 
+    // Get selected reason
+    const selectedReason = document.querySelector('input[name="escalateReason"]:checked');
+    if (!selectedReason) {
+        alert('Please select a reason for escalation.');
+        return;
+    }
+
+    const reason = selectedReason.value;
     const note = document.getElementById('escalateNote').value.trim();
     const report = pendingEscalateReport;
 
+    // Remove from active queue
     activeReports = activeReports.filter(r => r.id !== report.id);
+    
+    // Add to escalated reports with reason and note
     escalatedReports.unshift({
         ...report,
         escalatedAt: new Date().toISOString(),
-        moderatorNote: note || '(No note provided)'
+        escalationReason: reason,
+        moderatorNote: note || '(No additional notes provided)'
     });
 
-    // Log to moderation history
-    logModerationAction('escalate', report, note);
+    // Also hide the post if it's a post type
+    if (report.type === 'post') {
+        hiddenPosts.unshift({ 
+            ...report, 
+            hiddenAt: new Date().toISOString(),
+            hiddenReason: 'Escalated to admin'
+        });
+    }
+
+    // Log to moderation history with reason and note
+    const fullNote = `${reason}${note ? ': ' + note : ''}`;
+    logModerationAction('escalate', report, fullNote);
 
     closeEscalateModal();
     pendingEscalateReport = null;
     applyFilter(currentFilter);
     updateBadge();
 
-    console.log(`Escalated report #${report.id} with note:`, note || '(none)');
+    console.log(`Escalated report #${report.id} - Reason: ${reason}, Note: ${note || '(none)'}`);
 }
 
 /**
@@ -373,12 +390,6 @@ function initSidebar() {
                 document.getElementById('reportCards').style.display = 'flex';
                 document.getElementById('reportCards').className = 'report-cards';
                 renderReports();
-            } else if (view === 'hidden') {
-                document.querySelector('.mod-content-header h1').textContent = 'Hidden Posts';
-                document.getElementById('reportFilter').parentElement.style.display = 'none';
-                document.getElementById('reportCards').style.display = 'flex';
-                document.getElementById('reportCards').className = 'report-cards';
-                renderHiddenPosts();
             } else if (view === 'history') {
                 document.querySelector('.mod-content-header h1').textContent = 'Moderation History';
                 document.getElementById('reportFilter').parentElement.style.display = 'none';

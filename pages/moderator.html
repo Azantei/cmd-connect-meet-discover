@@ -56,7 +56,6 @@
                 <span class="mod-badge" id="reportCount">7</span>
             </button>
             <button class="mod-nav-item" data-view="history">Moderation History</button>
-            <button class="mod-nav-item" data-view="hidden">Hidden Posts</button>
         </aside>
 
         <main class="mod-content">
@@ -90,11 +89,29 @@
         <div class="mod-modal-backdrop"></div>
         <div class="mod-modal-content">
             <h3>Escalate to System Admin</h3>
-            <p class="mod-modal-desc">Add a note for the system administrator about this report.</p>
-            <textarea id="escalateNote" placeholder="Enter your note for the system admin..." rows="4"></textarea>
+            <p class="mod-modal-desc">Select a reason for escalation and add any additional notes for the system administrator.</p>
+            
+            <!-- Warning about hiding -->
+            <div class="mod-modal-warning">
+                <strong>⚠ Notice:</strong> Escalating this report will immediately hide the post from public view while the system administrator reviews it.
+            </div>
+            
+            <!-- Escalation reasons -->
+            <div class="mod-modal-reasons">
+                <label class="reason-label"><input type="radio" name="escalateReason" value="Serious Policy Violation" required> Serious Policy Violation</label>
+                <label class="reason-label"><input type="radio" name="escalateReason" value="Potential Legal Issue"> Potential Legal Issue</label>
+                <label class="reason-label"><input type="radio" name="escalateReason" value="Harassment or Threats"> Harassment or Threats</label>
+                <label class="reason-label"><input type="radio" name="escalateReason" value="Requires Admin Decision"> Requires Admin Decision</label>
+                <label class="reason-label"><input type="radio" name="escalateReason" value="Other"> Other</label>
+            </div>
+            
+            <!-- Additional notes -->
+            <label for="escalateNote" class="note-label">Additional Notes (optional):</label>
+            <textarea id="escalateNote" placeholder="Provide any additional context for the system admin..." rows="3"></textarea>
+            
             <div class="mod-modal-actions">
                 <button class="btn-mod btn-cancel" id="escalateCancel">Cancel</button>
-                <button class="btn-mod btn-escalate-submit" id="escalateSubmit">Escalate</button>
+                <button class="btn-mod btn-escalate-submit" id="escalateSubmit">Escalate &amp; Hide</button>
             </div>
         </div>
     </div>
