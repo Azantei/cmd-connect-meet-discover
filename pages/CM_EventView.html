@@ -42,55 +42,91 @@
     <!-- Content -->
     <div class="content">
 
-        <!-- Tags -->
-        <div class="tags">
-            <span class="tag">Outdoors</span>
-            <span class="tag">Casual Activity</span>
-            <span class="tag">1.2 mi away</span>
-        </div>
-
-        <!-- Title -->
-        <h1 class="event-title">Example Event</h1>
-
-        <!-- Info Boxes -->
-        <div class="info-boxes">
-            <div class="info-box info-box--blue">
-                <div class="info-label">📅 Date &amp; Time</div>
-                <div class="info-value">Sat Mar 32 · 25:00</div>
-            </div>
-            <div class="info-box info-box--cream">
-                <div class="info-label">📍 Location</div>
-                <div class="info-value">WSU Pullman Campus</div>
-                <div class="info-value">2710 Crimson Way, Richland, WA 99354</div>
-            </div>
-            <div class="info-box info-box--cream">
-                <div class="info-label">👥 Attendees</div>
-                <div class="info-value">12 going · RSVP open</div>
-            </div>
-        </div>
-
-        <!-- Description Placeholder -->
-        <div class="desc-lines">
-            <div style="width:100%">Example Description</div>
-        </div>
-
-        <!-- RSVP + Report -->
-        <div class="action-row">
-            <button class="btn-rsvp" id="rsvpBtn" onclick="toggleRsvp()">✓ RSVP — I'm Going!</button>
-            <button class="btn-report">⚑ Report Post</button>
-        </div>
-
-        <!-- Host Card -->
-        <div class="host-card">
-            <div class="host-left">
-                <div class="avatar">AJ</div>
-                <div class="host-info">
-                    <div class="host-name">Alex Johnson</div>
-                    <div class="host-meta">Posted 2 days ago · <span class="view-profile">View profile</span></div>
+        <!-- Two Column Layout -->
+        <div class="two-column-layout">
+            
+            <!-- Left Column: Info Boxes -->
+            <div class="left-column">
+                <div class="info-box">
+                    <div class="info-label">📅 Date &amp; Time</div>
+                    <div class="info-value">Sat Mar 32 · 25:00</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">📍 Location</div>
+                    <div class="info-value">WSU Pullman Campus</div>
+                    <div class="info-value">2710 Crimson Way, Richland, WA 99354</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">👥 Attendees</div>
+                    <div class="info-value">12 going · RSVP open</div>
                 </div>
             </div>
+
+            <!-- Right Column: Title, Tags, Description and Actions -->
+            <div class="right-column">
+                <!-- Title -->
+                <h1 class="event-title">Example Event</h1>
+
+                <!-- Tags -->
+                <div class="tags">
+                    <span class="tag">Outdoors</span>
+                    <span class="tag">Casual Activity</span>
+                    <span class="tag">1.2 mi away</span>
+                </div>
+
+                <!-- Description Placeholder -->
+                <div class="desc-lines">
+                    <div style="width:100%">Example Description</div>
+                </div>
+
+                <!-- RSVP + Report -->
+                <div class="action-row">
+                    <button class="btn-rsvp" id="rsvpBtn" onclick="toggleRsvp()">RSVP</button>
+                    <button class="btn-report" id="reportBtn" onclick="openReportModal()">⚑ Report Post</button>
+                </div>
+
+                <!-- Section Divider -->
+                <div class="section-divider">
+                    <h3 class="section-title">Event Creator</h3>
+                </div>
+
+                <!-- Host Card -->
+                <div class="host-card">
+                    <div class="host-left">
+                        <div class="avatar">AJ</div>
+                        <div class="host-info">
+                            <div class="host-name">Alex Johnson</div>
+                            <div class="host-meta">Posted 2 days ago · <span class="view-profile">View profile</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
+    </div>
+
+    <!-- Report Modal -->
+    <div class="modal-overlay" id="reportModal" style="display:none;">
+        <div class="modal">
+            <div class="modal-title">Report this post?</div>
+            <div class="modal-desc">Please select a reason for reporting this post. Our team will review the report.</div>
+            <div class="modal-reasons">
+                <label><input type="radio" name="reason"> Spam or misleading content</label>
+                <label><input type="radio" name="reason"> Inappropriate content</label>
+                <label><input type="radio" name="reason"> Harassment or bullying</label>
+                <label><input type="radio" name="reason"> Violates community guidelines</label>
+                <label><input type="radio" name="reason"> Other</label>
+            </div>
+            <div class="modal-comment-section">
+                <label for="reportComment" class="comment-label">Additional Comments (optional)</label>
+                <textarea id="reportComment" class="report-textarea" rows="3" placeholder="Provide any additional details that might help our moderation team..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeReportModal()">Cancel</button>
+                <button class="btn-submit" onclick="submitReport()">Submit Report</button>
+            </div>
+        </div>
     </div>
 
     <!-- ========================================

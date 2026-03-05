@@ -11,7 +11,7 @@
 
 body {
     font-family: 'DM Sans', sans-serif;
-    background-color: #f5f5f5;
+    background-color: #f0ede8;
     min-height: 100vh;
 }
 
@@ -114,16 +114,16 @@ body {
 
 /* Content */
 .content {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 0 24px;
+    max-width: 1200px;
+    margin: 0;
+    padding: 32px 48px;
 }
 
 /* Tags */
 .tags {
     display: flex;
     gap: 8px;
-    padding: 16px 0 10px;
+    padding: 0 0 10px;
 }
 .tag {
     border: 1px solid #aaa;
@@ -140,27 +140,39 @@ body {
     font-weight: 700;
     color: #222;
     line-height: 1.2;
-    margin-bottom: 8px;
+    margin-bottom: 24px;
+    font-family: 'Playfair Display', serif;
+}
+
+/* Two Column Layout */
+.two-column-layout {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 48px;
+    padding-right: 24px;
+    border-right: 1px solid #ddd;
+}
+
+.right-column {
+    display: flex;
+    flex-direction: column;
 }
 
 /* Info Boxes */
-.info-boxes {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+.info-box {
+    padding: 14px 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    overflow: hidden;
-    background-color: #fff;
-    margin-bottom: 24px;
+    background-color: #faf8f2;
 }
-.info-box {
-    padding: 12px 16px;
-}
-.info-box + .info-box {
-    border-left: 1px solid #ccc;
-}
-.info-box--blue { background-color: #dce4f0; }
-.info-box--cream { background-color: #faf8f2; }
 .info-label {
     font-size: 0.78rem;
     font-weight: 700;
@@ -173,7 +185,7 @@ body {
 }
 
 /* Description Lines */
-.desc-lines { margin-bottom: 24px; }
+.desc-lines { margin-top: 20px; margin-bottom: 24px; }
 
 /* Action Row */
 .action-row {
@@ -192,7 +204,7 @@ body {
     font-weight: 700;
     font-size: 1rem;
     cursor: pointer;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'DM Sans', sans-serif;
     transition: background-color 0.2s;
 }
 .btn-rsvp:hover { background-color: #a8451f; }
@@ -206,9 +218,26 @@ body {
     font-weight: 500;
     font-size: 0.95rem;
     cursor: pointer;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'DM Sans', sans-serif;
 }
 .btn-report:hover { background-color: #f0ede0; }
+
+/* Section Divider */
+.section-divider {
+    margin: 32px 0 16px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #ddd;
+}
+
+.section-title {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
 
 /* Host Card */
 .host-card {
@@ -219,7 +248,6 @@ body {
     background-color: #fefce8;
     border: 1px solid #e5e0c8;
     border-radius: 4px;
-    margin-bottom: 32px;
 }
 .host-left { display: flex; align-items: center; gap: 12px; }
 .avatar {
@@ -245,6 +273,138 @@ body {
     font-size: 0.82rem;
     color: #666;
     background-color: #fff;
+}
+
+/* ==========================================
+   REPORT MODAL
+========================================== */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.modal {
+    background-color: #fff;
+    border-radius: 8px;
+    padding: 28px;
+    width: 360px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+}
+
+.modal-title { 
+    font-weight: 700; 
+    font-size: 1rem; 
+    color: #222; 
+    margin-bottom: 8px; 
+}
+
+.modal-desc { 
+    font-size: 0.85rem; 
+    color: #666; 
+    margin-bottom: 20px; 
+    line-height: 1.6; 
+}
+
+.modal-reasons { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+    margin-bottom: 20px; 
+}
+
+.modal-reasons label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: #444;
+    cursor: pointer;
+}
+
+.modal-reasons input[type="radio"] { 
+    accent-color: #c0522a; 
+}
+
+.modal-comment-section { 
+    margin-bottom: 20px; 
+}
+
+.comment-label {
+    display: block;
+    font-size: 0.85rem;
+    color: #444;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.report-textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-family: 'DM Sans', sans-serif;
+    color: #333;
+    resize: vertical;
+    min-height: 60px;
+}
+
+.report-textarea:focus {
+    outline: none;
+    border-color: #c0522a;
+}
+
+.report-textarea::placeholder {
+    color: #aaa;
+}
+
+.modal-actions { 
+    display: flex; 
+    gap: 10px; 
+    justify-content: flex-end; 
+}
+
+.btn-cancel {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #555;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+}
+
+.btn-submit {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background-color: #c0522a;
+    color: #fff;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.btn-cancel:hover {
+    background-color: #f5f5f5;
+}
+
+.btn-submit:hover {
+    background-color: #a8451f;
+}
+
+.btn-report.reported {
+    background-color: #888;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 /* ==========================================

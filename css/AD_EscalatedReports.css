@@ -161,6 +161,11 @@
     border-color: hsl(280, 40%, 80%);
 }
 
+.report-action-btn.remove-post::before {
+    content: '';
+    margin-right: 0;
+}
+
 .report-action-btn.remove-post:hover {
     background-color: hsl(280, 30%, 90%);
 }
@@ -170,6 +175,11 @@
     color: var(--status-banned-text);
     border-color: hsl(350, 60%, 80%);
     font-weight: 700;
+}
+
+.report-action-btn.ban-user::before {
+    content: '';
+    margin-right: 0;
 }
 
 .report-action-btn.ban-user:hover {
