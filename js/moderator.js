@@ -79,7 +79,13 @@ let currentFilter = 'all';
 let pendingEscalateReport = null;       // Report awaiting escalate note
 const MODERATOR_NAME = 'Sara M.';
 
-// Log a moderation action to history
+/**
+ * Log a moderation action to history
+ * Adds an entry to the moderation history log
+ * @param {string} action - Type of action taken (dismiss, hide, escalate, warn)
+ * @param {Object} report - The report object
+ * @param {string} note - Optional note for escalations
+ */
 function logModerationAction(action, report, note = '') {
     const typeLabel = report.type === 'post' ? 'Post' : 'User';
     const displayTitle = report.type === 'post' ? `'${report.title}'` : report.title;
@@ -96,7 +102,12 @@ function logModerationAction(action, report, note = '') {
     });
 }
 
-// Render a single hidden post card (no action buttons)
+/**
+ * Render a single hidden post card (no action buttons)
+ * Creates HTML for a hidden post in the Hidden Posts view
+ * @param {Object} post - Hidden post data
+ * @returns {string} HTML string for the card
+ */
 function renderHiddenPostCard(post) {
     const typeLabel = post.type === 'post' ? 'Post' : 'User';
     const displayTitle = post.type === 'post' ? `'${post.title}'` : post.title;
@@ -110,6 +121,12 @@ function renderHiddenPostCard(post) {
     `;
 }
 
+/**
+ * Render a single report card with action buttons
+ * Creates HTML for an active report in the Reports Queue
+ * @param {Object} report - Report data
+ * @returns {string} HTML string for the report card
+ */
 // Render a single report card (with action buttons)
 function renderReportCard(report) {
     const typeLabel = report.type === 'post' ? 'Post' : 'User';
@@ -133,6 +150,10 @@ function renderReportCard(report) {
     `;
 }
 
+/**
+ * Render hidden posts view
+ * Displays all posts that have been hidden by moderator
+ */
 // Render hidden posts view
 function renderHiddenPosts() {
     const container = document.getElementById('reportCards');
@@ -149,6 +170,12 @@ function renderHiddenPosts() {
     container.innerHTML = hiddenPosts.map(renderHiddenPostCard).join('');
 }
 
+/**
+ * Render a single moderation history entry
+ * Creates HTML for a past moderation action
+ * @param {Object} entry - History entry data
+ * @returns {string} HTML string for the history card
+ */
 // Render a single moderation history entry
 function renderHistoryEntry(entry) {
     const actionLabels = {
@@ -174,6 +201,10 @@ function renderHistoryEntry(entry) {
     `;
 }
 
+/**
+ * Render moderation history view
+ * Displays all past moderation actions taken
+ */
 // Render moderation history view
 function renderModerationHistory() {
     const container = document.getElementById('reportCards');
@@ -190,6 +221,10 @@ function renderModerationHistory() {
     container.innerHTML = moderationHistory.map(renderHistoryEntry).join('');
 }
 
+/**
+ * Render all report cards in the Reports Queue
+ * Displays active reports with action buttons
+ */
 // Render all report cards
 function renderReports() {
     const container = document.getElementById('reportCards');
@@ -212,6 +247,11 @@ function renderReports() {
     });
 }
 
+/**
+ * Handle action button clicks on report cards
+ * Processes moderation actions (warn, hide, escalate, dismiss)
+ * @param {Event} e - Click event
+ */
 // Handle action button clicks
 function handleAction(e) {
     const btn = e.target;
@@ -246,6 +286,10 @@ function handleAction(e) {
     console.log(`Moderator action: ${action} on report #${id}`);
 }
 
+/**
+ * Complete escalation process with note
+ * Moves report to escalated queue with moderator's note
+ */
 // Complete escalate (called when modal Submit is clicked)
 function completeEscalate() {
     if (!pendingEscalateReport) return;
@@ -271,18 +315,30 @@ function completeEscalate() {
     console.log(`Escalated report #${report.id} with note:`, note || '(none)');
 }
 
+/**
+ * Close escalate modal and reset state
+ */
 // Close escalate modal
 function closeEscalateModal() {
     document.getElementById('escalateModal').classList.remove('is-open');
     pendingEscalateReport = null;
 }
 
+/**
+ * Update report count badge in sidebar
+ * Shows number of active reports in queue
+ */
 // Update badge count
 function updateBadge() {
     const badge = document.getElementById('reportCount');
     if (badge) badge.textContent = filteredReports.length;
 }
 
+/**
+ * Apply filter to reports queue
+ * Filters reports by type or reason
+ * @param {string} value - Filter value (all, post, user, spam, harassment, etc.)
+ */
 // Apply filter (filters active reports in queue)
 function applyFilter(value) {
     currentFilter = value;
@@ -299,6 +355,10 @@ function applyFilter(value) {
     updateBadge();
 }
 
+/**
+ * Initialize sidebar navigation
+ * Sets up click handlers for switching between views
+ */
 // Sidebar navigation (switch active view)
 function initSidebar() {
     document.querySelectorAll('.mod-nav-item').forEach(item => {
@@ -337,6 +397,10 @@ function initSidebar() {
     });
 }
 
+/**
+ * Initialize page on DOM ready
+ * Sets up initial state, event listeners, and renders reports queue
+ */
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     applyFilter('all');  // Populate filteredReports from activeReports

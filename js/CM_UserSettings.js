@@ -42,12 +42,18 @@ function setSection(el, id) {
     document.getElementById('section-' + id).style.display = 'block';
 }
 
+/**
+ * Toggle a switch on/off
+ * Generic toggler for settings switches
+ * @param {HTMLElement} el - The toggle switch element
+ */
 function toggleSwitch(el) {
     el.classList.toggle('on');
 }
 
 /**
  * Toggle email notifications and show/hide nested options
+ * When enabled, shows additional email notification sub-options
  * @param {HTMLElement} el - The toggle switch element
  */
 function toggleEmailNotifications(el) {
@@ -74,6 +80,10 @@ function toggleNearbyEvents(el) {
     }
 }
 
+/**
+ * Show success toast notification
+ * Displays a temporary "Changes saved!" message at the bottom of the screen
+ */
 function showToast() {
     var toast = document.getElementById('toast');
     toast.style.display = 'block';

@@ -1,3 +1,12 @@
+/* ==========================================
+   C.M.D. - EVENTS PAGE STYLES
+   Event discovery with filtering, search, and map view
+========================================== */
+
+/* ==========================================
+   RESET & BASE STYLES
+========================================== */
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
@@ -7,6 +16,10 @@ body {
     flex-direction: column;
     background-color: #f0ede8;
 }
+
+/* ==========================================
+   NAVIGATION BAR
+========================================== */
 
 /* Navbar */
 .navbar {
@@ -70,6 +83,11 @@ body {
 }
 .logout { cursor: pointer; }
 
+/* ==========================================
+   SEARCH BAR
+   Top search input with create button
+========================================== */
+
 /* Search Bar */
 .search-bar {
     background-color: #fff;
@@ -102,6 +120,11 @@ body {
 }
 .btn-create:hover { background-color: #a8451f; }
 
+/* ==========================================
+   CATEGORY FILTER PILLS
+   Toggleable category buttons for filtering
+========================================== */
+
 /* Categories */
 .categories {
     background-color: #fff;
@@ -129,6 +152,11 @@ body {
     font-weight: 600;
 }
 
+/* ==========================================
+   MAIN CONTENT LAYOUT
+   Split view with cards panel and map
+========================================== */
+
 /* Main Content */
 .main-content {
     display: flex;
@@ -136,6 +164,8 @@ body {
     overflow: hidden;
     margin-bottom: 2rem;
 }
+
+/* Cards Panel - left side with scrollable event cards */
 
 /* Cards Panel */
 .cards-panel {
@@ -149,6 +179,11 @@ body {
     grid-template-columns: 1fr 1fr;
     gap: 16px;
 }
+
+/* ==========================================
+   EVENT CARDS
+   Individual event card styling with image, tags, and details
+========================================== */
 
 /* Card */
 .card {
@@ -236,6 +271,11 @@ body {
     font-size: 0.78rem;
     color: #666;
 }
+
+/* ==========================================
+   MAP PANEL
+   Right side showing location visualization
+========================================== */
 
 /* Map Panel */
 .map-panel {

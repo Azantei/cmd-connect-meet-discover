@@ -211,6 +211,10 @@ function toggleCatFilter(el) {
     renderCards();
 }
 
+/**
+ * Clear all active filters
+ * Resets filter pills and re-renders all cards
+ */
 function clearFilters() {
     activeFilters = [];
     document.querySelectorAll('.fpill').forEach(function(p) { p.classList.remove('active'); });
@@ -218,6 +222,10 @@ function clearFilters() {
     renderCards();
 }
 
+/**
+ * Update filter button UI based on active filters
+ * Shows filter count and clear button when filters are active
+ */
 function updateFilterUI() {
     var filterBtn = document.getElementById('filterBtn');
     var clearBtn = document.getElementById('clearBtn');
