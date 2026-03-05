@@ -1,110 +1,50 @@
-/* ==========================================
-   C.M.D. - ACTIVITY FEED
-   Category filtering and search functionality
-========================================== */
-
-// Active filter categories
-var activeFilters = [];
-
-/**
- * Toggle category filter selection
- * Allows multiple categories to be selected at once
- * @param {HTMLElement} el - The clicked pill element
- */
 function toggleCategory(el) {
-    var cat = el.getAttribute('data-cat');
+    // Toggle the active class on the clicked pill
     el.classList.toggle('active');
     
-    if (activeFilters.includes(cat)) {
-        // Remove from active filters
-        activeFilters = activeFilters.filter(function(c) { return c !== cat; });
-    } else {
-        // Add to active filters
-        activeFilters.push(cat);
-    }
-    
-    console.log('Active filters:', activeFilters);
+    // Filter cards based on active categories
     filterCards();
 }
 
-/**
- * Filter displayed cards based on active filters and search term
- */
 function filterCards() {
-    const searchInput = document.getElementById('search-input');
-    const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    const activePills = document.querySelectorAll('.pill.active');
     const cards = document.querySelectorAll('.card');
+    const searchInput = document.getElementById('search-input');
+    const searchTerm = searchInput ? searchInput.value.toLowerCase().trim() : '';
     
-    cards.forEach(function(card) {
-        // Get all category tags in the card (excluding distance tags that contain 'mi')
-        const tagElements = card.querySelectorAll('.tag');
-        const cardCategories = [];
+    // Get active category names
+    const activeCategories = Array.from(activePills).map(pill => pill.textContent.trim());
+    
+    // Filter cards
+    cards.forEach(card => {
+        const cardTags = Array.from(card.querySelectorAll('.tag')).map(tag => tag.textContent.trim());
+        const cardTitle = card.querySelector('.card-title')?.textContent.toLowerCase() || '';
+        const cardDesc = card.querySelector('.card-desc')?.textContent.toLowerCase() || '';
         
-        tagElements.forEach(function(tag) {
-            const tagText = tag.textContent.trim();
-            // Only include tags that don't contain 'mi' (distance tags)
-            if (!tagText.includes('mi')) {
-                cardCategories.push(tagText);
-            }
-        });
+        // Check if card matches category filter (if any categories are selected)
+        const categoryMatch = activeCategories.length === 0 || activeCategories.some(cat => cardTags.includes(cat));
         
-        // Check if card matches category filters
-        const matchesFilter = activeFilters.length === 0 || 
-                             cardCategories.some(function(cat) {
-                                 return activeFilters.includes(cat);
-                             });
+        // Check if card matches search term (in title or description)
+        const searchMatch = searchTerm === '' || cardTitle.includes(searchTerm) || cardDesc.includes(searchTerm);
         
-        // Check if card matches search term
-        let matchesSearch = true;
-        if (searchTerm !== '') {
-            const title = card.querySelector('.card-title');
-            const desc = card.querySelector('.card-desc');
-            
-            if (title && desc) {
-                const titleText = title.textContent.toLowerCase();
-                const descText = desc.textContent.toLowerCase();
-                matchesSearch = titleText.includes(searchTerm) || descText.includes(searchTerm);
-            }
-        }
-        
-        // Show card only if it matches BOTH filter and search criteria
-        card.style.display = (matchesFilter && matchesSearch) ? 'block' : 'none';
+        // Show card only if it matches both category and search filters
+        card.style.display = (categoryMatch && searchMatch) ? '' : 'none';
     });
 }
 
-/**
- * Perform search on activity feed
- * Filters cards based on search term in title or description
- */
 function performSearch() {
+    // Just call filterCards which now handles both category and search filtering
     filterCards();
 }
 
-/**
- * Handle Enter key press in search input
- * @param {KeyboardEvent} event - The keypress event
- */
 function handleSearchKeypress(event) {
+    // Trigger search when Enter key is pressed
     if (event.key === 'Enter') {
         performSearch();
     }
 }
 
-/**
- * Toggle star (interested) status on an event
- * @param {HTMLElement} btn - The clicked star button
- * @param {string} eventTitle - The title of the event
- */
-function toggleStar(btn, eventTitle) {
-    btn.classList.toggle('starred');
-    
-    // In a real app, this would save to backend/localStorage
-    // For now, just toggle the visual state
-    if (btn.classList.contains('starred')) {
-        console.log('Marked as interested:', eventTitle);
-        // TODO: Add to user's interested events
-    } else {
-        console.log('Removed from interested:', eventTitle);
-        // TODO: Remove from user's interested events
-    }
+function toggleStar(button) {
+    // Toggle the interested class
+    button.classList.toggle('interested');
 }
