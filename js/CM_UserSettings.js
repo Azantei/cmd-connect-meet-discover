@@ -34,13 +34,8 @@ function setSection(el, id) {
     // Update nav
     document.querySelectorAll('.nav-item').forEach(function(item) {
         item.classList.remove('active');
-        var dot = item.querySelector('.nav-dot');
-        if (dot) dot.remove();
     });
     el.classList.add('active');
-    var dot = document.createElement('span');
-    dot.className = 'nav-dot';
-    el.insertBefore(dot, el.firstChild);
 
     // Show section
     document.querySelectorAll('.section').forEach(function(s) { s.style.display = 'none'; });
@@ -49,6 +44,34 @@ function setSection(el, id) {
 
 function toggleSwitch(el) {
     el.classList.toggle('on');
+}
+
+/**
+ * Toggle email notifications and show/hide nested options
+ * @param {HTMLElement} el - The toggle switch element
+ */
+function toggleEmailNotifications(el) {
+    el.classList.toggle('on');
+    var options = document.getElementById('emailNotificationOptions');
+    if (el.classList.contains('on')) {
+        options.style.display = 'block';
+    } else {
+        options.style.display = 'none';
+    }
+}
+
+/**
+ * Toggle nearby events and show/hide nested sub-options
+ * @param {HTMLElement} el - The toggle switch element
+ */
+function toggleNearbyEvents(el) {
+    el.classList.toggle('on');
+    var options = document.getElementById('nearbyEventsOptions');
+    if (el.classList.contains('on')) {
+        options.style.display = 'block';
+    } else {
+        options.style.display = 'none';
+    }
 }
 
 function showToast() {

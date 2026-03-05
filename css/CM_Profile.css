@@ -107,7 +107,7 @@ body {
 .profile-handle { color: #aaa; font-size: 0.85rem; margin-bottom: 10px; }
 .profile-stats { display: flex; gap: 28px; }
 .stat-num { color: #fff; font-weight: 700; font-size: 1rem; }
-.stat-label { color: #c0522a; font-size: 0.82rem; margin-left: 4px; cursor: pointer; }
+.stat-label { color: #c0522a; font-size: 0.82rem; margin-left: 4px; }
 .btn-edit {
     padding: 8px 18px;
     background-color: #c0522a;
@@ -150,8 +150,6 @@ body {
 /* Main Layout */
 .main-layout {
     display: flex;
-    max-width: 1100px;
-    margin: 0 auto;
     height: calc(100vh - 140px);
 }
 
@@ -170,6 +168,11 @@ body {
     color: #444;
     letter-spacing: 0.05em;
     margin-bottom: 10px;
+}
+.sidebar-divider {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 20px 0;
 }
 .ph-line {
     height: 10px;
@@ -325,7 +328,7 @@ body {
 /* Cards Grid */
 .cards-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 16px;
 }
 .card {
