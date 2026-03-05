@@ -38,7 +38,7 @@
          Search input and search button
     ======================================== -->
     <div class="search-bar">
-        <input type="text" id="search-input" placeholder="🔍  Search activities, events, or people..." onkeypress="handleSearchKeypress(event)" />
+        <input type="text" id="search-input" placeholder="🔍  Search activities, events, or people..." oninput="performSearch()" onkeypress="handleSearchKeypress(event)" />
         <button class="btn-create" onclick="performSearch()">Search</button>
     </div>
 
@@ -90,7 +90,7 @@
                 <div class="card">
                     <div class="card-img" style="background-color:#3b4a2e;"><div class="img-placeholder"></div></div>
                     <div class="card-tags">
-                        <div class="tags-left"><span class="tag">Outdoors</span><span class="tag">1.2 mi</span></div>
+                        <div class="tags-left"><span class="tag">Music</span><span class="tag">Outdoors</span><span class="tag">0.8 mi</span></div>
                         <button class="star-btn" onclick="toggleStar(this, 'Acoustic Jam Session')" aria-label="Mark as interested">
                             <svg class="star-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -101,13 +101,13 @@
                         <div class="card-title">Acoustic Jam Session</div>
                         <div class="card-desc">Bring your instrument or just your ears. Casual outdoor music gathering.</div>
                     </div>
-                    <div class="card-footer"><span>📅 Sat Mar 7</span><span>👥 12 going</span></div>
+                    <div class="card-footer"><span>📅 Sat Mar 7</span><span>👥 8 going</span></div>
                 </div>
 
                 <div class="card">
                     <div class="card-img" style="background-color:#3b2e4a;"><div class="img-placeholder"></div></div>
                     <div class="card-tags">
-                        <div class="tags-left"><span class="tag">Outdoors</span><span class="tag">1.2 mi</span></div>
+                        <div class="tags-left"><span class="tag">Food</span><span class="tag">Outdoors</span><span class="tag">Games</span><span class="tag">1.5 mi</span></div>
                         <button class="star-btn" onclick="toggleStar(this, 'Community Picnic')" aria-label="Mark as interested">
                             <svg class="star-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -118,13 +118,13 @@
                         <div class="card-title">Community Picnic</div>
                         <div class="card-desc">A relaxed afternoon picnic in the park. Food, games, and good company.</div>
                     </div>
-                    <div class="card-footer"><span>📅 Sat Mar 7</span><span>👥 12 going</span></div>
+                    <div class="card-footer"><span>📅 Sun Mar 8</span><span>👥 25 going</span></div>
                 </div>
 
                 <div class="card">
-                    <div class="card-img" style="background-color:#2e3a4e;"><div class="img-placeholder"></div></div>
+                    <div class="card-img" style="background-color:#4e3a2e;"><div class="img-placeholder"></div></div>
                     <div class="card-tags">
-                        <div class="tags-left"><span class="tag">Outdoors</span><span class="tag">1.2 mi</span></div>
+                        <div class="tags-left"><span class="tag">Fitness</span><span class="tag">0.5 mi</span></div>
                         <button class="star-btn" onclick="toggleStar(this, 'Sunset Yoga')" aria-label="Mark as interested">
                             <svg class="star-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -135,7 +135,143 @@
                         <div class="card-title">Sunset Yoga</div>
                         <div class="card-desc">Wind down with a group yoga session as the sun sets over the park.</div>
                     </div>
-                    <div class="card-footer"><span>📅 Sat Mar 7</span><span>👥 12 going</span></div>
+                    <div class="card-footer"><span>📅 Sat Mar 7</span><span>👥 15 going</span></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-img" style="background-color:#2e4e3a;"><div class="img-placeholder"></div></div>
+                    <div class="card-tags">
+                        <div class="tags-left"><span class="tag">Sports</span><span class="tag">Fitness</span><span class="tag">2.1 mi</span></div>
+                        <button class="star-btn" onclick="toggleStar(this, 'Pickup Basketball')" aria-label="Mark as interested">
+                            <svg class="star-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">Pickup Basketball</div>
+                        <div class="card-desc">Weekly basketball game at the community court. Bring your A-game!</div>
+                    </div>
+                    <div class="card-footer"><span>📅 Fri Mar 6</span><span>👥 10 going</span></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-img" style="background-color:#4a2e4e;"><div class="img-placeholder"></div></div>
+                    <div class="card-tags">
+                        <div class="tags-left"><span class="tag">Arts</span><span class="tag">Outdoors</span><span class="tag">1.0 mi</span></div>
+                        <button class="star-btn" onclick="toggleStar(this, 'Watercolor Workshop')" aria-label="Mark as interested">
+                            <svg class="star-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">Watercolor Workshop</div>
+                        <div class="card-desc">Learn basic watercolor techniques in this beginner-friendly art class.</div>
+                    </div>
+                    <div class="card-footer"><span>📅 Sun Mar 8</span><span>👥 6 going</span></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-img" style="background-color:#2e4e4a;"><div class="img-placeholder"></div></div>
+                    <div class="card-tags">
+                        <div class="tags-left"><span class="tag">Tech</span><span class="tag">3.2 mi</span></div>
+                        <button class="star-btn" onclick="toggleStar(this, 'Web Dev Meetup')" aria-label="Mark as interested">
+                            <svg class="star-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">Web Dev Meetup</div>
+                        <div class="card-desc">Monthly gathering for web developers. Share projects and learn new frameworks.</div>
+                    </div>
+                    <div class="card-footer"><span>📅 Thu Mar 12</span><span>👥 18 going</span></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-img" style="background-color:#4e2e3a;"><div class="img-placeholder"></div></div>
+                    <div class="card-tags">
+                        <div class="tags-left"><span class="tag">Games</span><span class="tag">1.8 mi</span></div>
+                        <button class="star-btn" onclick="toggleStar(this, 'Board Game Night')" aria-label="Mark as interested">
+                            <svg class="star-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">Board Game Night</div>
+                        <div class="card-desc">Explore new board games or play your favorites with fellow enthusiasts.</div>
+                    </div>
+                    <div class="card-footer"><span>📅 Sat Mar 7</span><span>👥 14 going</span></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-img" style="background-color:#4e3b2e;"><div class="img-placeholder"></div></div>
+                    <div class="card-tags">
+                        <div class="tags-left"><span class="tag">Food</span><span class="tag">Arts</span><span class="tag">0.9 mi</span></div>
+                        <button class="star-btn" onclick="toggleStar(this, 'Sushi Making Class')" aria-label="Mark as interested">
+                            <svg class="star-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">Sushi Making Class</div>
+                        <div class="card-desc">Learn to roll your own sushi from a professional chef. All ingredients provided.</div>
+                    </div>
+                    <div class="card-footer"><span>📅 Wed Mar 11</span><span>👥 8 going</span></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-img" style="background-color:#3a2e4e;"><div class="img-placeholder"></div></div>
+                    <div class="card-tags">
+                        <div class="tags-left"><span class="tag">Music</span><span class="tag">2.5 mi</span></div>
+                        <button class="star-btn" onclick="toggleStar(this, 'Jazz Night')" aria-label="Mark as interested">
+                            <svg class="star-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">Jazz Night</div>
+                        <div class="card-desc">Live jazz performance at the local lounge. Smooth vibes and good company.</div>
+                    </div>
+                    <div class="card-footer"><span>📅 Fri Mar 13</span><span>👥 22 going</span></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-img" style="background-color:#2e3e4e;"><div class="img-placeholder"></div></div>
+                    <div class="card-tags">
+                        <div class="tags-left"><span class="tag">Outdoors</span><span class="tag">Sports</span><span class="tag">Fitness</span><span class="tag">4.5 mi</span></div>
+                        <button class="star-btn" onclick="toggleStar(this, 'Rock Climbing')" aria-label="Mark as interested">
+                            <svg class="star-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">Rock Climbing</div>
+                        <div class="card-desc">Outdoor climbing session at the local crag. Gear rental available.</div>
+                    </div>
+                    <div class="card-footer"><span>📅 Sat Mar 14</span><span>👥 7 going</span></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-img" style="background-color:#3b4e2e;"><div class="img-placeholder"></div></div>
+                    <div class="card-tags">
+                        <div class="tags-left"><span class="tag">Fitness</span><span class="tag">1.3 mi</span></div>
+                        <button class="star-btn" onclick="toggleStar(this, 'Morning Bootcamp')" aria-label="Mark as interested">
+                            <svg class="star-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">Morning Bootcamp</div>
+                        <div class="card-desc">High-intensity interval training to kickstart your day. All fitness levels welcome.</div>
+                    </div>
+                    <div class="card-footer"><span>📅 Mon Mar 9</span><span>👥 20 going</span></div>
                 </div>
 
             </div>

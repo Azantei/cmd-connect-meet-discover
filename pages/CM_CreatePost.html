@@ -35,60 +35,47 @@
 
     <!-- ========================================
          MAIN CONTENT AREA
-         Post creation form with type selector
+         Post creation form
     ======================================== -->
     <div class="content">
 
         <h1 class="page-title">Create a Post</h1>
 
-        <!-- ========================================
-             POST TYPE SELECTOR
-             Choose between casual activity or formal event
-        ======================================== -->
-        <div class="type-selector">
-            <button class="type-btn active" id="btn-casual" onclick="setType('casual')">
-                <div class="type-icon"></div>
-                <div class="type-name">Casual Activity</div>
-                <div class="type-sub">(spontaneous, informal)</div>
-            </button>
-            <button class="type-btn" id="btn-formal" onclick="setType('formal')">
-                <div class="type-icon"></div>
-                <div class="type-name">Formal Event</div>
-                <div class="type-sub">(organized, optional RSVP)</div>
-            </button>
+        <!-- Title & Description -->
+        <div class="form-box">
+            <div class="section-label">TITLE &amp; DESCRIPTION <span class="req">*</span></div>
+            <div class="form-row border-bottom">
+                <label>Title</label>
+                <input type="text" id="eventTitle" placeholder="Enter a title..." />
+            </div>
+            <div class="form-row textarea-row">
+                <label>Description</label>
+                <textarea rows="3" id="eventDesc" placeholder="Describe your event or activity..."></textarea>
+            </div>
         </div>
 
-        <!-- Form Fields -->
+        <!-- Date, Time & Location -->
         <div class="form-box">
+            <div class="section-label">DATE &amp; TIME <span class="req">*</span></div>
             <div class="form-row border-bottom">
-                <label>Title <span class="req">*</span></label>
-                <input type="text" placeholder="Enter a title..." />
+                <label>Date</label>
+                <input type="date" id="eventDate" />
             </div>
-            <div class="form-row border-bottom textarea-row">
-                <label>Description <span class="req">*</span></label>
-                <textarea rows="3" placeholder="Describe your event or activity..."></textarea>
-            </div>
-            <div class="form-row-split border-bottom">
-                <div class="form-row">
-                    <label>Date <span class="req">*</span></label>
-                    <input type="date" />
-                </div>
-                <div class="form-row">
-                    <label>Start Time <span class="req">*</span></label>
-                    <input type="time" />
-                </div>
+            <div class="form-row border-bottom">
+                <label>Start Time</label>
+                <input type="time" id="eventTime" />
             </div>
             <div class="form-row">
-                <label>Location <span class="req">*</span></label>
-                <input type="text" placeholder="Enter a location..." />
+                <label>Location</label>
+                <input type="text" id="eventLocation" placeholder="Enter a location..." />
             </div>
         </div>
 
         <!-- Categories & Tags -->
-        <div class="categories-section">
+        <div class="form-box">
             <div class="categories-label">CATEGORIES &amp; TAGS <span class="req">*</span></div>
             <div class="pills" id="categoryPills">
-                <button class="pill active" onclick="toggleCat(this)">Outdoors</button>
+                <button class="pill" onclick="toggleCat(this)">Outdoors</button>
                 <button class="pill" onclick="toggleCat(this)">Music</button>
                 <button class="pill" onclick="toggleCat(this)">Sports</button>
                 <button class="pill" onclick="toggleCat(this)">Food</button>
@@ -101,28 +88,40 @@
             </div>
         </div>
 
-        <!-- RSVP Settings -->
-        <div class="rsvp-wrapper" id="rsvpWrapper">
-            <div class="rsvp-box">
-                <span class="rsvp-label">RSVP SETTINGS — only shown when 'Formal Event' selected</span>
-                <span class="rsvp-divider">|</span>
-                <div class="rsvp-control">
-                    <span>Enable RSVP</span>
-                    <div class="toggle" id="rsvpToggle" onclick="toggleRsvp()">
-                        <div class="toggle-knob" id="toggleKnob"></div>
+        <!-- Banner Photo Upload -->
+        <div class="form-box">
+            <div class="section-label">EVENT BANNER <span class="optional">(optional)</span></div>
+            <div class="form-row">
+                <input type="file" id="bannerUpload" accept="image/*" onchange="handleBannerUpload(event)" style="padding: 12px 16px;" />
+                <div class="upload-note">Recommended size: 800x400px. Max 5MB.</div>
+            </div>
+        </div>
+
+        <!-- Event Preview -->
+        <div class="preview-section">
+            <h2 class="preview-title">Event Preview</h2>
+            <div class="preview-card" id="previewCard">
+                <div class="preview-banner" id="previewBanner">
+                    <div class="preview-banner-placeholder">Banner photo will appear here</div>
+                </div>
+                <div class="preview-body">
+                    <div class="preview-categories" id="previewCategories">
+                        <span class="preview-tag">Select categories above</span>
+                    </div>
+                    <h3 class="preview-event-title" id="previewTitle">Your event title will appear here</h3>
+                    <p class="preview-event-desc" id="previewDesc">Your event description will appear here</p>
+                    <div class="preview-event-details" id="previewDetails">
+                        <span>📅 Date not set</span>
+                        <span>🕐 Time not set</span>
+                        <span>📍 Location not set</span>
                     </div>
                 </div>
-                <div class="rsvp-control">
-                    <span>Max Attendees</span>
-                    <input type="number" class="attendees-input" placeholder="—" />
-                </div>
             </div>
-            <div class="rsvp-note">↑ This section slides in/out based on post type selection</div>
         </div>
 
         <!-- Actions -->
         <div class="actions">
-            <button class="btn-cancel">Cancel</button>
+            <button class="btn-cancel" onclick="handleCancel()">Cancel</button>
             <div class="actions-right">
                 <button class="btn-draft">Save As Draft</button>
                 <button class="btn-post">Post</button>

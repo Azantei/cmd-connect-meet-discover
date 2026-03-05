@@ -24,22 +24,60 @@ function toggleCategory(el) {
     }
     
     console.log('Active filters:', activeFilters);
-    // TODO: Filter displayed cards based on activeFilters array
-    // In a real implementation, this would filter the event cards shown
+    filterCards();
+}
+
+/**
+ * Filter displayed cards based on active filters and search term
+ */
+function filterCards() {
+    const searchInput = document.getElementById('search-input');
+    const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    const cards = document.querySelectorAll('.card');
+    
+    cards.forEach(function(card) {
+        // Get all category tags in the card (excluding distance tags that contain 'mi')
+        const tagElements = card.querySelectorAll('.tag');
+        const cardCategories = [];
+        
+        tagElements.forEach(function(tag) {
+            const tagText = tag.textContent.trim();
+            // Only include tags that don't contain 'mi' (distance tags)
+            if (!tagText.includes('mi')) {
+                cardCategories.push(tagText);
+            }
+        });
+        
+        // Check if card matches category filters
+        const matchesFilter = activeFilters.length === 0 || 
+                             cardCategories.some(function(cat) {
+                                 return activeFilters.includes(cat);
+                             });
+        
+        // Check if card matches search term
+        let matchesSearch = true;
+        if (searchTerm !== '') {
+            const title = card.querySelector('.card-title');
+            const desc = card.querySelector('.card-desc');
+            
+            if (title && desc) {
+                const titleText = title.textContent.toLowerCase();
+                const descText = desc.textContent.toLowerCase();
+                matchesSearch = titleText.includes(searchTerm) || descText.includes(searchTerm);
+            }
+        }
+        
+        // Show card only if it matches BOTH filter and search criteria
+        card.style.display = (matchesFilter && matchesSearch) ? 'block' : 'none';
+    });
 }
 
 /**
  * Perform search on activity feed
+ * Filters cards based on search term in title or description
  */
 function performSearch() {
-    const searchInput = document.getElementById('search-input');
-    const searchTerm = searchInput.value.trim();
-    
-    if (searchTerm) {
-        console.log('Searching for:', searchTerm);
-        // Here you would filter the posts based on the search term
-        // For now, this is a placeholder for the search functionality
-    }
+    filterCards();
 }
 
 /**
