@@ -86,22 +86,28 @@ function renderCards() {
     } else {
         grid.style.display = 'grid';
         noResults.style.display = 'none';
-        grid.innerHTML = filtered.map(function(card) {
+        grid.innerHTML = filtered.map(function(card, index) {
             var footer = '';
+            var statusBadge = '';
+            
             if (currentTab === 'my-posts') {
-                footer = '<span>📅 ' + card.date + '</span><span>👥 ' + card.going + ' going</span>';
+                statusBadge = '<span class="status-badge" style="background-color: #5a7a9e;">👥 ' + card.going + ' going</span>';
+                footer = '<span>📅 ' + card.date + '</span><span style="color: #d32f2f; font-weight: 600; cursor: pointer;" onclick="removeEvent(\'' + currentTab + '\', ' + index + ')">✕ Remove</span>';
             } else if (currentTab === 'upcoming') {
                 var rsvpColor = card.rsvp === 'Going' ? '#2e7d32' : '#f57c00';
-                footer = '<span>📅 ' + card.date + '</span><span style="color:' + rsvpColor + '; font-weight: 600;">✓ ' + card.rsvp + '</span>';
+                statusBadge = '<span class="status-badge" style="background-color:' + rsvpColor + ';">✓ ' + card.rsvp + '</span>';
+                footer = '<span>📅 ' + card.date + '</span><span style="color: #d32f2f; font-weight: 600; cursor: pointer;" onclick="removeEvent(\'' + currentTab + '\', ' + index + ')">✕ Remove</span>';
             } else if (currentTab === 'interested') {
-                footer = '<span>📅 ' + card.date + '</span><span style="color: #f57c00; font-weight: 600;">⭐ Interested</span>';
+                statusBadge = '<span class="status-badge" style="background-color: #f57c00;">⭐ Interested</span>';
+                footer = '<span>📅 ' + card.date + '</span><span style="color: #d32f2f; font-weight: 600; cursor: pointer;" onclick="removeEvent(\'' + currentTab + '\', ' + index + ')">✕ Remove</span>';
             } else if (currentTab === 'drafts') {
-                footer = '<span style="color: #888;">📝 Draft</span><span style="color: #888;">Not published</span>';
+                statusBadge = '<span class="status-badge" style="background-color: #888;">Not published</span>';
+                footer = '<span style="color: #888;">📝 Draft</span><span style="color: #d32f2f; font-weight: 600; cursor: pointer;" onclick="removeEvent(\'' + currentTab + '\', ' + index + ')">✕ Remove</span>';
             }
             
             return '<div class="card">' +
                 '<div class="card-img" style="background-color:' + card.color + '"><div class="card-img-icon"></div></div>' +
-                '<div class="card-tags">' + card.tags.map(function(t) { return '<span class="card-tag">' + t + '</span>'; }).join('') + '<span class="card-tag">1.2 mi</span></div>' +
+                '<div class="card-tags">' + card.tags.map(function(t) { return '<span class="card-tag">' + t + '</span>'; }).join('') + '<span class="card-tag">1.2 mi</span>' + statusBadge + '</div>' +
                 '<div class="card-body"><div class="card-title">' + card.title + '</div><div class="card-desc">' + card.desc + '</div></div>' +
                 '<div class="card-footer">' + footer + '</div>' +
                 '</div>';
@@ -195,6 +201,71 @@ function updateFilterUI() {
         countSpan.textContent = '';
         clearBtn.style.display = 'none';
     }
+}
+
+/**
+ * Remove an event from the user's lists or permanently delete their own post
+ * @param {string} tab - The current tab identifier
+ * @param {number} index - The index of the event in the filtered array
+ */
+function removeEvent(tab, index) {
+    var currentData = getCurrentData();
+    
+    // Get the actual data array based on applied filters
+    var filtered = activeFilters.length === 0
+        ? currentData
+        : currentData.filter(function(c) { return c.tags.some(function(t) { return activeFilters.includes(t); }); });
+    
+    // Find the event to remove from the filtered list
+    var eventToRemove = filtered[index];
+    
+    // Special handling for My Posts - requires confirmation
+    if (tab === 'my-posts') {
+        var confirmed = confirm(
+            'Are you sure you want to delete this event?\n\n' +
+            '"' + eventToRemove.title + '"\n\n' +
+            'This will permanently remove the event and it will no longer be visible to anyone. ' +
+            'All RSVPs will be cancelled.'
+        );
+        
+        if (!confirmed) {
+            return; // User cancelled, don't delete
+        }
+        
+        // Remove from MY_POSTS
+        var actualIndex = MY_POSTS.indexOf(eventToRemove);
+        if (actualIndex > -1) {
+            MY_POSTS.splice(actualIndex, 1);
+            console.log('Permanently deleted event:', eventToRemove.title);
+            
+            // Also remove from all users' UPCOMING_EVENTS and INTERESTED_EVENTS
+            // (simulating backend removal across all users)
+            UPCOMING_EVENTS = UPCOMING_EVENTS.filter(function(e) { return e.title !== eventToRemove.title; });
+            INTERESTED_EVENTS = INTERESTED_EVENTS.filter(function(e) { return e.title !== eventToRemove.title; });
+            console.log('Removed from all users\' lists');
+        }
+    } else if (tab === 'upcoming') {
+        var actualIndex = UPCOMING_EVENTS.indexOf(eventToRemove);
+        if (actualIndex > -1) {
+            UPCOMING_EVENTS.splice(actualIndex, 1);
+            console.log('Removed from Upcoming Events:', eventToRemove.title);
+        }
+    } else if (tab === 'interested') {
+        var actualIndex = INTERESTED_EVENTS.indexOf(eventToRemove);
+        if (actualIndex > -1) {
+            INTERESTED_EVENTS.splice(actualIndex, 1);
+            console.log('Removed from Interested:', eventToRemove.title);
+        }
+    } else if (tab === 'drafts') {
+        var actualIndex = DRAFTS.indexOf(eventToRemove);
+        if (actualIndex > -1) {
+            DRAFTS.splice(actualIndex, 1);
+            console.log('Removed draft:', eventToRemove.title);
+        }
+    }
+    
+    // Re-render the cards
+    renderCards();
 }
 
 // Close dropdowns on outside click

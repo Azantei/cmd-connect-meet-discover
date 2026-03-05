@@ -118,6 +118,8 @@ body {
     font-size: 0.88rem;
     cursor: pointer;
     font-family: 'Segoe UI', sans-serif;
+    text-decoration: none;
+    display: inline-block;
 }
 .settings-sep { font-size: 0.75rem; opacity: 0.8; }
 
@@ -346,13 +348,21 @@ body {
     border: 2px solid rgba(255,255,255,0.5);
     background-color: rgba(255,255,255,0.15);
 }
-.card-tags { padding: 8px 12px 4px; display: flex; gap: 6px; flex-wrap: wrap; }
+.card-tags { padding: 8px 12px 4px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
 .card-tag {
     border: 1px solid #aaa;
     border-radius: 3px;
     padding: 2px 8px;
     font-size: 0.72rem;
     color: #555;
+}
+.status-badge {
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 0.72rem;
+    color: #fff;
+    font-weight: 600;
+    margin-left: auto;
 }
 .card-body { padding: 6px 12px 10px; }
 .card-title { font-weight: 600; font-size: 0.9rem; color: #222; margin-bottom: 4px; }
@@ -365,6 +375,12 @@ body {
     justify-content: space-between;
     font-size: 0.75rem;
     color: #666;
+}
+.card-footer span[onclick] {
+    transition: opacity 0.2s;
+}
+.card-footer span[onclick]:hover {
+    opacity: 0.8;
 }
 
 /* No Results */
