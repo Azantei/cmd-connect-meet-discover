@@ -255,11 +255,6 @@ function completeEscalate() {
 
     const reason = selectedReason.value;
     const report = pendingEscalateReport;
-    const confirmMsg = report.type === 'post'
-        ? `Escalate and hide the post "${report.title}"? This will immediately remove it from public view.`
-        : `Escalate the report for "${report.title}" to the system administrator?`;
-    if (!confirm(confirmMsg)) return;
-
     const note = document.getElementById('escalateNote').value.trim();
 
     // Remove from active queue
@@ -291,6 +286,7 @@ function completeEscalate() {
     applyFilter(currentFilter);
     updateBadge();
 
+    alert('This report has been sent to a system admin for review');
     console.log(`Escalated report #${report.id} - Reason: ${reason}, Note: ${note || '(none)'}`);
 }
 
