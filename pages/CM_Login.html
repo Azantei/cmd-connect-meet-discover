@@ -107,6 +107,7 @@
                 <div class="form-group">
                     <label>Full Name</label>
                     <input type="text" id="signup-name" placeholder="Jane Doe">
+                    <span class="error-message" id="signup-name-error"></span>
                 </div>
                 <div class="form-group">
                     <label>Email</label>
@@ -116,7 +117,7 @@
                 <div class="form-group">
                     <label style="font-weight:400;">Password</label>
                     <div class="password-wrapper">
-                        <input type="password" id="signup-password" placeholder="••••••••">
+                        <input type="password" id="signup-password" placeholder="••••••••" oninput="checkPasswordStrength()">
                         <button type="button" class="toggle-password" onclick="togglePassword('signup-password')">
                             <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
@@ -124,10 +125,32 @@
                             </svg>
                         </button>
                     </div>
+                    <div class="password-strength" id="password-strength" style="display: none;">
+                        <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+                        <span class="strength-text" id="strength-text"></span>
+                    </div>
+                    <span class="error-message" id="signup-password-error"></span>
+                    <div class="password-hint">Must be at least 8 characters with uppercase, lowercase, and a number</div>
+                </div>
+                <div class="form-group">
+                    <label>Interests <span style="color: #c0522a;">*</span></label>
+                    <p class="field-hint">Select at least one interest to personalize your feed</p>
+                    <div class="pills-wrap" id="interestPills"></div>
+                    <span class="error-message" id="signup-interests-error"></span>
                 </div>
                 <div class="form-group">
                     <label>Location</label>
-                    <input type="text" id="signup-location" placeholder="City, State">
+                    <div class="location-controls">
+                        <input type="text" id="signup-location" placeholder="City, State">
+                        <button type="button" class="btn-gps" onclick="requestGPSLocation()" title="Use my current location">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            Use GPS
+                        </button>
+                    </div>
+                    <span class="error-message" id="signup-location-error"></span>
                 </div>
                 <button class="btn-primary" onclick="validateSignUp(event)">Create Account</button>
                 <p class="form-footer">Already have an account? <a onclick="switchTab('signin')">Sign in</a></p>

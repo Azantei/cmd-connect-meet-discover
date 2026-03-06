@@ -14,39 +14,6 @@ function toggleCat(el) {
 }
 
 /**
- * Toggle RSVP options visibility
- * Shows/hides the max attendees field based on RSVP toggle state
- */
-function toggleRsvpOptions() {
-    const rsvpToggle = document.getElementById('rsvpToggle');
-    const maxAttendeesSection = document.getElementById('maxAttendeesSection');
-    const previewRsvp = document.getElementById('previewRsvp');
-    
-    if (rsvpToggle.checked) {
-        maxAttendeesSection.style.display = 'block';
-        previewRsvp.style.display = 'block';
-        updateRsvpPreview();
-    } else {
-        maxAttendeesSection.style.display = 'none';
-        previewRsvp.style.display = 'none';
-    }
-}
-
-/**
- * Update RSVP preview text
- */
-function updateRsvpPreview() {
-    const maxAttendees = document.getElementById('maxAttendees');
-    const previewRsvp = document.getElementById('previewRsvp');
-    
-    if (maxAttendees.value && parseInt(maxAttendees.value) > 0) {
-        previewRsvp.textContent = '👥 RSVP enabled · Max ' + maxAttendees.value + ' attendees';
-    } else {
-        previewRsvp.textContent = '👥 RSVP enabled';
-    }
-}
-
-/**
  * Handle banner photo upload
  * Shows preview of uploaded image
  * @param {Event} event - The file input change event
@@ -171,7 +138,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const dateInput = document.getElementById('eventDate');
     const timeInput = document.getElementById('eventTime');
     const locationInput = document.getElementById('eventLocation');
-    const maxAttendees = document.getElementById('maxAttendees');
     
     if (titleInput) titleInput.addEventListener('input', updatePreviewTitle);
     if (descInput) descInput.addEventListener('input', updatePreviewDesc);
@@ -183,7 +149,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     if (timeInput) timeInput.addEventListener('change', updatePreviewDetails);
     if (locationInput) locationInput.addEventListener('input', updatePreviewDetails);
-    if (maxAttendees) maxAttendees.addEventListener('input', updateRsvpPreview);
     
     // Set minimum date to today
     if (dateInput) {
@@ -211,6 +176,22 @@ function validateDate() {
         return false;
     }
     return true;
+}
+
+/**
+ * Toggle RSVP options visibility
+ * Shows/hides max attendees input field based on RSVP toggle state
+ */
+function toggleRsvpOptions() {
+    const rsvpToggle = document.getElementById('rsvpToggle');
+    const maxAttendeesRow = document.getElementById('maxAttendeesRow');
+    
+    if (rsvpToggle.checked) {
+        maxAttendeesRow.style.display = 'flex';
+    } else {
+        maxAttendeesRow.style.display = 'none';
+        document.getElementById('maxAttendees').value = '';
+    }
 }
 
 /**

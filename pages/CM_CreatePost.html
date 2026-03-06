@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
     
     <!-- Create Post Stylesheet -->
-    <link rel="stylesheet" href="../css/CM_CreatePost.css">
+    <link rel="stylesheet" href="../css/CM_CreatePost.css?v=rsvp4">
 </head>
 <body>
 
@@ -91,21 +91,16 @@
         <!-- RSVP Options -->
         <div class="form-box">
             <div class="section-label">RSVP OPTIONS <span class="optional">(optional)</span></div>
-            <div class="form-row rsvp-toggle-row">
-                <div class="rsvp-label-group">
-                    <label style="font-weight: 600; margin-bottom: 4px; display: block;">Enable RSVP</label>
-                    <div style="color: #666; font-size: 0.875rem;">Allow attendees to RSVP to your event</div>
-                </div>
+            <div class="form-row">
+                <label>Enable RSVP</label>
                 <label class="toggle-switch">
                     <input type="checkbox" id="rsvpToggle" onchange="toggleRsvpOptions()">
                     <span class="toggle-slider"></span>
                 </label>
             </div>
-            <div id="maxAttendeesSection" style="display: none;">
-                <div class="form-row">
-                    <label>Max Attendees <span class="optional">(optional)</span></label>
-                    <input type="number" id="maxAttendees" placeholder="Leave blank for unlimited" min="1" style="width: 200px;" />
-                </div>
+            <div class="form-row border-bottom" id="maxAttendeesRow" style="display: none;">
+                <label>Max Attendees<br><span class="optional">(optional)</span></label>
+                <input type="number" id="maxAttendees" placeholder="Enter maximum number" min="1" />
             </div>
         </div>
 
@@ -135,9 +130,6 @@
                         <span>📅 Date not set</span>
                         <span>🕐 Time not set</span>
                         <span>📍 Location not set</span>
-                    </div>
-                    <div class="preview-rsvp" id="previewRsvp" style="display: none; margin-top: 12px; padding: 8px 12px; background: rgba(225, 85, 63, 0.1); border-radius: 6px; font-size: 0.875rem; color: hsl(12, 80%, 60%);">
-                        👥 RSVP enabled
                     </div>
                 </div>
             </div>

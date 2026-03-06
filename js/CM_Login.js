@@ -14,6 +14,11 @@ function switchTab(tab) {
     const idx = tab === 'signin' ? 0 : 1;
     document.querySelectorAll('.tab-btn')[idx].classList.add('active');
     
+    // Initialize interest pills when switching to signup
+    if (tab === 'signup') {
+        initializeInterestPills();
+    }
+    
     // Clear all error messages when switching tabs
     clearAllErrors();
 }
@@ -24,6 +29,9 @@ function switchTab(tab) {
 window.addEventListener('DOMContentLoaded', function() {
     if (window.location.hash === '#signup') {
         switchTab('signup');
+    } else {
+        // Initialize pills on page load if on signup tab
+        initializeInterestPills();
     }
 });
 
@@ -107,8 +115,18 @@ function validateSignUp(event) {
     event.preventDefault();
     clearAllErrors();
     
+    const name = document.getElementById('signup-name').value.trim();
     const email = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+    const location = document.getElementById('signup-location').value.trim();
+    const interests = getSelectedInterests();
     let isValid = true;
+    
+    // Validate name
+    if (!name) {
+        showError('signup-name', 'signup-name-error', 'Full name is required');
+        isValid = false;
+    }
     
     // Validate email
     if (!email) {
@@ -119,9 +137,34 @@ function validateSignUp(event) {
         isValid = false;
     }
     
+    // Validate password
+    if (!password) {
+        showError('signup-password', 'signup-password-error', 'Password is required');
+        isValid = false;
+    } else if (!isPasswordStrong(password)) {
+        showError('signup-password', 'signup-password-error', 'Password must be at least 8 characters with uppercase, lowercase, and a number');
+        isValid = false;
+    }
+    
+    // Validate interests
+    if (interests.length === 0) {
+        showError('', 'signup-interests-error', 'Please select at least one interest');
+        isValid = false;
+    }
+    
+    // Validate location
+    if (!location) {
+        showError('signup-location', 'signup-location-error', 'Location is required');
+        isValid = false;
+    }
+    
     if (isValid) {
         // Form is valid, proceed with sign up (placeholder)
         console.log('Sign up form is valid');
+        console.log('Name:', name);
+        console.log('Email:', email);
+        console.log('Interests:', interests);
+        console.log('Location:', location);
         // Here you would normally submit the form or make an API call
     }
 }
@@ -153,4 +196,98 @@ function togglePassword(inputId) {
             </svg>
         `;
     }
+}
+
+// Interest categories
+var ALL_INTERESTS = ["Outdoors", "Running", "Coffee", "Music", "Sports", "Food", "Arts", "Tech", "Fitness", "Games", "Photography", "Travel"];
+
+/**
+ * Initialize interest pills when tab is shown
+ */
+function initializeInterestPills() {
+    var pillsWrap = document.getElementById('interestPills');
+    if (pillsWrap && pillsWrap.children.length === 0) {
+        ALL_INTERESTS.forEach(function(interest) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'pill';
+            btn.textContent = interest;
+            btn.onclick = function() {
+                btn.classList.toggle('active');
+                clearError('', 'signup-interests-error');
+            };
+            pillsWrap.appendChild(btn);
+        });
+    }
+}
+
+/**
+ * Get selected interests
+ * @returns {Array} Array of selected interest names
+ */
+function getSelectedInterests() {
+    var activePills = document.querySelectorAll('#interestPills .pill.active');
+    return Array.from(activePills).map(function(pill) { return pill.textContent; });
+}
+
+/**
+ * Check password strength
+ */
+function checkPasswordStrength() {
+    var password = document.getElementById('signup-password').value;
+    var strengthDiv = document.getElementById('password-strength');
+    var strengthFill = document.getElementById('strength-fill');
+    var strengthText = document.getElementById('strength-text');
+    
+    if (password.length === 0) {
+        strengthDiv.style.display = 'none';
+        return;
+    }
+    
+    strengthDiv.style.display = 'block';
+    
+    var strength = 0;
+    if (password.length >= 8) strength++;
+    if (password.length >= 12) strength++;
+    if (/[a-z]/.test(password)) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^a-zA-Z0-9]/.test(password)) strength++;
+    
+    var percentage = (strength / 6) * 100;
+    strengthFill.style.width = percentage + '%';
+    
+    if (strength <= 2) {
+        strengthFill.style.backgroundColor = '#e74c3c';
+        strengthText.textContent = 'Weak';
+        strengthText.style.color = '#e74c3c';
+    } else if (strength <= 4) {
+        strengthFill.style.backgroundColor = '#f39c12';
+        strengthText.textContent = 'Medium';
+        strengthText.style.color = '#f39c12';
+    } else {
+        strengthFill.style.backgroundColor = '#27ae60';
+        strengthText.textContent = 'Strong';
+        strengthText.style.color = '#27ae60';
+    }
+}
+
+/**
+ * Validate password strength
+ * @param {string} password - Password to validate
+ * @returns {boolean} True if password meets requirements
+ */
+function isPasswordStrong(password) {
+    if (password.length < 8) return false;
+    if (!/[a-z]/.test(password)) return false;
+    if (!/[A-Z]/.test(password)) return false;
+    if (!/[0-9]/.test(password)) return false;
+    return true;
+}
+
+/**
+ * Request GPS location (placeholder for future implementation)
+ */
+function requestGPSLocation() {
+    alert('GPS location feature is not yet available. Please enter your location manually.');
 }
