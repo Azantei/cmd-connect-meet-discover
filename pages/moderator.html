@@ -84,6 +84,35 @@
         </main>
     </div>
 
+    <!-- Warn User modal -->
+    <div class="mod-modal" id="warnModal">
+        <div class="mod-modal-backdrop"></div>
+        <div class="mod-modal-content">
+            <h3>Warn User About Violation</h3>
+            <p class="mod-modal-desc">Send a warning notification to the user whose content has violated community guidelines.</p>
+            
+            <div class="mod-modal-target" id="warnTargetInfo"></div>
+            
+            <label for="warnReason" class="reason-select-label">Warning Reason:</label>
+            <select id="warnReason" class="mod-modal-select">
+                <option value="">Select a reason...</option>
+                <option value="Spam">Spam</option>
+                <option value="Harassment">Harassment</option>
+                <option value="Inappropriate Content">Inappropriate Content</option>
+                <option value="Community Guidelines Violation">Community Guidelines Violation</option>
+                <option value="Other">Other</option>
+            </select>
+            
+            <label for="warnMessage" class="note-label">Additional Message (optional):</label>
+            <textarea id="warnMessage" placeholder="Add any additional context for the user..." rows="3"></textarea>
+            
+            <div class="mod-modal-actions">
+                <button class="btn-mod btn-cancel" id="warnCancel">Cancel</button>
+                <button class="btn-mod btn-warn-submit" id="warnSubmit">Send Warning</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Escalate modal -->
     <div class="mod-modal" id="escalateModal">
         <div class="mod-modal-backdrop"></div>

@@ -3,71 +3,21 @@
    Mock data, report rendering, sidebar & filter logic
 ========================================== */
 
-// Mock reports data
+// Helper to create timestamps for sorting (reports sorted by date submitted, newest first)
+const now = Date.now();
+const ms = { hour: 3600000, day: 86400000 };
+
+// Mock reports data (submittedAt used for sorting by date submitted)
+// userActive: false simulates Exception Flow 1 (user account no longer active)
+// author: target user for post reports (user we warn)
 const mockReports = [
-    {
-        id: 1,
-        type: 'post',
-        title: "Free Concert Downtown",
-        reporter: "user",
-        time: "2 hrs ago",
-        reason: "Spam",
-        note: ""
-    },
-    {
-        id: 2,
-        type: 'user',
-        title: "@toxic_user99",
-        reporter: "member",
-        time: "5 hrs ago",
-        reason: "Harassment",
-        note: ""
-    },
-    {
-        id: 3,
-        type: 'post',
-        title: "Neighborhood Watch Sign-Up",
-        reporter: "curious",
-        time: "1 day ago",
-        reason: "Inappropriate",
-        note: ""
-    },
-    {
-        id: 4,
-        type: 'post',
-        title: "Coffee Meetup at Central Park",
-        reporter: "community_member",
-        time: "3 hrs ago",
-        reason: "Spam",
-        note: ""
-    },
-    {
-        id: 5,
-        type: 'user',
-        title: "@spammer123",
-        reporter: "moderator_help",
-        time: "6 hrs ago",
-        reason: "Spam",
-        note: ""
-    },
-    {
-        id: 6,
-        type: 'post',
-        title: "Yoga in the Park - Saturday",
-        reporter: "local_user",
-        time: "12 hrs ago",
-        reason: "Inappropriate",
-        note: ""
-    },
-    {
-        id: 7,
-        type: 'post',
-        title: "Lost Dog - Please Help",
-        reporter: "concerned",
-        time: "1 day ago",
-        reason: "Spam",
-        note: ""
-    }
+    { id: 1, type: 'post', title: "Free Concert Downtown", reporter: "user", author: "@eventhost", time: "2 hrs ago", reason: "Spam", note: "", submittedAt: now - 2 * ms.hour, userActive: true },
+    { id: 2, type: 'user', title: "@toxic_user99", reporter: "member", author: "@toxic_user99", time: "5 hrs ago", reason: "Harassment", note: "", submittedAt: now - 5 * ms.hour, userActive: true },
+    { id: 3, type: 'post', title: "Neighborhood Watch Sign-Up", reporter: "curious", author: "@neighbor_jane", time: "1 day ago", reason: "Inappropriate", note: "", submittedAt: now - 1 * ms.day, userActive: true },
+    { id: 4, type: 'post', title: "Coffee Meetup at Central Park", reporter: "community_member", author: "@coffee_lover", time: "3 hrs ago", reason: "Spam", note: "", submittedAt: now - 3 * ms.hour, userActive: true },
+    { id: 5, type: 'user', title: "@spammer123", reporter: "moderator_help", author: "@spammer123", time: "6 hrs ago", reason: "Spam", note: "", submittedAt: now - 6 * ms.hour, userActive: false },
+    { id: 6, type: 'post', title: "Yoga in the Park - Saturday", reporter: "local_user", author: "@yoga_instructor", time: "12 hrs ago", reason: "Inappropriate", note: "", submittedAt: now - 12 * ms.hour, userActive: true },
+    { id: 7, type: 'post', title: "Lost Dog - Please Help", reporter: "concerned", author: "@petowner", time: "1 day ago", reason: "Spam", note: "", submittedAt: now - 1 * ms.day - 2 * ms.hour, userActive: true }
 ];
 
 let activeReports = [...mockReports];  // Reports still in queue
@@ -77,6 +27,7 @@ let moderationHistory = [];             // Log of all moderation actions (dismis
 let filteredReports = [];
 let currentFilter = 'all';
 let pendingEscalateReport = null;       // Report awaiting escalate note
+let pendingWarnReport = null;           // Report awaiting warn (UC-M-003)
 const MODERATOR_NAME = 'Sara M.';
 
 /**
@@ -269,6 +220,12 @@ function handleAction(e) {
         return;
     }
 
+    // Warn User (UC-M-003): show warning form modal
+    if (action === 'warn') {
+        openWarnModal(report);
+        return;
+    }
+
     // Remove from active queue
     activeReports = activeReports.filter(r => r.id !== id);
 
@@ -297,8 +254,13 @@ function completeEscalate() {
     }
 
     const reason = selectedReason.value;
-    const note = document.getElementById('escalateNote').value.trim();
     const report = pendingEscalateReport;
+    const confirmMsg = report.type === 'post'
+        ? `Escalate and hide the post "${report.title}"? This will immediately remove it from public view.`
+        : `Escalate the report for "${report.title}" to the system administrator?`;
+    if (!confirm(confirmMsg)) return;
+
+    const note = document.getElementById('escalateNote').value.trim();
 
     // Remove from active queue
     activeReports = activeReports.filter(r => r.id !== report.id);
@@ -342,6 +304,86 @@ function closeEscalateModal() {
 }
 
 /**
+ * Open Warn User modal (UC-M-003)
+ * Displays warning form with target user/post info
+ * @param {Object} report - The report containing the user to warn
+ */
+function openWarnModal(report) {
+    pendingWarnReport = report;
+
+    // Exception Flow 1: User account no longer active
+    if (report.userActive === false) {
+        alert('This user account is no longer active.');
+        pendingWarnReport = null;
+        return;
+    }
+
+    const targetEl = document.getElementById('warnTargetInfo');
+    const typeLabel = report.type === 'post' ? 'Post' : 'User';
+    const displayTitle = report.type === 'post' ? `'${report.title}'` : report.title;
+    const targetUser = report.author || report.title;
+    targetEl.textContent = `Target: ${typeLabel} ${displayTitle} → Warn user ${targetUser}`;
+
+    // Pre-select report reason if it matches a preset (Alternative Flow 1)
+    const reasonSelect = document.getElementById('warnReason');
+    const reasonMap = { 'spam': 'Spam', 'harassment': 'Harassment', 'inappropriate': 'Inappropriate Content' };
+    const presetReason = reasonMap[report.reason.toLowerCase()] || report.reason;
+    const reasonMatch = Array.from(reasonSelect.options).find(opt =>
+        opt.value && (opt.value === presetReason || opt.value.toLowerCase() === report.reason.toLowerCase())
+    );
+    reasonSelect.value = reasonMatch ? reasonMatch.value : '';
+    document.getElementById('warnMessage').value = '';
+    document.getElementById('warnModal').classList.add('is-open');
+}
+
+/**
+ * Close Warn User modal and reset state
+ */
+function closeWarnModal() {
+    document.getElementById('warnModal').classList.remove('is-open');
+    pendingWarnReport = null;
+}
+
+/**
+ * Complete Warn User flow (UC-M-003)
+ * Validates reason, records warning, removes from queue, shows success
+ */
+function completeWarn() {
+    if (!pendingWarnReport) return;
+
+    const reason = document.getElementById('warnReason').value.trim();
+    if (!reason) {
+        alert('Please select a warning reason.');
+        return;
+    }
+
+    const message = document.getElementById('warnMessage').value.trim();
+    const report = pendingWarnReport;
+
+    // Double-check user active (could have changed)
+    if (report.userActive === false) {
+        alert('This user account is no longer active.');
+        closeWarnModal();
+        return;
+    }
+
+    // Remove from active queue
+    activeReports = activeReports.filter(r => r.id !== report.id);
+
+    // Log to moderation history
+    const fullNote = message ? `${reason}: ${message}` : reason;
+    logModerationAction('warn', report, fullNote);
+
+    closeWarnModal();
+    applyFilter(currentFilter);
+    updateBadge();
+
+    alert('Warning sent successfully.');
+    console.log(`Warning sent for report #${report.id} - Reason: ${reason}`);
+}
+
+
+/**
  * Update report count badge in sidebar
  * Shows number of active reports in queue
  */
@@ -356,7 +398,7 @@ function updateBadge() {
  * Filters reports by type or reason
  * @param {string} value - Filter value (all, post, user, spam, harassment, etc.)
  */
-// Apply filter (filters active reports in queue)
+// Apply filter (filters active reports in queue) and sort by date submitted (newest first)
 function applyFilter(value) {
     currentFilter = value;
 
@@ -367,6 +409,9 @@ function applyFilter(value) {
     } else {
         filteredReports = activeReports.filter(r => r.reason.toLowerCase() === value.toLowerCase());
     }
+
+    // Sort by date submitted (newest first)
+    filteredReports.sort((a, b) => (b.submittedAt || 0) - (a.submittedAt || 0));
 
     renderReports();
     updateBadge();
@@ -424,5 +469,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Escalate modal
     document.getElementById('escalateCancel').addEventListener('click', closeEscalateModal);
     document.getElementById('escalateSubmit').addEventListener('click', completeEscalate);
-    document.querySelector('.mod-modal-backdrop').addEventListener('click', closeEscalateModal);
+
+    // Warn User modal (UC-M-003)
+    document.getElementById('warnCancel').addEventListener('click', closeWarnModal);
+    document.getElementById('warnSubmit').addEventListener('click', completeWarn);
+
+    // Modal backdrop clicks (close the containing modal)
+    document.addEventListener('click', (e) => {
+        if (!e.target.classList.contains('mod-modal-backdrop')) return;
+        const modal = e.target.closest('.mod-modal');
+        if (!modal) return;
+        modal.classList.remove('is-open');
+        if (modal.id === 'warnModal') pendingWarnReport = null;
+        if (modal.id === 'escalateModal') pendingEscalateReport = null;
+    });
 });

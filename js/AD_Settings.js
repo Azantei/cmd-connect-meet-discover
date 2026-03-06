@@ -49,10 +49,12 @@ function setupEventListeners() {
     // Form inputs
     document.getElementById('platformName').addEventListener('input', (e) => {
         settings.platformName = e.target.value;
+        e.target.classList.remove('invalid');
     });
 
     document.getElementById('distanceRadius').addEventListener('input', (e) => {
         settings.distanceRadius = e.target.value;
+        e.target.classList.remove('invalid');
     });
 
     // Action buttons
@@ -119,8 +121,51 @@ function handleToggle(toggleElement) {
 // SAVE & DISCARD CHANGES
 // ==========================================
 
+function validateSettings() {
+    const platformName = document.getElementById('platformName').value.trim();
+    const distanceRadius = document.getElementById('distanceRadius').value.trim();
+    const invalidFields = [];
+
+    if (!platformName) {
+        invalidFields.push('platformName');
+    }
+    if (!distanceRadius) {
+        invalidFields.push('distanceRadius');
+    } else {
+        // Distance radius should be a number optionally followed by unit (e.g. "10 mi", "5 km", "10")
+        const distancePattern = /^\d+\s*(mi|km|miles|kilometers)?$/i;
+        if (!distancePattern.test(distanceRadius)) {
+            invalidFields.push('distanceRadius');
+        }
+    }
+
+    return invalidFields;
+}
+
+function highlightInvalidFields(invalidFields) {
+    document.getElementById('platformName').classList.toggle('invalid', invalidFields.includes('platformName'));
+    document.getElementById('distanceRadius').classList.toggle('invalid', invalidFields.includes('distanceRadius'));
+}
+
+function clearInvalidHighlights() {
+    document.getElementById('platformName').classList.remove('invalid');
+    document.getElementById('distanceRadius').classList.remove('invalid');
+}
+
 function saveChanges() {
-    // Update original settings
+    // Sync settings from form inputs before validation
+    settings.platformName = document.getElementById('platformName').value;
+    settings.distanceRadius = document.getElementById('distanceRadius').value;
+
+    const invalidFields = validateSettings();
+
+    if (invalidFields.length > 0) {
+        highlightInvalidFields(invalidFields);
+        alert('One or more settings contain invalid values.');
+        return;
+    }
+
+    clearInvalidHighlights();
     originalSettings = { ...settings };
 
     console.log('Settings saved:', settings);
@@ -136,6 +181,8 @@ function discardChanges() {
     // Update form inputs
     document.getElementById('platformName').value = settings.platformName;
     document.getElementById('distanceRadius').value = settings.distanceRadius;
+
+    clearInvalidHighlights();
 
     // Update toggles
     updateToggle('guestBrowsing', settings.guestBrowsing);
@@ -196,6 +243,8 @@ function addTag() {
 
     // Clear input
     input.value = '';
+
+    alert('Tag added successfully!');
 
     console.log('Tag added:', tagName);
     console.log('Current tags:', tags);
