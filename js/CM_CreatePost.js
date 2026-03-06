@@ -14,6 +14,39 @@ function toggleCat(el) {
 }
 
 /**
+ * Toggle RSVP options visibility
+ * Shows/hides the max attendees field based on RSVP toggle state
+ */
+function toggleRsvpOptions() {
+    const rsvpToggle = document.getElementById('rsvpToggle');
+    const maxAttendeesSection = document.getElementById('maxAttendeesSection');
+    const previewRsvp = document.getElementById('previewRsvp');
+    
+    if (rsvpToggle.checked) {
+        maxAttendeesSection.style.display = 'block';
+        previewRsvp.style.display = 'block';
+        updateRsvpPreview();
+    } else {
+        maxAttendeesSection.style.display = 'none';
+        previewRsvp.style.display = 'none';
+    }
+}
+
+/**
+ * Update RSVP preview text
+ */
+function updateRsvpPreview() {
+    const maxAttendees = document.getElementById('maxAttendees');
+    const previewRsvp = document.getElementById('previewRsvp');
+    
+    if (maxAttendees.value && parseInt(maxAttendees.value) > 0) {
+        previewRsvp.textContent = '👥 RSVP enabled · Max ' + maxAttendees.value + ' attendees';
+    } else {
+        previewRsvp.textContent = '👥 RSVP enabled';
+    }
+}
+
+/**
  * Handle banner photo upload
  * Shows preview of uploaded image
  * @param {Event} event - The file input change event
@@ -138,13 +171,47 @@ document.addEventListener('DOMContentLoaded', function() {
     const dateInput = document.getElementById('eventDate');
     const timeInput = document.getElementById('eventTime');
     const locationInput = document.getElementById('eventLocation');
+    const maxAttendees = document.getElementById('maxAttendees');
     
     if (titleInput) titleInput.addEventListener('input', updatePreviewTitle);
     if (descInput) descInput.addEventListener('input', updatePreviewDesc);
-    if (dateInput) dateInput.addEventListener('change', updatePreviewDetails);
+    if (dateInput) {
+        dateInput.addEventListener('change', function() {
+            validateDate();
+            updatePreviewDetails();
+        });
+    }
     if (timeInput) timeInput.addEventListener('change', updatePreviewDetails);
     if (locationInput) locationInput.addEventListener('input', updatePreviewDetails);
+    if (maxAttendees) maxAttendees.addEventListener('input', updateRsvpPreview);
+    
+    // Set minimum date to today
+    if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+    }
 });
+
+/**
+ * Validate that the selected date is not in the past
+ * @returns {boolean} True if date is valid, false otherwise
+ */
+function validateDate() {
+    const dateInput = document.getElementById('eventDate');
+    if (!dateInput.value) return true;
+    
+    const selectedDate = new Date(dateInput.value + 'T00:00:00');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    if (selectedDate < today) {
+        alert('Event date cannot be in the past. Please select a future date.');
+        dateInput.value = '';
+        updatePreviewDetails();
+        return false;
+    }
+    return true;
+}
 
 /**
  * Handle cancel button click

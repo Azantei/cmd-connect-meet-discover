@@ -160,6 +160,24 @@ body {
     color: #777;
     letter-spacing: normal;
 }
+
+/* RSVP Toggle Row */
+.rsvp-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px !important;
+}
+
+.rsvp-label-group {
+    flex: 1;
+}
+
+.rsvp-toggle-row .toggle-switch {
+    flex-shrink: 0;
+    margin-left: 16px;
+}
+
 .pills { 
     display: flex; 
     flex-wrap: wrap; 
@@ -314,6 +332,60 @@ body {
     font-family: 'DM Sans', sans-serif;
 }
 .btn-post:hover { background-color: #a8451f; }
+
+/* ==========================================
+   TOGGLE SWITCH (for RSVP)
+========================================== */
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 42px;
+    height: 22px;
+    cursor: pointer;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.3s;
+    border-radius: 22px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+    background-color: #c0522a;
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+}
+
+.toggle-switch input:focus + .toggle-slider {
+    box-shadow: 0 0 1px #c0522a;
+}
 
 /* ==========================================
    FOOTER
