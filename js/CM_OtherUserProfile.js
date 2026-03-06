@@ -178,9 +178,13 @@ function submitReport() {
         });
         
         closeReportModal();
+        
+        // Mark button as reported
         var btn = document.getElementById('reportBtn');
         btn.classList.add('reported');
         btn.innerHTML = 'Reported';
+        
+        alert('Thank you for your report. Our moderation team will review this user.');
     }
 }
 

@@ -9,16 +9,77 @@ var rsvpActive = false;
 /**
  * Toggle RSVP status for the event
  * Updates button text and styling based on state
+ * Shows confirmation dialog when canceling RSVP
  */
 function toggleRsvp() {
-    rsvpActive = !rsvpActive;
     var btn = document.getElementById('rsvpBtn');
+    
+    // If currently RSVPed and trying to cancel
     if (rsvpActive) {
-        btn.textContent = "✓ RSVP'd";
-        btn.classList.add('active');
-    } else {
+        var confirmed = confirm("Are you sure you want to cancel your RSVP?");
+        
+        if (!confirmed) {
+            // User said no, keep RSVP active
+            return;
+        }
+        
+        // User confirmed cancellation
+        rsvpActive = false;
         btn.textContent = "RSVP";
         btn.classList.remove('active');
+        
+        // Show cancellation confirmation message
+        alert("Your RSVP has been cancelled.");
+        
+        // Update attendee count (decrement by 1)
+        updateAttendeeCount(-1);
+    } else {
+        // Toggling RSVP on
+        rsvpActive = true;
+        btn.textContent = "✓ RSVP'd";
+        btn.classList.add('active');
+        
+        // Show success message
+        alert("You're going! This event has been added to your schedule.");
+        
+        // Update attendee count (increment by 1)
+        updateAttendeeCount(1);
+    }
+}
+
+/**
+ * Update the attendee count displayed on the page
+ * @param {number} change - Amount to change count by (+1 or -1)
+ */
+function updateAttendeeCount(change) {
+    // Get the attendees info box
+    var attendeesBox = document.querySelector('.info-box:nth-child(3) .info-value');
+    if (!attendeesBox) return;
+    
+    // Extract current count (e.g., "12 going · RSVP open" -> 12)
+    var text = attendeesBox.textContent;
+    var match = text.match(/(\d+)\s*(?:\/\s*(\d+))?\s*going/);
+    
+    if (match) {
+        var currentCount = parseInt(match[1]);
+        var maxCount = match[2] ? parseInt(match[2]) : null;
+        var newCount = currentCount + change;
+        
+        // Build new text
+        var newText;
+        if (maxCount) {
+            newText = newCount + "/" + maxCount + " going";
+            // Check if event is now full
+            if (newCount >= maxCount) {
+                newText += " · Event Full";
+            } else {
+                newText += " · RSVP open";
+            }
+        } else {
+            newText = newCount + " going · RSVP open";
+        }
+        
+        attendeesBox.textContent = newText;
     }
 }
 

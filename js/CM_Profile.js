@@ -5,22 +5,22 @@
 
 // Mock event data for "My Posts" - events the user created
 var MY_POSTS = [
-    { title: "Morning Trail Hike", desc: "Join us for a scenic morning hike through the local trails. All skill levels welcome.", date: "Sat Mar 7", going: 12, color: "#2e3a4e", tags: ["Outdoors"], status: "Published" },
-    { title: "Community Picnic", desc: "A relaxed afternoon picnic in the park. Food, games, and good company.", date: "Sat Mar 14", going: 20, color: "#3b2e4a", tags: ["Food"], status: "Published" },
-    { title: "Coffee Tasting", desc: "Explore local roasters and taste a variety of single-origin coffees.", date: "Sun Mar 22", going: 10, color: "#4a3b2e", tags: ["Coffee"], status: "Published" },
+    { title: "Morning Trail Hike", desc: "Join us for a scenic morning hike through the local trails. All skill levels welcome.", date: "Sat Mar 7", going: 12, maxAttendees: null, color: "#2e3a4e", tags: ["Outdoors"], status: "Published" },
+    { title: "Community Picnic", desc: "A relaxed afternoon picnic in the park. Food, games, and good company.", date: "Sat Mar 14", going: 20, maxAttendees: 30, color: "#3b2e4a", tags: ["Food"], status: "Published" },
+    { title: "Coffee Tasting", desc: "Explore local roasters and taste a variety of single-origin coffees.", date: "Sun Mar 22", going: 10, maxAttendees: 12, color: "#4a3b2e", tags: ["Coffee"], status: "Published" },
 ];
 
 // Mock event data for "Upcoming Events" - events user is attending (Going)
 var UPCOMING_EVENTS = [
-    { title: "Acoustic Jam Session", desc: "Bring your instrument or just your ears. Casual outdoor music gathering.", date: "Sun Mar 8", going: 8, color: "#3b4a2e", tags: ["Music"], rsvp: "Going" },
-    { title: "5K Fun Run", desc: "A casual community run through Capitol Hill. All paces welcome!", date: "Sat Mar 21", going: 30, color: "#3b4a2e", tags: ["Running", "Outdoors"], rsvp: "Going" },
+    { title: "Acoustic Jam Session", desc: "Bring your instrument or just your ears. Casual outdoor music gathering.", date: "Sun Mar 8", going: 8, maxAttendees: 15, color: "#3b4a2e", tags: ["Music"], rsvp: "Going" },
+    { title: "5K Fun Run", desc: "A casual community run through Capitol Hill. All paces welcome!", date: "Sat Mar 21", going: 30, maxAttendees: null, color: "#3b4a2e", tags: ["Running", "Outdoors"], rsvp: "Going" },
 ];
 
 // Mock event data for "Interested" - events user marked with star (Interested)
 var INTERESTED_EVENTS = [
-    { title: "Sunset Yoga", desc: "Wind down with a group yoga session as the sun sets over the park.", date: "Fri Mar 13", going: 15, color: "#2e3a4e", tags: ["Fitness"] },
-    { title: "Art Gallery Opening", desc: "Celebrate local artists at the community gallery's spring exhibition.", date: "Thu Mar 19", going: 25, color: "#4a2e3b", tags: ["Arts"] },
-    { title: "Community Picnic", desc: "A relaxed afternoon picnic in the park. Food, games, and good company.", date: "Sat Mar 14", going: 20, color: "#3b2e4a", tags: ["Food"] },
+    { title: "Sunset Yoga", desc: "Wind down with a group yoga session as the sun sets over the park.", date: "Fri Mar 13", going: 15, maxAttendees: 20, color: "#2e3a4e", tags: ["Fitness"] },
+    { title: "Art Gallery Opening", desc: "Celebrate local artists at the community gallery's spring exhibition.", date: "Thu Mar 19", going: 25, maxAttendees: null, color: "#4a2e3b", tags: ["Arts"] },
+    { title: "Community Picnic", desc: "A relaxed afternoon picnic in the park. Food, games, and good company.", date: "Sat Mar 14", going: 20, maxAttendees: 30, color: "#3b2e4a", tags: ["Food"] },
 ];
 
 // Mock event data for "Drafts" - unpublished events user created
@@ -113,14 +113,17 @@ function renderCards() {
             var statusBadge = '';
             
             if (currentTab === 'my-posts') {
-                statusBadge = '<span class="status-badge" style="background-color: #5a7a9e;">👥 ' + card.going + ' going</span>';
+                var attendeeText = card.maxAttendees ? (card.going + '/' + card.maxAttendees + ' going') : (card.going + ' going');
+                statusBadge = '<span class="status-badge" style="background-color: #5a7a9e;">👥 ' + attendeeText + '</span>';
                 footer = '<span>📅 ' + card.date + '</span><span style="color: #d32f2f; font-weight: 600; cursor: pointer;" onclick="removeEvent(\'' + currentTab + '\', ' + index + ')">✕ Remove</span>';
             } else if (currentTab === 'upcoming') {
                 var rsvpColor = card.rsvp === 'Going' ? '#2e7d32' : '#f57c00';
-                statusBadge = '<span class="status-badge" style="background-color:' + rsvpColor + ';">✓ ' + card.rsvp + '</span>';
+                var attendeeText = card.maxAttendees ? (card.going + '/' + card.maxAttendees + ' going') : (card.going + ' going');
+                statusBadge = '<span class="status-badge" style="background-color:' + rsvpColor + ';">✓ ' + card.rsvp + '</span><span class="status-badge" style="background-color: #5a7a9e; margin-left: 8px;">👥 ' + attendeeText + '</span>';
                 footer = '<span>📅 ' + card.date + '</span><span style="color: #d32f2f; font-weight: 600; cursor: pointer;" onclick="removeEvent(\'' + currentTab + '\', ' + index + ')">✕ Remove</span>';
             } else if (currentTab === 'interested') {
-                statusBadge = '<span class="status-badge" style="background-color: #f57c00;">⭐ Interested</span>';
+                var attendeeText = card.maxAttendees ? (card.going + '/' + card.maxAttendees + ' going') : (card.going + ' going');
+                statusBadge = '<span class="status-badge" style="background-color: #f57c00;">⭐ Interested</span><span class="status-badge" style="background-color: #5a7a9e; margin-left: 8px;">👥 ' + attendeeText + '</span>';
                 footer = '<span>📅 ' + card.date + '</span><span style="color: #d32f2f; font-weight: 600; cursor: pointer;" onclick="removeEvent(\'' + currentTab + '\', ' + index + ')">✕ Remove</span>';
             } else if (currentTab === 'previous') {
                 // Previous Events - show if created or attended
