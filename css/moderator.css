@@ -329,6 +329,10 @@
     color: var(--muted);
 }
 
+.report-card-actions .btn-dismiss {
+    color: var(--muted);
+}
+
 .report-card-actions .btn-dismiss:hover {
     color: var(--primary);
 }
@@ -409,10 +413,11 @@
     display: none;
     position: fixed;
     inset: 0;
-    z-index: 100;
+    z-index: 1100;
     align-items: center;
     justify-content: center;
     padding: 1.5rem;
+    overflow-y: auto;
 }
 
 .mod-modal.is-open {
@@ -432,9 +437,6 @@
     padding: 1.5rem;
     max-width: 28rem;
     width: 100%;
-    max-height: calc(100vh - 14rem);
-    margin-top: 2rem;
-    overflow-y: auto;
     box-shadow: 0 20px 40px rgba(31, 41, 55, 0.2);
 }
 
@@ -450,17 +452,13 @@
 }
 
 .mod-modal-warning {
-    background: rgba(234, 179, 8, 0.1);
-    border: 1px solid rgba(234, 179, 8, 0.3);
+    padding: 0.75rem 1rem;
+    background: hsl(38, 92%, 95%);
+    border: 1px solid hsl(38, 80%, 75%);
     border-radius: 0.5rem;
-    padding: 0.75rem;
-    margin-bottom: 1rem;
     font-size: 0.875rem;
-    color: hsl(38, 92%, 30%);
-}
-
-.mod-modal-warning strong {
-    font-weight: 600;
+    color: hsl(25, 60%, 25%);
+    margin-bottom: 1rem;
 }
 
 .mod-modal-reasons {
@@ -470,33 +468,13 @@
     margin-bottom: 1rem;
 }
 
-.reason-label {
+.mod-modal-reasons .reason-label {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem;
-    border: 1px solid var(--border);
-    border-radius: 0.375rem;
     cursor: pointer;
-    transition: all 0.2s;
-    font-size: 0.875rem;
-}
-
-.reason-label:hover {
-    background: var(--card-bg);
-    border-color: var(--primary);
-}
-
-.reason-label input[type="radio"] {
-    cursor: pointer;
-}
-
-.note-label {
-    display: block;
-    font-size: 0.875rem;
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    color: var(--text-color);
+    font-size: 0.9375rem;
+    font-weight: 400;
 }
 
 .mod-modal-content textarea {
@@ -547,6 +525,52 @@
 .mod-modal-actions .btn-escalate-submit:hover {
     background: hsl(12, 80%, 55%);
 }
+
+/* Warn modal specific */
+.mod-modal-target {
+    padding: 0.75rem 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    font-size: 0.9375rem;
+    margin-bottom: 1rem;
+}
+
+.reason-select-label,
+.note-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.mod-modal-select {
+    width: 100%;
+    padding: 0.75rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9375rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background: white;
+    margin-bottom: 1rem;
+}
+
+.mod-modal-select:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.mod-modal-actions .btn-warn-submit {
+    background: var(--primary);
+    color: white;
+    border: none;
+}
+
+.mod-modal-actions .btn-warn-submit:hover {
+    background: hsl(12, 80%, 55%);
+}
+
 
 /* ==========================================
    RESPONSIVE
