@@ -89,6 +89,56 @@
     </main>
 
     <!-- ========================================
+         REPORT DETAIL MODAL
+    ======================================== -->
+    <div id="reportDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalReportTitle">Report Details</h2>
+                <button class="modal-close" onclick="closeReportDetail()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-section">
+                    <h3>Report Information</h3>
+                    <div id="modalReportMeta" class="detail-meta"></div>
+                </div>
+                <div class="detail-section">
+                    <h3>Moderator Notes</h3>
+                    <div id="modalModeratorNotes" class="detail-content"></div>
+                </div>
+                <div class="detail-section">
+                    <h3>Reported Content</h3>
+                    <div id="modalContentPreview" class="detail-content"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btnBanUser" class="modal-action-btn ban-user" onclick="handleBanUser()">Ban User</button>
+                <button id="btnRemoveContent" class="modal-action-btn remove-content" onclick="handleRemoveContent()">Remove Content</button>
+                <button id="btnDismissReport" class="modal-action-btn dismiss" onclick="handleDismissReport()">Dismiss Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================
+         CONFIRMATION MODAL
+    ======================================== -->
+    <div id="confirmationModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>Confirm Action</h2>
+            </div>
+            <div class="modal-body">
+                <p id="confirmationMessage" class="confirmation-text"></p>
+                <p class="warning-text">⚠️ This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-action-btn secondary" onclick="closeConfirmation()">Cancel</button>
+                <button id="confirmActionBtn" class="modal-action-btn primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================
          FOOTER
          Simple footer with branding and copyright
     ======================================== -->

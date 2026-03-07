@@ -15,6 +15,8 @@
 
 let reports = []; // All reports data
 let filteredReports = []; // Filtered results
+let currentReportId = null; // Currently selected report
+let pendingAction = null; // Pending action for confirmation
 
 // ==========================================
 // SAMPLE DATA
@@ -26,34 +28,49 @@ function generateSampleReports() {
             id: 1,
             type: 'post',
             title: 'Free Concert Downtown',
+            reportedUser: '@concert_spammer',
             escalatedBy: '@moderator',
             timeAgo: '3 hrs ago',
             originalReason: 'Spam',
-            moderatorNotes: '...',
-            contentPreview: 'Reported content preview',
+            moderatorNotes: 'User has been posting this same concert advertisement across multiple unrelated community groups. This appears to be commercial spam rather than genuine community engagement. Multiple users have reported it. Escalating for potential ban consideration.',
+            contentPreview: 'FREE CONCERT THIS WEEKEND!!! Everyone come downtown for amazing music! Click here for tickets: [...]. Tell all your friends! Share everywhere!',
             status: 'open'
         },
         {
             id: 2,
             type: 'user',
             title: '@toxic_user99',
+            reportedUser: '@toxic_user99',
             escalatedBy: '@sara_mod',
             timeAgo: '6 hrs ago',
             originalReason: 'Harassment',
-            moderatorNotes: '...',
-            contentPreview: 'Reported content preview',
+            moderatorNotes: 'This user has a pattern of leaving hostile comments on community posts. After receiving a warning yesterday, they continued aggressive behavior targeting specific community members. Their recent comments include personal attacks and inflammatory language. Recommend ban.',
+            contentPreview: 'Recent comment: "You people are all idiots. Why don\'t you just leave this neighborhood if you don\'t like it..." [Multiple similar comments found]',
             status: 'open'
         },
         {
             id: 3,
             type: 'post',
             title: 'Neighborhood Watch Sign-Up',
+            reportedUser: '@concerned_neighbor',
             escalatedBy: '@moderator',
             timeAgo: '2 days ago',
             originalReason: 'Privacy concern',
-            moderatorNotes: '...',
-            contentPreview: 'Reported content preview',
+            moderatorNotes: 'Post includes a sign-up form that requests home addresses and personal schedules. While the intent appears genuine, the data collection method raises privacy concerns. Seeking admin guidance on whether to remove or allow with modifications.',
+            contentPreview: 'Join our neighborhood watch program! Please fill out this form with your name, address, phone number, and typical daily schedule so we can coordinate patrols effectively...',
             status: 'open'
+        },
+        {
+            id: 4,
+            type: 'post',
+            title: 'Lost Dog - Please Help',
+            reportedUser: '@worried_owner',
+            escalatedBy: '@john_mod',
+            timeAgo: '1 week ago',
+            originalReason: 'False report',
+            moderatorNotes: 'Multiple users reported this as suspicious, claiming they saw the same post in other cities. However, after investigation, this appears to be a legitimate lost pet post. The user is genuinely distressed. Escalating to dismiss the false reports.',
+            contentPreview: 'Has anyone seen my golden retriever Max? He went missing yesterday near Oak Park. Brown collar, very friendly. Please contact me if you have any information...',
+            status: 'resolved'
         }
     ];
 }
@@ -90,13 +107,19 @@ function renderReports() {
     
     filteredReports.forEach(report => {
         const card = document.createElement('div');
-        card.className = 'report-card';
+        card.className = `report-card ${report.status}`;
+        
+        // Only make unresolved reports clickable
+        if (report.status === 'open') {
+            card.onclick = () => openReportDetail(report.id);
+        }
         
         const titlePrefix = report.type === 'post' ? 'Post: ' : 'User: ';
+        const statusBadge = `<span class="status-badge ${report.status}">${report.status}</span>`;
         
         card.innerHTML = `
             <div class="report-header">
-                <div class="report-title">${titlePrefix}'${report.title}'</div>
+                <div class="report-title">${titlePrefix}'${report.title}' ${statusBadge}</div>
                 <div class="report-meta">
                     <span>Escalated by ${report.escalatedBy}</span>
                     <span class="separator">·</span>
@@ -107,17 +130,7 @@ function renderReports() {
             </div>
             
             <div class="moderator-notes">
-                Moderator's notes: '${report.moderatorNotes}' (quoted escalation notes)
-            </div>
-            
-            <div class="content-preview">
-                ${report.contentPreview}
-            </div>
-            
-            <div class="report-actions">
-                <button class="report-action-btn remove-post" onclick="removePost(${report.id})">Remove Post</button>
-                <button class="report-action-btn ban-user" onclick="banUser(${report.id})">Ban User</button>
-                <button class="report-action-btn dismiss" onclick="dismissReport(${report.id})">Dismiss</button>
+                ${report.moderatorNotes.substring(0, 100)}${report.moderatorNotes.length > 100 ? '...' : ''}
             </div>
         `;
         
@@ -141,46 +154,106 @@ function applyFilter() {
 }
 
 // ==========================================
+// MODAL FUNCTIONS
+// ==========================================
+
+function openReportDetail(reportId) {
+    const report = reports.find(r => r.id === reportId);
+    if (!report || report.status !== 'open') return;
+    
+    currentReportId = reportId;
+    
+    // Populate modal content
+    const titlePrefix = report.type === 'post' ? 'Post: ' : 'User: ';
+    document.getElementById('modalReportTitle').textContent = `${titlePrefix}"${report.title}"`;
+    
+    document.getElementById('modalReportMeta').innerHTML = `
+        <span><strong>Reported ${report.type === 'post' ? 'Content' : 'User'}:</strong> ${report.reportedUser}</span>
+        <span><strong>Escalated by:</strong> ${report.escalatedBy}</span>
+        <span><strong>Time:</strong> ${report.timeAgo}</span>
+        <span><strong>Original Reason:</strong> ${report.originalReason}</span>
+    `;
+    
+    document.getElementById('modalModeratorNotes').textContent = report.moderatorNotes;
+    document.getElementById('modalContentPreview').textContent = report.contentPreview;
+    
+    // Show modal
+    document.getElementById('reportDetailModal').classList.add('active');
+}
+
+function closeReportDetail() {
+    document.getElementById('reportDetailModal').classList.remove('active');
+    currentReportId = null;
+}
+
+function showConfirmation(message, action) {
+    pendingAction = action;
+    document.getElementById('confirmationMessage').textContent = message;
+    document.getElementById('confirmationModal').classList.add('active');
+    
+    // Set up confirm button
+    const confirmBtn = document.getElementById('confirmActionBtn');
+    confirmBtn.onclick = () => {
+        if (pendingAction) {
+            pendingAction();
+        }
+        closeConfirmation();
+    };
+}
+
+function closeConfirmation() {
+    document.getElementById('confirmationModal').classList.remove('active');
+    pendingAction = null;
+}
+
+// ==========================================
 // ACTION HANDLERS
 // ==========================================
 
-function removePost(reportId) {
-    const report = reports.find(r => r.id === reportId);
+function handleBanUser() {
+    const report = reports.find(r => r.id === currentReportId);
     if (!report) return;
     
-    if (confirm(`Are you sure you want to remove the post "${report.title}"?`)) {
-        console.log('Removing post:', reportId);
-        // Update report status
+    const message = `Are you sure you want to ban user ${report.reportedUser}? This will permanently remove their access to the platform and delete all their content.`;
+    
+    showConfirmation(message, () => {
+        console.log('Banning user:', report.reportedUser);
         report.status = 'resolved';
-        alert('Post removed successfully!');
+        closeReportDetail();
         applyFilter();
-    }
+        // In a real implementation, this would make an API call
+    });
 }
 
-function banUser(reportId) {
-    const report = reports.find(r => r.id === reportId);
+function handleRemoveContent() {
+    const report = reports.find(r => r.id === currentReportId);
     if (!report) return;
     
-    if (confirm(`Are you sure you want to BAN the user associated with "${report.title}"? This is a serious action.`)) {
-        console.log('Banning user from report:', reportId);
-        // Update report status
+    const contentType = report.type === 'post' ? 'post' : 'content';
+    const message = `Are you sure you want to remove this ${contentType}? It will be permanently deleted and no longer visible to users.`;
+    
+    showConfirmation(message, () => {
+        console.log('Removing content for report:', currentReportId);
         report.status = 'resolved';
-        alert('User banned successfully!');
+        closeReportDetail();
         applyFilter();
-    }
+        // In a real implementation, this would make an API call
+    });
 }
 
-function dismissReport(reportId) {
-    const report = reports.find(r => r.id === reportId);
+function handleDismissReport() {
+    const report = reports.find(r => r.id === currentReportId);
     if (!report) return;
     
-    if (confirm('Dismiss this escalated report? This will mark it as resolved without taking action.')) {
-        console.log('Dismissing report:', reportId);
-        // Update report status
+    const message = 'Are you sure you want to dismiss this report? The report will be marked as resolved without taking any action against the user or content.';
+    
+    showConfirmation(message, () => {
+        console.log('Dismissing report:', currentReportId);
         report.status = 'resolved';
-        alert('Report dismissed!');
+        closeReportDetail();
         applyFilter();
-    }
+        // In a real implementation, this would make an API call
+    });
 }
 
 // ==========================================
@@ -190,4 +263,25 @@ function dismissReport(reportId) {
 function setupEventListeners() {
     // Status filter
     document.getElementById('statusFilter').addEventListener('change', applyFilter);
+    
+    // Close modals when clicking outside
+    window.onclick = (event) => {
+        const reportModal = document.getElementById('reportDetailModal');
+        const confirmModal = document.getElementById('confirmationModal');
+        
+        if (event.target === reportModal) {
+            closeReportDetail();
+        }
+        if (event.target === confirmModal) {
+            closeConfirmation();
+        }
+    };
+    
+    // Close modals with Escape key
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeReportDetail();
+            closeConfirmation();
+        }
+    });
 }
