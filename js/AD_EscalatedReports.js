@@ -1,3 +1,9 @@
+/*
+  Created for use for C.M.D. with the assistance of AI tools:
+  Claude 4.6, Co-Pilot using Claude Somnet 4.5, and Cursor.
+  Logs and further project documents can be found at:
+  <insert link to our Google Drive for the project here>.
+*/
 /* ==========================================
    ADMIN ESCALATED REPORTS JAVASCRIPT
    Handles escalated report display and actions
