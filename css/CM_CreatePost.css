@@ -411,6 +411,34 @@ body {
 }
 
 /* ==========================================
+   ERROR STATES
+   Visual feedback for validation errors
+========================================== */
+
+.error-message {
+    display: block;
+    color: #d32f2f;
+    font-size: 0.8rem;
+    margin-top: 4px;
+    margin-bottom: 8px;
+    min-height: 1rem;
+}
+
+input[type="text"].error,
+input[type="date"].error,
+input[type="time"].error,
+input[type="number"].error,
+textarea.error {
+    border-color: #d32f2f;
+}
+
+.pills.error {
+    border: 2px solid #d32f2f;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+/* ==========================================
    FOOTER
 ========================================== */
 

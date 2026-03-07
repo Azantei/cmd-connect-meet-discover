@@ -216,3 +216,138 @@ function handleCancel() {
         window.location.href = 'CM_Events.html';
     }
 }
+
+/**
+ * Validate all required form fields
+ * @returns {boolean} True if form is valid, false otherwise
+ */
+function validateForm() {
+    let isValid = true;
+    
+    // Clear previous error states
+    clearAllErrors();
+    
+    // Validate title
+    const titleInput = document.getElementById('eventTitle');
+    if (!titleInput.value.trim()) {
+        showError('eventTitle', 'title-error', 'Title is required');
+        isValid = false;
+    }
+    
+    // Validate description
+    const descInput = document.getElementById('eventDesc');
+    if (!descInput.value.trim()) {
+        showError('eventDesc', 'desc-error', 'Description is required');
+        isValid = false;
+    }
+    
+    // Validate date
+    const dateInput = document.getElementById('eventDate');
+    if (!dateInput.value) {
+        showError('eventDate', 'date-error', 'Date is required');
+        isValid = false;
+    }
+    
+    // Validate time
+    const timeInput = document.getElementById('eventTime');
+    if (!timeInput.value) {
+        showError('eventTime', 'time-error', 'Start time is required');
+        isValid = false;
+    }
+    
+    // Validate location
+    const locationInput = document.getElementById('eventLocation');
+    if (!locationInput.value.trim()) {
+        showError('eventLocation', 'location-error', 'Location is required');
+        isValid = false;
+    }
+    
+    // Validate categories (at least one must be selected)
+    const activePills = document.querySelectorAll('#categoryPills .pill.active');
+    if (activePills.length === 0) {
+        showError('categoryPills', 'categories-error', 'Please select at least one category');
+        isValid = false;
+    }
+    
+    return isValid;
+}
+
+/**
+ * Show error message for a specific input
+ * @param {string} inputId - ID of the input element
+ * @param {string} errorId - ID of the error message element
+ * @param {string} message - Error message to display
+ */
+function showError(inputId, errorId, message) {
+    const input = document.getElementById(inputId);
+    const errorElement = document.getElementById(errorId);
+    
+    if (input) input.classList.add('error');
+    if (errorElement) errorElement.textContent = message;
+}
+
+/**
+ * Clear error message for a specific input
+ * @param {string} inputId - ID of the input element
+ * @param {string} errorId - ID of the error message element
+ */
+function clearError(inputId, errorId) {
+    const input = document.getElementById(inputId);
+    const errorElement = document.getElementById(errorId);
+    
+    if (input) input.classList.remove('error');
+    if (errorElement) errorElement.textContent = '';
+}
+
+/**
+ * Clear all error messages and states
+ */
+function clearAllErrors() {
+    // Remove error class from all inputs
+    document.querySelectorAll('input.error, textarea.error, .pills.error').forEach(el => {
+        el.classList.remove('error');
+    });
+    
+    // Clear all error message texts
+    document.querySelectorAll('.error-message').forEach(el => {
+        el.textContent = '';
+    });
+}
+
+/**
+ * Handle post button click
+ * Validates form and submits if valid
+ */
+function handlePost() {
+    if (!validateForm()) {
+        // Scroll to first error field
+        const firstErrorField = document.querySelector('.error');
+        if (firstErrorField) {
+            firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
+    }
+    
+    // Form is valid, proceed with posting
+    const confirmed = confirm(
+        "Ready to post your event?\n\n" +
+        "Your event will be visible to all community members immediately."
+    );
+    
+    if (confirmed) {
+        console.log('Posting event...');
+        // In a real implementation, this would send data to the backend
+        alert('Event posted successfully!');
+        window.location.href = 'CM_Events.html';
+    }
+}
+
+/**
+ * Handle save draft button click
+ * Saves current form state without validation
+ */
+function handleSaveDraft() {
+    console.log('Saving draft...');
+    // In a real implementation, this would save to local storage or backend
+    alert('Draft saved! You can continue editing later.');
+}

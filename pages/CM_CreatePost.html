@@ -54,10 +54,12 @@
                 <label>Title</label>
                 <input type="text" id="eventTitle" placeholder="Enter a title..." />
             </div>
+            <span class="error-message" id="title-error"></span>
             <div class="form-row textarea-row">
                 <label>Description</label>
                 <textarea rows="3" id="eventDesc" placeholder="Describe your event or activity..."></textarea>
             </div>
+            <span class="error-message" id="desc-error"></span>
         </div>
 
         <!-- Date, Time & Location -->
@@ -67,14 +69,17 @@
                 <label>Date</label>
                 <input type="date" id="eventDate" />
             </div>
+            <span class="error-message" id="date-error"></span>
             <div class="form-row border-bottom">
                 <label>Start Time</label>
                 <input type="time" id="eventTime" />
             </div>
+            <span class="error-message" id="time-error"></span>
             <div class="form-row">
                 <label>Location</label>
                 <input type="text" id="eventLocation" placeholder="Enter a location..." />
             </div>
+            <span class="error-message" id="location-error"></span>
         </div>
 
         <!-- Categories & Tags -->
@@ -92,6 +97,7 @@
                 <button class="pill" onclick="toggleCat(this)">Education</button>
                 <button class="pill" onclick="toggleCat(this)">Social</button>
             </div>
+            <span class="error-message" id="categories-error"></span>
         </div>
 
         <!-- RSVP Options -->
@@ -145,8 +151,8 @@
         <div class="actions">
             <button class="btn-cancel" onclick="handleCancel()">Cancel</button>
             <div class="actions-right">
-                <button class="btn-draft">Save As Draft</button>
-                <button class="btn-post">Post</button>
+                <button class="btn-draft" onclick="handleSaveDraft()">Save As Draft</button>
+                <button class="btn-post" onclick="handlePost()">Post</button>
             </div>
         </div>
 
