@@ -95,6 +95,7 @@ function validateSignIn(event) {
     clearAllErrors();
     
     const email = document.getElementById('signin-email').value.trim();
+    const password = document.getElementById('signin-password').value;
     let isValid = true;
     
     // Validate email
@@ -105,11 +106,16 @@ function validateSignIn(event) {
         showError('signin-email', 'signin-email-error', 'Not a valid email address');
         isValid = false;
     }
+
+    // Validate password
+    if (!password) {
+        showError('signin-password', 'signin-password-error', 'Password is required');
+        isValid = false;
+    }
     
     if (isValid) {
-        // Form is valid, proceed with sign in (placeholder)
-        console.log('Sign in form is valid');
-        // Here you would normally submit the form or make an API call
+        // Redirect to profile page after successful sign in validation
+        window.location.href = 'CM_Profile.html';
     }
 }
 
@@ -165,13 +171,8 @@ function validateSignUp(event) {
     }
     
     if (isValid) {
-        // Form is valid, proceed with sign up (placeholder)
-        console.log('Sign up form is valid');
-        console.log('Name:', name);
-        console.log('Email:', email);
-        console.log('Interests:', interests);
-        console.log('Location:', location);
-        // Here you would normally submit the form or make an API call
+        // Redirect to profile page after successful sign up validation
+        window.location.href = 'CM_Profile.html';
     }
 }
 
