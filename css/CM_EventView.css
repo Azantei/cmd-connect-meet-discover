@@ -271,7 +271,14 @@ body {
 }
 .host-name { font-weight: 700; font-size: 0.95rem; color: #222; }
 .host-meta { font-size: 0.8rem; color: #777; }
-.view-profile { color: #c0522a; cursor: pointer; }
+.view-profile { 
+    color: #c0522a; 
+    cursor: pointer; 
+    text-decoration: none;
+}
+.view-profile:hover {
+    text-decoration: underline;
+}
 .verified-badge {
     border: 1px solid #b5b090;
     border-radius: 4px;
