@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C.M.D. - Profile</title>
+    <title>C.M.D. - User Profile</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/CM_Profile.css">
+    <link rel="stylesheet" href="/css/CM_OtherUserProfile.css">
 </head>
 <body>
 
@@ -33,27 +33,20 @@
 
     <div class="profile-header">
         <div class="profile-left">
-            <div class="avatar">AJ</div>
+            <div class="avatar">?</div>
             <div class="profile-info">
-                <div class="profile-name-row">
-                    <span class="profile-name">Alex Johnson</span>
+                <div class="profile-name">Other User's Name</div>
+                <div class="profile-meta">
+                    <span class="meta-link">@username</span>
+                    <span class="meta-link">Location</span>
                 </div>
-                <div class="profile-handle">@alexj · Capitol Hill, Seattle</div>
                 <div class="profile-stats">
-                    <div><span class="stat-num">24</span><span class="stat-label">Posts</span></div>
-                    <div><span class="stat-num">142</span><span class="stat-label">RSVPs</span></div>
+                    <div><span class="stat-num">16</span><span class="stat-label">Posts</span></div>
+                    <div><span class="stat-num">78</span><span class="stat-label">RSVPs</span></div>
                 </div>
             </div>
         </div>
-        <a href="/users/settings" class="btn-edit">Edit Profile</a>
-    </div>
-
-    <div class="tabs">
-        <button class="tab active" onclick="setTab(this, 'my-posts')">My Posts</button>
-        <button class="tab" onclick="setTab(this, 'upcoming')">Upcoming Events</button>
-        <button class="tab" onclick="setTab(this, 'interested')">Interested</button>
-        <button class="tab" onclick="setTab(this, 'previous')">Previous Events</button>
-        <button class="tab" onclick="setTab(this, 'drafts')">Drafts</button>
+        <button class="btn-report" id="reportBtn" onclick="openReportModal()">Report User</button>
     </div>
 
     <div class="main-layout">
@@ -63,14 +56,18 @@
             <hr class="sidebar-divider">
             <div class="sidebar-section-title">INTERESTS</div>
             <div class="interests-box">
-                <span class="interest-tag">Outdoors</span>
-                <span class="interest-tag">Running</span>
-                <span class="interest-tag">Coffee</span>
                 <span class="interest-tag">Music</span>
+                <span class="interest-tag">Sports</span>
+                <span class="interest-tag">Tech</span>
             </div>
         </div>
 
         <div class="posts-area">
+            <div class="section-header">
+                <h2 class="section-title">Previously Attended Events</h2>
+                <p class="section-subtitle">Only visible if privacy settings allow</p>
+            </div>
+
             <div class="toolbar">
                 <div class="dropdown-wrap">
                     <button class="toolbar-btn" onclick="toggleSort()">↕ Sort: <span id="sortLabel">Newest</span> ▾</button>
@@ -78,7 +75,6 @@
                         <div class="dropdown-item active-item" onclick="setSort(this, 'Newest')">Newest</div>
                         <div class="dropdown-item" onclick="setSort(this, 'Oldest')">Oldest</div>
                         <div class="dropdown-item" onclick="setSort(this, 'Most Popular')">Most Popular</div>
-                        <div class="dropdown-item" onclick="setSort(this, 'Upcoming')">Upcoming</div>
                     </div>
                 </div>
                 <button class="toolbar-btn" id="filterBtn" onclick="toggleFilter()">⚙ Filter by Interests <span id="filterCount"></span> ▾</button>
@@ -101,7 +97,28 @@
 
             <div class="scrollable-content">
                 <div class="cards-grid" id="cardsGrid"></div>
-                <div class="no-results" id="noResults" style="display:none;">No posts match the selected filters.</div>
+                <div class="no-results" id="noResults" style="display:none;">This user's previously attended events are not public.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="reportModal" style="display:none;">
+        <div class="modal">
+            <div class="modal-title">Report this user?</div>
+            <div class="modal-desc">Please select a reason for reporting this user. Our team will review the report.</div>
+            <div class="modal-reasons">
+                <label><input type="radio" name="reason"> Spam or misleading content</label>
+                <label><input type="radio" name="reason"> Harassment or bullying</label>
+                <label><input type="radio" name="reason"> Inappropriate content</label>
+                <label><input type="radio" name="reason"> Other</label>
+            </div>
+            <div class="modal-comment-section">
+                <label for="reportComment" class="comment-label">Additional Comments (optional)</label>
+                <textarea id="reportComment" class="report-textarea" rows="3" placeholder="Provide any additional details that might help our moderation team..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeReportModal()">Cancel</button>
+                <button class="btn-submit" onclick="submitReport()">Submit Report</button>
             </div>
         </div>
     </div>
@@ -113,6 +130,6 @@
         </div>
     </footer>
 
-    <script src="/js/CM_Profile.js"></script>
+    <script src="/js/CM_OtherUserProfile.js"></script>
 </body>
 </html>

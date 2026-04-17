@@ -1,11 +1,158 @@
-<%- include('../partials/header', { pageCSS: 'CM_Login' }) %>
-<main>
-  <h1>Login</h1>
-  <form action="/login" method="POST">
-    <label>Email <input type="email" name="email" required></label>
-    <label>Password <input type="password" name="password" required></label>
-    <button type="submit">Login</button>
-  </form>
-  <p>No account? <a href="/register">Register</a></p>
-</main>
-<%- include('../partials/footer') %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C.M.D. - Your Community Starts Here</title>
+    <link rel="stylesheet" href="/css/CM_Login.css">
+    <style>
+        .login-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: hsl(215, 20%, 30%);
+            padding: 0 2rem;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .login-nav .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .login-nav .logo-light { color: white; }
+        .login-nav .logo-accent { color: hsl(20, 90%, 55%); }
+        body { padding-top: 60px; }
+    </style>
+</head>
+<body>
+    <nav class="login-nav">
+        <a href="/" class="logo"><span class="logo-light">C.M.</span><span class="logo-accent">D.</span></a>
+    </nav>
+
+    <% if (error && error.length) { %>
+        <div style="background:#f8d7da;color:#721c24;padding:10px 20px;text-align:center;"><%= error %></div>
+    <% } %>
+    <% if (success && success.length) { %>
+        <div style="background:#d4edda;color:#155724;padding:10px 20px;text-align:center;"><%= success %></div>
+    <% } %>
+
+    <div class="left-panel">
+        <div class="left-content">
+            <h1><span style="color: white;">C.M.</span><span style="color: hsl(20, 90%, 55%);">D.</span></h1>
+            <h2>Your community<br>starts here.</h2>
+            <ul>
+                <li>• Discover activities near you</li>
+                <li>• Create events with RSVP</li>
+                <li>• Connect with your community</li>
+                <li>• Filter by interests &amp; distance</li>
+            </ul>
+        </div>
+        <div class="left-footer">
+            <span class="logo">C.M.D.</span>
+            <p>Connect. Meet. Discover. © 2026</p>
+        </div>
+    </div>
+
+    <div class="right-panel">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('signin')">Sign In</button>
+            <button class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
+        </div>
+
+        <div class="form-container">
+            <!-- Sign In Form -->
+            <div id="signin" class="tab-content active">
+                <form action="/login" method="POST" id="signinForm">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="signin-email" name="email" placeholder="you@example.com" style="text-align:center; color:#aaa;">
+                        <span class="error-message" id="signin-email-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label style="font-weight:400;">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="signin-password" name="password" placeholder="••••••••" style="text-align:center;">
+                            <button type="button" class="toggle-password" onclick="togglePassword('signin-password')">
+                                <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                        <span class="error-message" id="signin-password-error"></span>
+                    </div>
+                    <button type="button" class="btn-primary" onclick="validateSignIn(event)">Sign In</button>
+                </form>
+                <p class="form-footer">Don't have an account? <a onclick="switchTab('signup')">Sign up</a></p>
+                <p class="form-footer"><a href="#">Forgot password?</a></p>
+            </div>
+
+            <!-- Sign Up Form -->
+            <div id="signup" class="tab-content">
+                <form action="/register" method="POST" id="signupForm">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="signup-name" name="username" placeholder="jane_doe">
+                        <span class="error-message" id="signup-name-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="signup-email" name="email" placeholder="you@example.com">
+                        <span class="error-message" id="signup-email-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label style="font-weight:400;">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="signup-password" name="password" placeholder="••••••••" oninput="checkPasswordStrength()">
+                            <button type="button" class="toggle-password" onclick="togglePassword('signup-password')">
+                                <svg class="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="password-strength" id="password-strength" style="display: none;">
+                            <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+                            <span class="strength-text" id="strength-text"></span>
+                        </div>
+                        <span class="error-message" id="signup-password-error"></span>
+                        <div class="password-hint">Must be at least 8 characters with uppercase, lowercase, and a number</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Interests <span style="color: #c0522a;">*</span></label>
+                        <p class="field-hint">Select at least one interest to personalize your feed</p>
+                        <div class="pills-wrap" id="interestPills"></div>
+                        <span class="error-message" id="signup-interests-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Location</label>
+                        <div class="location-controls">
+                            <input type="text" id="signup-location" name="location" placeholder="City, State">
+                            <button type="button" class="btn-gps" onclick="requestGPSLocation()" title="Use my current location">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                Use GPS
+                            </button>
+                        </div>
+                        <span class="error-message" id="signup-location-error"></span>
+                    </div>
+                    <button type="button" class="btn-primary" onclick="validateSignUp(event)">Create Account</button>
+                </form>
+                <p class="form-footer">Already have an account? <a onclick="switchTab('signin')">Sign in</a></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/CM_Login.js"></script>
+</body>
+</html>

@@ -17,7 +17,8 @@ exports.getUserProfile = async (req, res, next) => {
     });
     if (!user) { req.flash('error', 'User not found.'); return res.redirect('/'); }
     const isOwn = req.session.userId === user.id;
-    res.render('users/profile', { title: `${user.username}'s Profile`, profileUser: user, isOwn });
+    const view = isOwn ? 'users/profile' : 'users/otherProfile';
+    res.render(view, { title: `${user.username}'s Profile`, profileUser: user, isOwn });
   } catch (err) { next(err); }
 };
 

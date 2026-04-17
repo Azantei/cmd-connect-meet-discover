@@ -1,7 +1,129 @@
-<%- include('../partials/header', { pageCSS: 'moderator' }) %>
-<main>
-  <h1>Moderator Dashboard</h1>
-  <p>Pending Reports: <%= pendingCount %></p>
-  <a href="/moderator/reports">View Reports</a>
-</main>
-<%- include('../partials/footer') %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moderation Dashboard - C.M.D.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/moderator.css">
+</head>
+<body class="mod-body">
+
+    <header class="mod-topbar">
+        <span>Moderation Dashboard</span>
+        <span class="mod-role">Moderator</span>
+    </header>
+
+    <nav class="mod-nav">
+        <div class="mod-nav-inner">
+            <a href="/" class="logo"><span class="logo-light">C.M.</span><span class="logo-accent">D.</span></a>
+            <div class="mod-nav-links">
+                <a href="/events">Explore</a>
+                <a href="/posts/create">Create</a>
+                <a href="/users/profile">Profile</a>
+                <a href="/about">About Us</a>
+            </div>
+            <span class="mod-user">Moderator: Sara M.
+                <form action="/logout" method="POST" style="display:inline">
+                    <button type="submit" style="margin-left:1rem;color:hsl(20,90%,55%);text-decoration:none;background:none;border:none;cursor:pointer;font:inherit;">Log Out</button>
+                </form>
+            </span>
+        </div>
+    </nav>
+
+    <div class="mod-layout">
+        <aside class="mod-sidebar">
+            <button class="mod-nav-item active" data-view="reports">
+                Reports Queue
+                <span class="mod-badge" id="reportCount">7</span>
+            </button>
+            <button class="mod-nav-item" data-view="history">Moderation History</button>
+        </aside>
+
+        <main class="mod-content">
+            <div class="mod-content-header">
+                <h1>Reports Queue</h1>
+                <div class="mod-filter">
+                    <label for="reportFilter">Filter:</label>
+                    <select id="reportFilter">
+                        <option value="all">All Types</option>
+                        <option value="post">Posts</option>
+                        <option value="user">Users</option>
+                        <option value="spam">Spam</option>
+                        <option value="harassment">Harassment</option>
+                        <option value="inappropriate">Inappropriate</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="report-cards" id="reportCards">
+                <!-- Report cards rendered by JS -->
+            </div>
+
+            <div class="mod-empty" id="emptyState" style="display: none;">
+                <p>No reports match your filter. Great job keeping the community safe!</p>
+            </div>
+        </main>
+    </div>
+
+    <div class="mod-modal" id="warnModal">
+        <div class="mod-modal-backdrop"></div>
+        <div class="mod-modal-content">
+            <h3>Warn User About Violation</h3>
+            <p class="mod-modal-desc">Send a warning notification to the user whose content has violated community guidelines.</p>
+            <div class="mod-modal-target" id="warnTargetInfo"></div>
+            <label for="warnReason" class="reason-select-label">Warning Reason:</label>
+            <select id="warnReason" class="mod-modal-select">
+                <option value="">Select a reason...</option>
+                <option value="Spam">Spam</option>
+                <option value="Harassment">Harassment</option>
+                <option value="Inappropriate Content">Inappropriate Content</option>
+                <option value="Community Guidelines Violation">Community Guidelines Violation</option>
+                <option value="Other">Other</option>
+            </select>
+            <label for="warnMessage" class="note-label">Additional Message (optional):</label>
+            <textarea id="warnMessage" placeholder="Add any additional context for the user..." rows="3"></textarea>
+            <div class="mod-modal-actions">
+                <button class="btn-mod btn-cancel" id="warnCancel">Cancel</button>
+                <button class="btn-mod btn-warn-submit" id="warnSubmit">Send Warning</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mod-modal" id="escalateModal">
+        <div class="mod-modal-backdrop"></div>
+        <div class="mod-modal-content">
+            <h3>Escalate to System Admin</h3>
+            <p class="mod-modal-desc">Select a reason for escalation and add any additional notes for the system administrator.</p>
+            <div class="mod-modal-warning">
+                <strong>⚠ Notice:</strong> Escalating this report will immediately hide the post from public view while the system administrator reviews it.
+            </div>
+            <div class="mod-modal-reasons">
+                <label class="reason-label"><input type="radio" name="escalateReason" value="Serious Policy Violation" required> Serious Policy Violation</label>
+                <label class="reason-label"><input type="radio" name="escalateReason" value="Potential Legal Issue"> Potential Legal Issue</label>
+                <label class="reason-label"><input type="radio" name="escalateReason" value="Harassment or Threats"> Harassment or Threats</label>
+                <label class="reason-label"><input type="radio" name="escalateReason" value="Requires Admin Decision"> Requires Admin Decision</label>
+                <label class="reason-label"><input type="radio" name="escalateReason" value="Other"> Other</label>
+            </div>
+            <label for="escalateNote" class="note-label">Additional Notes (optional):</label>
+            <textarea id="escalateNote" placeholder="Provide any additional context for the system admin..." rows="3"></textarea>
+            <div class="mod-modal-actions">
+                <button class="btn-mod btn-cancel" id="escalateCancel">Cancel</button>
+                <button class="btn-mod btn-escalate-submit" id="escalateSubmit">Escalate &amp; Hide</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <span class="logo">C.M.D.</span>
+            <p>Connect. Meet. Discover. © 2026</p>
+        </div>
+    </footer>
+
+    <script src="/js/moderator.js"></script>
+</body>
+</html>

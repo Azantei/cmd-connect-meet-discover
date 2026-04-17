@@ -1,8 +1,111 @@
-<%- include('../partials/header', { pageCSS: 'AD_Settings' }) %>
-<main>
-  <h1>Admin Settings</h1>
-  <form action="/admin/settings?_method=PUT" method="POST">
-    <button type="submit">Save Settings</button>
-  </form>
-</main>
-<%- include('../partials/footer') %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Settings | C.M.D.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/AD_Settings.css">
+</head>
+<body>
+    <header class="admin-topbar">
+        <span>System Administrator Dashboard</span>
+        <span class="admin-role">System Administrator</span>
+    </header>
+
+    <nav class="top-navbar">
+        <div class="navbar-content">
+            <a href="/" class="logo"><span class="logo-light">C.M.</span><span class="logo-accent">D.</span></a>
+            <div class="nav-links">
+                <a href="/events">Explore</a>
+                <a href="/posts/create">Create</a>
+                <a href="/users/profile">Profile</a>
+                <a href="/about">About Us</a>
+            </div>
+            <div class="admin-info">Admin: [Name]
+                <form action="/logout" method="POST" style="display:inline">
+                    <button type="submit" style="margin-left:1rem;color:hsl(20,90%,55%);text-decoration:none;background:none;border:none;cursor:pointer;font:inherit;">Log Out</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <aside class="left-sidebar">
+        <nav class="sidebar-nav">
+            <a href="/admin/users" class="nav-item"><span>Users</span></a>
+            <a href="/admin/reports" class="nav-item"><span>Escalated</span></a>
+            <a href="/admin/analytics" class="nav-item"><span>Analytics</span></a>
+            <a href="/admin/settings" class="nav-item active"><span>Settings</span></a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <section class="page-header">
+            <h1>Platform Settings</h1>
+        </section>
+
+        <section class="settings-tabs">
+            <button class="tab-button active" data-tab="general">General</button>
+            <button class="tab-button" data-tab="categories">Categories &amp; Tags</button>
+        </section>
+
+        <section id="general-tab" class="tab-content active">
+            <h2>GENERAL SETTINGS</h2>
+            <div class="form-group">
+                <label for="platformName">Platform Name</label>
+                <input type="text" id="platformName" class="form-input" value="C.M.D. — Connect. Meet. Discover.">
+            </div>
+            <div class="form-group">
+                <label for="distanceRadius">Default Distance Radius</label>
+                <input type="text" id="distanceRadius" class="form-input" value="10 mi">
+            </div>
+            <div class="toggles-grid">
+                <div class="toggle-group">
+                    <label>Allow Guest Browsing</label>
+                    <button class="toggle-switch on" data-setting="guestBrowsing"><span class="toggle-text">ON</span></button>
+                </div>
+                <div class="toggle-group">
+                    <label>Registration Open</label>
+                    <button class="toggle-switch on" data-setting="registrationOpen"><span class="toggle-text">ON</span></button>
+                </div>
+                <div class="toggle-group">
+                    <label>Maintenance Mode</label>
+                    <button class="toggle-switch off" data-setting="maintenanceMode"><span class="toggle-text">OFF</span></button>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn-save" id="saveChanges">Save Changes</button>
+                <button class="btn-discard" id="discardChanges">Discard Changes</button>
+            </div>
+        </section>
+
+        <section id="categories-tab" class="tab-content">
+            <h2>CATEGORIES &amp; TAGS (shown when that tab is active)</h2>
+            <div class="add-tag-section">
+                <input type="text" id="newTagInput" class="form-input" placeholder="New tag name...">
+                <button class="btn-add-tag" id="addTagBtn">+ Add</button>
+            </div>
+            <div class="tags-container" id="tagsList">
+                <div class="tag-chip">Outdoors <button class="remove-tag" data-tag="Outdoors">X</button></div>
+                <div class="tag-chip">Music <button class="remove-tag" data-tag="Music">X</button></div>
+                <div class="tag-chip">Sports <button class="remove-tag" data-tag="Sports">X</button></div>
+                <div class="tag-chip">Food &amp; Drink <button class="remove-tag" data-tag="Food & Drink">X</button></div>
+                <div class="tag-chip">Arts <button class="remove-tag" data-tag="Arts">X</button></div>
+                <div class="tag-chip">Tech <button class="remove-tag" data-tag="Tech">X</button></div>
+                <div class="tag-chip">Fitness <button class="remove-tag" data-tag="Fitness">X</button></div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <span class="logo">C.M.D.</span>
+            <p>Connect. Meet. Discover. © 2026</p>
+        </div>
+    </footer>
+
+    <script src="/js/AD_Settings.js"></script>
+</body>
+</html>

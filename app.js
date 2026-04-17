@@ -35,6 +35,7 @@ app.use(flash());
 app.use((req, res, next) => {
   res.locals.currentUser = req.session.userId || null;
   res.locals.currentRole = req.session.role || null;
+  res.locals.currentUsername = req.session.username || null;
   res.locals.success = req.flash('success');
   res.locals.error = req.flash('error');
   next();

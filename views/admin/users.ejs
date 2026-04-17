@@ -1,31 +1,92 @@
-<%- include('../partials/header', { pageCSS: 'AD_UserManagement' }) %>
-<main>
-  <h1>User Management</h1>
-  <table>
-    <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Banned</th><th>Actions</th></tr></thead>
-    <tbody>
-      <% users.forEach(user => { %>
-      <tr>
-        <td><a href="/users/profile/<%= user.id %>"><%= user.username %></a></td>
-        <td><%= user.email %></td>
-        <td>
-          <form action="/admin/users/<%= user.id %>/role?_method=PUT" method="POST" style="display:inline">
-            <select name="role" onchange="this.form.submit()">
-              <option value="user" <%= user.role==='user'?'selected':'' %>>User</option>
-              <option value="moderator" <%= user.role==='moderator'?'selected':'' %>>Moderator</option>
-              <option value="admin" <%= user.role==='admin'?'selected':'' %>>Admin</option>
-            </select>
-          </form>
-        </td>
-        <td><%= user.isBanned ? 'Yes' : 'No' %></td>
-        <td>
-          <form action="/admin/users/<%= user.id %>/ban?_method=PUT" method="POST" style="display:inline">
-            <button type="submit"><%= user.isBanned ? 'Unban' : 'Ban' %></button>
-          </form>
-        </td>
-      </tr>
-      <% }) %>
-    </tbody>
-  </table>
-</main>
-<%- include('../partials/footer') %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Users | C.M.D.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/AD_UserManagement.css">
+</head>
+<body>
+    <header class="admin-topbar">
+        <span>System Administrator Dashboard</span>
+        <span class="admin-role">System Administrator</span>
+    </header>
+
+    <nav class="top-navbar">
+        <div class="navbar-content">
+            <a href="/" class="logo"><span class="logo-light">C.M.</span><span class="logo-accent">D.</span></a>
+            <div class="nav-links">
+                <a href="/events">Explore</a>
+                <a href="/posts/create">Create</a>
+                <a href="/users/profile">Profile</a>
+                <a href="/about">About Us</a>
+            </div>
+            <div class="admin-info">Admin: [Name]
+                <form action="/logout" method="POST" style="display:inline">
+                    <button type="submit" style="margin-left:1rem;color:hsl(20,90%,55%);text-decoration:none;background:none;border:none;cursor:pointer;font:inherit;">Log Out</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <aside class="left-sidebar">
+        <nav class="sidebar-nav">
+            <a href="/admin/users" class="nav-item active"><span>Users</span></a>
+            <a href="/admin/reports" class="nav-item"><span>Escalated</span></a>
+            <a href="/admin/analytics" class="nav-item"><span>Analytics</span></a>
+            <a href="/admin/settings" class="nav-item"><span>Settings</span></a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <section class="stats-section">
+            <div class="stat-card">
+                <div class="stat-label">Total Users</div>
+                <div class="stat-value" id="totalUsers">2,847</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Active Posts</div>
+                <div class="stat-value" id="activePosts">391</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Reports</div>
+                <div class="stat-value" id="reports">7</div>
+            </div>
+        </section>
+
+        <section class="search-section">
+            <input type="text" id="searchInput" placeholder="Search by name or email" class="search-input">
+            <button class="search-btn">Search</button>
+        </section>
+
+        <section class="table-section">
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>User (name + email)</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <!-- Users populated via JavaScript -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <span class="logo">C.M.D.</span>
+            <p>Connect. Meet. Discover. © 2026</p>
+        </div>
+    </footer>
+
+    <script src="/js/AD_UserManagement.js"></script>
+</body>
+</html>

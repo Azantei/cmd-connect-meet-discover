@@ -1,15 +1,117 @@
-<%- include('../partials/header', { pageCSS: 'CM_EventView' }) %>
-<main>
-  <h1><%= event.title %></h1>
-  <p><strong>Date:</strong> <%= new Date(event.eventDate).toLocaleString() %></p>
-  <p><strong>Location:</strong> <%= event.location %></p>
-  <p><strong>Organizer:</strong> <a href="/users/profile/<%= event.organizer.id %>"><%= event.organizer.username %></a></p>
-  <p><%= event.description %></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morning Trail Hike - C.M.D.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/CM_EventView.css">
+</head>
+<body>
 
-  <% if (currentUser === event.organizerId || currentRole === 'admin') { %>
-    <form action="/events/<%= event.id %>?_method=DELETE" method="POST">
-      <button type="submit">Delete Event</button>
-    </form>
-  <% } %>
-</main>
-<%- include('../partials/footer') %>
+    <nav class="navbar">
+        <a href="/" class="brand"><span class="brand-light">C.M.</span><span class="brand-accent">D.</span></a>
+        <div class="nav-links">
+            <a href="/events">Explore</a>
+            <a href="/posts/create">Create</a>
+            <a href="/users/profile">Profile</a>
+            <a href="/about">About Us</a>
+        </div>
+        <div class="nav-right">
+            <% if (currentUser) { %>
+                <span><%= currentUsername %></span>
+                <form action="/logout" method="POST" style="display:inline">
+                    <button type="submit" style="margin-left:1rem;color:hsl(20,90%,55%);text-decoration:none;background:none;border:none;cursor:pointer;font:inherit;">Log Out</button>
+                </form>
+            <% } else { %>
+                <a href="/login" style="color:hsl(20,90%,55%);text-decoration:none;">Sign In</a>
+            <% } %>
+        </div>
+    </nav>
+
+    <div class="banner">
+        <div class="banner-icon"></div>
+        <span class="banner-text">Post Banner Image</span>
+    </div>
+
+    <div class="content">
+        <div class="two-column-layout">
+            <div class="left-column">
+                <div class="info-box">
+                    <div class="info-label">📅 Date &amp; Time</div>
+                    <div class="info-value">Sat Mar 7 · 9:00 AM</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">📍 Location</div>
+                    <div class="info-value">Discovery Park Trailhead</div>
+                    <div class="info-value">3801 Discovery Park Blvd, Seattle, WA 98199</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label">👥 Attendees</div>
+                    <div class="info-value">12/20 going · RSVP open</div>
+                </div>
+            </div>
+
+            <div class="right-column">
+                <h1 class="event-title">Morning Trail Hike</h1>
+                <div class="tags">
+                    <span class="tag">Outdoors</span>
+                    <span class="tag">1.2 mi away</span>
+                </div>
+                <div class="desc-lines">
+                    <div style="width:100%">Join us for a scenic morning hike through the local trails. All skill levels welcome. We'll explore the beautiful Discovery Park trails, taking in views of Puget Sound and the Olympic Mountains. Bring water, comfortable shoes, and a sense of adventure! Perfect for beginners and experienced hikers alike.</div>
+                </div>
+                <div class="action-row">
+                    <button class="btn-rsvp" id="rsvpBtn" onclick="toggleRsvp()">RSVP</button>
+                    <button class="btn-report" id="reportBtn" onclick="openReportModal()">⚑ Report Post</button>
+                </div>
+                <div class="section-divider">
+                    <h3 class="section-title">Event Creator</h3>
+                </div>
+                <div class="host-card">
+                    <div class="host-left">
+                        <div class="avatar">AJ</div>
+                        <div class="host-info">
+                            <div class="host-name">Alex Johnson</div>
+                            <div class="host-meta">Posted 2 days ago · <a href="/users/profile/1" class="view-profile">View profile</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="reportModal" style="display:none;">
+        <div class="modal">
+            <div class="modal-title">Report this post?</div>
+            <div class="modal-desc">Please select a reason for reporting this post. Our team will review the report.</div>
+            <div class="modal-reasons">
+                <label><input type="radio" name="reason"> Spam or misleading content</label>
+                <label><input type="radio" name="reason"> Inappropriate content</label>
+                <label><input type="radio" name="reason"> Harassment or bullying</label>
+                <label><input type="radio" name="reason"> Violates community guidelines</label>
+                <label><input type="radio" name="reason"> Other</label>
+            </div>
+            <div class="modal-comment-section">
+                <label for="reportComment" class="comment-label">Additional Comments (optional)</label>
+                <textarea id="reportComment" class="report-textarea" rows="3" placeholder="Provide any additional details that might help our moderation team..."></textarea>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeReportModal()">Cancel</button>
+                <button class="btn-submit" onclick="submitReport()">Submit Report</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <span class="logo">C.M.D.</span>
+            <p>Connect. Meet. Discover. © 2026</p>
+        </div>
+    </footer>
+
+    <script src="/js/CM_EventView.js"></script>
+</body>
+</html>
