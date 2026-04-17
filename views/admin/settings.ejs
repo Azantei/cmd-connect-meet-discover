@@ -1,0 +1,8 @@
+<%- include('../partials/header', { pageCSS: 'AD_Settings' }) %>
+<main>
+  <h1>Admin Settings</h1>
+  <form action="/admin/settings?_method=PUT" method="POST">
+    <button type="submit">Save Settings</button>
+  </form>
+</main>
+<%- include('../partials/footer') %>

@@ -1,0 +1,22 @@
+<%- include('../partials/header', { pageCSS: 'moderator' }) %>
+<main>
+  <h1>Pending Reports</h1>
+  <% reports.forEach(report => { %>
+    <div>
+      <p><strong>Post:</strong> <a href="/posts/<%= report.Post.id %>"><%= report.Post.title %></a></p>
+      <p><strong>Reported by:</strong> <%= report.reporter.username %></p>
+      <p><strong>Reason:</strong> <%= report.reason %></p>
+      <form action="/moderator/reports/<%= report.id %>/review?_method=PUT" method="POST" style="display:inline">
+        <textarea name="moderatorNote" placeholder="Note (optional)"></textarea>
+        <button type="submit">Mark Reviewed</button>
+      </form>
+      <form action="/moderator/reports/<%= report.id %>/escalate?_method=PUT" method="POST" style="display:inline">
+        <button type="submit">Escalate to Admin</button>
+      </form>
+      <form action="/moderator/posts/<%= report.Post.id %>/hide?_method=PUT" method="POST" style="display:inline">
+        <button type="submit">Hide Post</button>
+      </form>
+    </div>
+  <% }) %>
+</main>
+<%- include('../partials/footer') %>

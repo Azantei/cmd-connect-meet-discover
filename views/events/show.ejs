@@ -1,0 +1,15 @@
+<%- include('../partials/header', { pageCSS: 'CM_EventView' }) %>
+<main>
+  <h1><%= event.title %></h1>
+  <p><strong>Date:</strong> <%= new Date(event.eventDate).toLocaleString() %></p>
+  <p><strong>Location:</strong> <%= event.location %></p>
+  <p><strong>Organizer:</strong> <a href="/users/profile/<%= event.organizer.id %>"><%= event.organizer.username %></a></p>
+  <p><%= event.description %></p>
+
+  <% if (currentUser === event.organizerId || currentRole === 'admin') { %>
+    <form action="/events/<%= event.id %>?_method=DELETE" method="POST">
+      <button type="submit">Delete Event</button>
+    </form>
+  <% } %>
+</main>
+<%- include('../partials/footer') %>

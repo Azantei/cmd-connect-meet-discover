@@ -1,0 +1,23 @@
+<%- include('../partials/header', { pageCSS: 'CM_Events' }) %>
+<main>
+  <h1><%= post.title %></h1>
+  <p>by <a href="/users/profile/<%= post.User.id %>"><%= post.User.username %></a></p>
+  <p><%= post.content %></p>
+
+  <% if (currentUser && currentUser !== post.userId) { %>
+    <details>
+      <summary>Report this post</summary>
+      <form action="/posts/<%= post.id %>/report" method="POST">
+        <textarea name="reason" required placeholder="Reason for report"></textarea>
+        <button type="submit">Submit Report</button>
+      </form>
+    </details>
+  <% } %>
+
+  <% if (currentUser === post.userId || currentRole === 'admin' || currentRole === 'moderator') { %>
+    <form action="/posts/<%= post.id %>?_method=DELETE" method="POST">
+      <button type="submit">Delete Post</button>
+    </form>
+  <% } %>
+</main>
+<%- include('../partials/footer') %>

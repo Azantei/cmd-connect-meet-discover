@@ -1,0 +1,13 @@
+<%- include('../partials/header', { pageCSS: 'CM_Events' }) %>
+<main>
+  <h1>Community Posts</h1>
+  <% if (currentUser) { %><a href="/posts/create">+ New Post</a><% } %>
+  <% posts.forEach(post => { %>
+    <div>
+      <h2><a href="/posts/<%= post.id %>"><%= post.title %></a></h2>
+      <p>by <a href="/users/profile/<%= post.User.id %>"><%= post.User.username %></a></p>
+      <p><%= post.content.substring(0, 150) %>...</p>
+    </div>
+  <% }) %>
+</main>
+<%- include('../partials/footer') %>

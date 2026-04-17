@@ -1,0 +1,12 @@
+<%- include('../partials/header', { pageCSS: 'CM_Profile' }) %>
+<main>
+  <h1><%= profileUser.username %></h1>
+  <% if (profileUser.profilePic) { %><img src="<%= profileUser.profilePic %>" alt="Profile Picture"><% } %>
+  <p><%= profileUser.bio || 'No bio yet.' %></p>
+  <% if (isOwn) { %><a href="/users/settings">Edit Profile</a><% } %>
+  <h2>Posts</h2>
+  <% profileUser.Posts.forEach(post => { %>
+    <div><a href="/posts/<%= post.id %>"><%= post.title %></a></div>
+  <% }) %>
+</main>
+<%- include('../partials/footer') %>

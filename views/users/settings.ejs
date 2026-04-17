@@ -1,0 +1,13 @@
+<%- include('../partials/header', { pageCSS: 'CM_UserSettings' }) %>
+<main>
+  <h1>Settings</h1>
+  <form action="/users/settings?_method=PUT" method="POST">
+    <label>Username <input type="text" name="username" value="<%= user.username %>" required></label>
+    <label>Bio <textarea name="bio"><%= user.bio || '' %></textarea></label>
+    <h3>Change Password</h3>
+    <label>Current Password <input type="password" name="currentPassword"></label>
+    <label>New Password <input type="password" name="newPassword" minlength="8"></label>
+    <button type="submit">Save</button>
+  </form>
+</main>
+<%- include('../partials/footer') %>

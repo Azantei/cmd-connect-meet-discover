@@ -1,0 +1,469 @@
+/*
+  Created for use for C.M.D. with the assistance of AI tools:
+  Claude 4.6, Co-Pilot using Claude Somnet 4.5, and Cursor Composer 1.5.
+  Logs and further project documents can be found at:
+  https://drive.google.com/drive/folders/1UOnmlC70OxJRkkYt0ohzdkyXL9j82hFQ
+*/
+/* ==========================================
+   C.M.D. - CREATE POST STYLES
+   Community member post creation form
+========================================== */
+
+/* ==========================================
+   RESET & BASE STYLES
+========================================== */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+}
+
+/* ==========================================
+   NAVIGATION BAR
+========================================== */
+
+/* Navbar */
+.navbar {
+    background-color: hsl(215, 20%, 30%);
+    padding: 0 2rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    position: relative;
+}
+.brand { 
+    font-weight: 700;
+    font-size: 1.25rem;
+    font-family: 'Playfair Display', serif;
+    text-decoration: none;
+    cursor: pointer;
+}
+.brand-light {
+    color: white;
+}
+.brand-accent {
+    color: hsl(20, 90%, 55%);
+}
+.nav-links { 
+    display: flex;
+    gap: 2rem;
+    font-size: 0.875rem;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.nav-links a,
+.nav-links span { 
+    color: rgba(250, 245, 240, 0.7);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+.nav-links a:hover,
+.nav-links span:hover { 
+    color: hsl(30, 33%, 97%);
+}
+.nav-right { 
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    color: rgba(250, 245, 240, 0.7);
+    font-size: 0.875rem;
+}
+.nav-right a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+.nav-right a:hover,
+.logout:hover { 
+    color: hsl(30, 33%, 97%);
+}
+.logout { cursor: pointer; }
+
+/* Content */
+.content {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.page-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: hsl(20, 90%, 55%);
+    margin-bottom: 16px;
+    font-family: 'Playfair Display', serif;
+}
+
+/* Form Box */
+.form-box {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: #fff;
+    margin-bottom: 16px;
+}
+.form-row {
+    display: flex;
+    align-items: center;
+}
+.form-row.border-bottom { border-bottom: 1px solid #ccc; }
+.form-row.textarea-row { align-items: flex-start; }
+.form-row label {
+    padding: 12px 16px;
+    font-size: 0.88rem;
+    color: #555;
+    white-space: nowrap;
+    min-width: 110px;
+}
+.form-row label.toggle-switch {
+    padding: 0;
+    min-width: auto;
+    width: 44px;
+    flex: 0 0 44px;
+    margin-left: 0;
+}
+.form-row input[type="number"]#maxAttendees {
+    flex: 0 0 200px;
+    width: 200px;
+}
+.form-row input,
+.form-row textarea {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    color: #333;
+    font-family: 'DM Sans', sans-serif;
+    background-color: #fff;
+    resize: vertical;
+}
+.form-row input::placeholder,
+.form-row textarea::placeholder { color: #aaa; }
+
+.req { color: #c0522a; }
+
+.upload-note {
+    font-size: 0.78rem;
+    color: #777;
+    margin-top: 4px;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 8px;
+}
+
+/* Categories */
+.categories-label,
+.section-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #333;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+    padding: 16px 16px 0 16px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 10px;
+}
+
+.optional {
+    font-weight: 400;
+    color: #777;
+    letter-spacing: normal;
+}
+
+/* RSVP Toggle Row */
+.rsvp-toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px !important;
+}
+
+.rsvp-label-group {
+    flex: 0 1 auto;
+}
+
+.rsvp-toggle-row .toggle-switch {
+    flex: 0 0 auto;
+}
+
+/* Max Attendees input should not stretch */
+#maxAttendees {
+    flex: 0 0 200px !important;
+    width: 200px !important;
+}
+
+.pills { 
+    display: flex; 
+    flex-wrap: wrap; 
+    gap: 8px;
+    padding: 0 16px 16px 16px;
+}
+.pill {
+    padding: 6px 16px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #444;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background-color 0.15s, color 0.15s;
+}
+.pill.active {
+    background-color: #c0522a;
+    color: #fff;
+    border: none;
+    font-weight: 600;
+}
+
+/* Preview Section */
+.preview-section {
+    margin-top: 32px;
+    margin-bottom: 24px;
+}
+
+.preview-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: hsl(20, 90%, 55%);
+    margin-bottom: 16px;
+    font-family: 'Playfair Display', serif;
+}
+
+.preview-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    max-width: 600px;
+}
+
+.preview-banner {
+    width: 100%;
+    height: 200px;
+    background-color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.preview-banner-placeholder {
+    font-size: 0.9rem;
+    color: #999;
+    text-align: center;
+}
+
+.preview-body {
+    padding: 20px;
+}
+
+.preview-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.preview-tag {
+    padding: 4px 12px;
+    border-radius: 3px;
+    background-color: #c0522a;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.preview-event-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 8px;
+}
+
+.preview-event-desc {
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+.preview-event-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* Actions */
+.actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+}
+.actions-right {
+    display: flex;
+    gap: 12px;
+}
+.btn-cancel {
+    padding: 10px 24px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #555;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+}
+.btn-cancel:hover { background-color: #f0f0f0; }
+.btn-draft {
+    padding: 10px 24px;
+    border: 1px solid #c0522a;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #c0522a;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background-color 0.2s, color 0.2s;
+}
+.btn-draft:hover { 
+    background-color: #fff3ee; 
+}
+.btn-post {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 4px;
+    background-color: #c0522a;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+}
+.btn-post:hover { background-color: #a8451f; }
+
+/* ==========================================
+   TOGGLE SWITCH (for RSVP)
+========================================== */
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.toggle-switch input[type="checkbox"] {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: all 0.3s ease;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+}
+
+.toggle-switch input[type="checkbox"]:checked + .toggle-slider {
+    background-color: #c0522a !important;
+}
+
+.toggle-switch input[type="checkbox"]:checked + .toggle-slider:before {
+    transform: translateX(20px) !important;
+}
+
+.toggle-switch input[type="checkbox"]:focus + .toggle-slider {
+    box-shadow: 0 0 1px #c0522a;
+}
+
+/* ==========================================
+   ERROR STATES
+   Visual feedback for validation errors
+========================================== */
+
+.error-message {
+    display: block;
+    color: #d32f2f;
+    font-size: 0.8rem;
+    margin-top: 4px;
+    margin-bottom: 8px;
+    min-height: 1rem;
+}
+
+input[type="text"].error,
+input[type="date"].error,
+input[type="time"].error,
+input[type="number"].error,
+textarea.error {
+    border-color: #d32f2f;
+}
+
+.pills.error {
+    border: 2px solid #d32f2f;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+footer {
+    padding: 3rem 0;
+    background: hsl(215, 20%, 30%);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+footer .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+footer .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+}
+
+footer p {
+    font-size: 0.875rem;
+}

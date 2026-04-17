@@ -1,0 +1,548 @@
+/*
+  Created for use for C.M.D. with the assistance of AI tools:
+  Claude 4.6, Co-Pilot using Claude Somnet 4.5, and Cursor Composer 1.5.
+  Logs and further project documents can be found at:
+  https://drive.google.com/drive/folders/1UOnmlC70OxJRkkYt0ohzdkyXL9j82hFQ
+*/
+/* ==========================================
+   C.M.D. - EVENTS PAGE STYLES
+   Event discovery with filtering, search, and map view
+========================================== */
+
+/* ==========================================
+   RESET & BASE STYLES
+========================================== */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f0ede8;
+}
+
+/* ==========================================
+   NAVIGATION BAR
+========================================== */
+
+/* Navbar */
+.navbar {
+    background-color: hsl(215, 20%, 30%);
+    padding: 0 2rem;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    position: relative;
+}
+.brand { 
+    font-weight: 700;
+    font-size: 1.25rem;
+    font-family: 'Playfair Display', serif;
+    text-decoration: none;
+    cursor: pointer;
+}
+.brand-light {
+    color: white;
+}
+.brand-accent {
+    color: hsl(20, 90%, 55%);
+}
+.nav-links { 
+    display: flex;
+    gap: 2rem;
+    font-size: 0.875rem;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.nav-links a,
+.nav-links span { 
+    color: rgba(250, 245, 240, 0.7);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+.nav-links a:hover,
+.nav-links span:hover { 
+    color: hsl(30, 33%, 97%);
+}
+.nav-right { 
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    color: rgba(250, 245, 240, 0.7);
+    font-size: 0.875rem;
+}
+.nav-right a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+.nav-right a:hover,
+.logout:hover { 
+    color: hsl(30, 33%, 97%);
+}
+.logout { cursor: pointer; }
+
+/* ==========================================
+   SEARCH BAR
+   Top search input with create button
+========================================== */
+
+/* Search Bar */
+.search-bar {
+    background-color: #fff;
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid #ddd;
+    flex-shrink: 0;
+}
+.search-bar input {
+    flex: 1;
+    padding: 9px 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+}
+.btn-create {
+    background-color: #c0522a;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 9px 18px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: 'DM Sans', sans-serif;
+}
+.btn-create:hover { background-color: #a8451f; }
+
+/* ==========================================
+   FILTERS SYSTEM
+   Comprehensive filtering with categories, distance, and date
+========================================== */
+
+/* Filters Section */
+.filters-section {
+    margin: 16px 0 20px 0;
+    padding: 0 24px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.btn-filters {
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.btn-filters:hover {
+    background-color: #f5f5f5;
+    border-color: #999;
+}
+
+.btn-filters svg {
+    color: #666;
+}
+
+.filter-count {
+    background-color: #c0522a;
+    color: white;
+    border-radius: 10px;
+    padding: 2px 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: 4px;
+}
+
+.btn-clear-filters {
+    padding: 8px 16px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.btn-clear-filters:hover {
+    background-color: #f5f5f5;
+}
+
+/* Filter Panel */
+.filter-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 400px;
+    height: 100vh;
+    background-color: #fff;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+.filter-panel-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.filter-panel-header h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    font-family: 'Playfair Display', serif;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #666;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.btn-close:hover {
+    background-color: #f0f0f0;
+}
+
+.filter-panel-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+}
+
+.filter-group {
+    margin-bottom: 28px;
+}
+
+.filter-label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 12px;
+}
+
+.filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.filter-pill {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #444;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+}
+
+.filter-pill:hover {
+    border-color: #999;
+}
+
+.filter-pill.active {
+    background-color: #c0522a;
+    color: #fff;
+    border-color: #c0522a;
+    font-weight: 600;
+}
+
+.filter-distance select,
+.filter-date select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+#customDateRange {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#customDateRange input {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.filter-panel-footer {
+    padding: 20px 24px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.btn-apply-filters {
+    width: 100%;
+    padding: 12px;
+    background-color: #c0522a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.btn-apply-filters:hover {
+    background-color: #a04422;
+}
+
+/* Overlay for filter panel */
+.filter-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 999;
+    display: none;
+}
+
+/* ==========================================
+   MAIN CONTENT LAYOUT
+   Split view with cards panel and map
+========================================== */
+
+/* Main Content */
+.main-content {
+    display: flex;
+    height: 600px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+/* Cards Panel - left side with scrollable event cards */
+
+/* Cards Panel */
+.cards-panel {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    height: 100%;
+}
+.cards-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* ==========================================
+   EVENT CARDS
+   Individual event card styling with image, tags, and details
+========================================== */
+
+/* Card */
+.card {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.card-img {
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.img-placeholder {
+    width: 36px;
+    height: 36px;
+    border: 2px solid rgba(255,255,255,0.6);
+    background-color: rgba(255,255,255,0.2);
+}
+.card-tags {
+    padding: 10px 12px 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+}
+.tags-left {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.tag {
+    border: 1px solid #aaa;
+    border-radius: 3px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    color: #555;
+}
+.star-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: transform 0.2s;
+}
+.star-btn:hover {
+    transform: scale(1.1);
+}
+.star-icon {
+    color: #ccc;
+    transition: all 0.2s;
+    width: 20px;
+    height: 20px;
+}
+.star-btn:hover .star-icon {
+    color: #ffd700;
+}
+.star-btn.interested .star-icon {
+    fill: #ffd700;
+    color: #ffd700;
+}
+.interested-label {
+    font-size: 0.75rem;
+    color: #555;
+    display: none;
+}
+.star-btn.interested .interested-label {
+    display: inline;
+}
+.card-body { padding: 6px 12px 12px; }
+.card-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; color: #222; }
+.card-desc { font-size: 0.82rem; color: #888; line-height: 1.5; }
+.card-footer {
+    margin-top: auto;
+    border-top: 1px solid #eee;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.78rem;
+    color: #666;
+}
+
+/* ==========================================
+   MAP PANEL
+   Right side showing location visualization
+========================================== */
+
+/* Map Panel */
+.map-panel {
+    width: 50%;
+    flex-shrink: 0;
+    background-color: #d9d9d9;
+    border-left: 1px solid #ccc;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.map-panel svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+.map-label {
+    position: relative;
+    z-index: 1;
+    background-color: rgba(255,255,255,0.75);
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: #555;
+}
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+footer {
+    padding: 2rem 0;
+    background: hsl(215, 20%, 30%);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+footer .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+footer .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+}
+
+footer p {
+    font-size: 0.875rem;
+}

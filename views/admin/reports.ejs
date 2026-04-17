@@ -1,0 +1,15 @@
+<%- include('../partials/header', { pageCSS: 'AD_EscalatedReports' }) %>
+<main>
+  <h1>Escalated Reports</h1>
+  <% reports.forEach(report => { %>
+    <div>
+      <p><strong>Post:</strong> <a href="/posts/<%= report.Post.id %>"><%= report.Post.title %></a></p>
+      <p><strong>Reported by:</strong> <%= report.reporter.username %></p>
+      <p><strong>Reason:</strong> <%= report.reason %></p>
+      <form action="/admin/reports/<%= report.id %>/resolve?_method=PUT" method="POST" style="display:inline">
+        <button type="submit">Resolve</button>
+      </form>
+    </div>
+  <% }) %>
+</main>
+<%- include('../partials/footer') %>

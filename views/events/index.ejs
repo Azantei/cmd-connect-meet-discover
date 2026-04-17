@@ -1,0 +1,13 @@
+<%- include('../partials/header', { pageCSS: 'CM_Events' }) %>
+<main>
+  <h1>Events</h1>
+  <% if (currentUser) { %><a href="/events/create">+ New Event</a><% } %>
+  <% events.forEach(event => { %>
+    <div>
+      <h2><a href="/events/<%= event.id %>"><%= event.title %></a></h2>
+      <p><%= event.location %> &mdash; <%= new Date(event.eventDate).toLocaleDateString() %></p>
+      <p>Organized by <a href="/users/profile/<%= event.organizer.id %>"><%= event.organizer.username %></a></p>
+    </div>
+  <% }) %>
+</main>
+<%- include('../partials/footer') %>

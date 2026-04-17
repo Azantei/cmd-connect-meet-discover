@@ -1,0 +1,324 @@
+/*
+  Created for use for C.M.D. with the assistance of AI tools:
+  Claude 4.6, Co-Pilot using Claude Somnet 4.5, and Cursor Composer 1.5.
+  Logs and further project documents can be found at:
+  https://drive.google.com/drive/folders/1UOnmlC70OxJRkkYt0ohzdkyXL9j82hFQ
+*/
+/* ==========================================
+   ADMIN ANALYTICS STYLES
+   System admin dashboard for analytics
+========================================== */
+
+/* Import base styles from User Management */
+@import url('AD_UserManagement.css');
+
+/* ==========================================
+   PAGE HEADER
+========================================== */
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.date-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.date-selector label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-dark);
+}
+
+.date-filter {
+    padding: 0.5rem 2rem 0.5rem 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: white;
+    font-size: 0.875rem;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 500;
+}
+
+.date-filter:focus {
+    outline: none;
+}
+
+/* ==========================================
+   STATISTICS GRID
+========================================== */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    border-radius: 4px;
+}
+
+.stat-card.orange {
+    background-color: hsl(20, 75%, 60%);
+}
+
+.stat-card.orange .stat-label,
+.stat-card.orange .stat-value {
+    color: white;
+}
+
+.stat-card.gray {
+    background: hsl(350, 45%, 90%);
+}
+
+.stat-card .stat-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.stat-card .stat-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+/* ==========================================
+   CHART SECTION
+========================================== */
+
+.chart-section {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.chart-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.chart-icon {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.chart-header h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.chart-container {
+    background: hsl(0, 0%, 97%);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 2rem 1rem;
+    min-height: 200px;
+}
+
+.chart-placeholder {
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.bar-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+    height: 150px;
+    width: 100%;
+    max-width: 600px;
+}
+
+.bar {
+    flex: 1;
+    background-color: hsl(20, 75%, 60%);
+    border: 1px solid hsl(20, 75%, 50%);
+    border-radius: 2px 2px 0 0;
+    min-height: 30px;
+}
+
+/* ==========================================
+   BOTTOM GRID (Categories & Activity)
+========================================== */
+
+.bottom-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.section-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 1.5rem;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-icon {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.section-header h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+/* ==========================================
+   TOP CATEGORIES
+========================================== */
+
+.categories-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.category-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.category-label {
+    font-size: 0.875rem;
+    color: var(--text-dark);
+    min-width: 100px;
+    flex-shrink: 0;
+}
+
+.category-bar {
+    height: 32px;
+    background-color: hsl(20, 75%, 60%);
+    border: 1px solid hsl(20, 75%, 50%);
+    border-radius: 2px;
+    max-width: calc(100% - 100px - 1rem);
+}
+
+/* ==========================================
+   RECENT ACTIVITY LOG
+========================================== */
+
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.activity-date {
+    color: var(--text-dark);
+    font-weight: 500;
+    min-width: 45px;
+}
+
+.activity-separator {
+    color: var(--text-muted);
+}
+
+.activity-text {
+    color: var(--text-dark);
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+========================================== */
+
+@media (max-width: 1024px) {
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .bottom-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .bar-chart {
+        gap: 0.5rem;
+    }
+}
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+footer {
+    padding: 3rem 0;
+    background: hsl(215, 20%, 30%);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+footer .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+footer .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+}
+
+footer p {
+    font-size: 0.875rem;
+}

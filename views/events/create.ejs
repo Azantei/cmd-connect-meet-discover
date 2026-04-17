@@ -1,0 +1,13 @@
+<%- include('../partials/header', { pageCSS: 'CM_Events' }) %>
+<main>
+  <h1>Create Event</h1>
+  <form action="/events" method="POST">
+    <label>Title <input type="text" name="title" required></label>
+    <label>Location <input type="text" name="location"></label>
+    <label>Date <input type="datetime-local" name="eventDate" required></label>
+    <label>Category <input type="text" name="category"></label>
+    <label>Description <textarea name="description"></textarea></label>
+    <button type="submit">Create Event</button>
+  </form>
+</main>
+<%- include('../partials/footer') %>

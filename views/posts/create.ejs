@@ -1,0 +1,11 @@
+<%- include('../partials/header', { pageCSS: 'CM_CreatePost' }) %>
+<main>
+  <h1>Create Post</h1>
+  <form action="/posts" method="POST">
+    <label>Title <input type="text" name="title" required></label>
+    <label>Category <input type="text" name="category"></label>
+    <label>Content <textarea name="content" required></textarea></label>
+    <button type="submit">Publish</button>
+  </form>
+</main>
+<%- include('../partials/footer') %>

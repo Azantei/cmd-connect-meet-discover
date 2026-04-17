@@ -1,0 +1,31 @@
+<%- include('../partials/header', { pageCSS: 'AD_UserManagement' }) %>
+<main>
+  <h1>User Management</h1>
+  <table>
+    <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Banned</th><th>Actions</th></tr></thead>
+    <tbody>
+      <% users.forEach(user => { %>
+      <tr>
+        <td><a href="/users/profile/<%= user.id %>"><%= user.username %></a></td>
+        <td><%= user.email %></td>
+        <td>
+          <form action="/admin/users/<%= user.id %>/role?_method=PUT" method="POST" style="display:inline">
+            <select name="role" onchange="this.form.submit()">
+              <option value="user" <%= user.role==='user'?'selected':'' %>>User</option>
+              <option value="moderator" <%= user.role==='moderator'?'selected':'' %>>Moderator</option>
+              <option value="admin" <%= user.role==='admin'?'selected':'' %>>Admin</option>
+            </select>
+          </form>
+        </td>
+        <td><%= user.isBanned ? 'Yes' : 'No' %></td>
+        <td>
+          <form action="/admin/users/<%= user.id %>/ban?_method=PUT" method="POST" style="display:inline">
+            <button type="submit"><%= user.isBanned ? 'Unban' : 'Ban' %></button>
+          </form>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</main>
+<%- include('../partials/footer') %>
