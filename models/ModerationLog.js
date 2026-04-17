@@ -1,12 +1,16 @@
 module.exports = (sequelize, DataTypes) => {
-  const Report = sequelize.define('Report', {
+  const ModerationLog = sequelize.define('ModerationLog', {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true
     },
-    reporterId: {
+    moderatorId: {
       type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    action: {
+      type: DataTypes.STRING(100),
       allowNull: false
     },
     targetType: {
@@ -17,21 +21,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    reason: {
-      type: DataTypes.TEXT,
-      allowNull: false
-    },
-    status: {
-      type: DataTypes.ENUM('pending', 'reviewed', 'escalated', 'resolved'),
-      defaultValue: 'pending'
-    },
     notes: {
       type: DataTypes.TEXT
     }
   }, {
-    tableName: 'reports',
-    timestamps: true
+    tableName: 'moderation_logs',
+    timestamps: true,
+    updatedAt: false
   });
 
-  return Report;
+  return ModerationLog;
 };

@@ -213,7 +213,7 @@ function handleCancel() {
     
     if (confirmed) {
         // Redirect to events page or previous page
-        window.location.href = 'CM_Events.html';
+        window.location.href = '/events';
     }
 }
 
@@ -338,7 +338,7 @@ function handlePost() {
         console.log('Posting event...');
         // In a real implementation, this would send data to the backend
         alert('Event posted successfully!');
-        window.location.href = 'CM_Events.html';
+        window.location.href = '/events';
     }
 }
 

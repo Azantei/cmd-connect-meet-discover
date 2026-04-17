@@ -114,8 +114,7 @@ function validateSignIn(event) {
     }
     
     if (isValid) {
-        // Redirect to profile page after successful sign in validation
-        window.location.href = 'CM_Profile.html';
+        document.getElementById('signinForm').submit();
     }
 }
 
@@ -171,8 +170,16 @@ function validateSignUp(event) {
     }
     
     if (isValid) {
-        // Redirect to profile page after successful sign up validation
-        window.location.href = 'CM_Profile.html';
+        const form = document.getElementById('signupForm');
+        let hiddenInterests = form.querySelector('input[name="interests"]');
+        if (!hiddenInterests) {
+            hiddenInterests = document.createElement('input');
+            hiddenInterests.type = 'hidden';
+            hiddenInterests.name = 'interests';
+            form.appendChild(hiddenInterests);
+        }
+        hiddenInterests.value = JSON.stringify(interests);
+        form.submit();
     }
 }
 

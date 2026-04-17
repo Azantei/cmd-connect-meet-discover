@@ -17,22 +17,32 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.User = require('./User')(sequelize, Sequelize.DataTypes);
-db.Post = require('./Post')(sequelize, Sequelize.DataTypes);
-db.Event = require('./Event')(sequelize, Sequelize.DataTypes);
-db.Report = require('./Report')(sequelize, Sequelize.DataTypes);
+// Load models
+db.User           = require('./User')(sequelize, Sequelize.DataTypes);
+db.Post           = require('./Post')(sequelize, Sequelize.DataTypes);
+db.RSVP           = require('./RSVP')(sequelize, Sequelize.DataTypes);
+db.Report         = require('./Report')(sequelize, Sequelize.DataTypes);
+db.Category       = require('./Category')(sequelize, Sequelize.DataTypes);
+db.ModerationLog  = require('./ModerationLog')(sequelize, Sequelize.DataTypes);
 
-// Associations
+// ── User ↔ Post ─────────────────────────────────────────────
 db.User.hasMany(db.Post, { foreignKey: 'userId', onDelete: 'CASCADE' });
-db.Post.belongsTo(db.User, { foreignKey: 'userId' });
+db.Post.belongsTo(db.User, { foreignKey: 'userId', as: 'author' });
 
-db.User.hasMany(db.Event, { foreignKey: 'organizerId', onDelete: 'CASCADE' });
-db.Event.belongsTo(db.User, { foreignKey: 'organizerId', as: 'organizer' });
+// ── User ↔ RSVP ─────────────────────────────────────────────
+db.User.hasMany(db.RSVP, { foreignKey: 'userId', onDelete: 'CASCADE' });
+db.RSVP.belongsTo(db.User, { foreignKey: 'userId', as: 'attendee' });
 
-db.Post.hasMany(db.Report, { foreignKey: 'postId', onDelete: 'CASCADE' });
-db.Report.belongsTo(db.Post, { foreignKey: 'postId' });
+// ── Post ↔ RSVP ─────────────────────────────────────────────
+db.Post.hasMany(db.RSVP, { foreignKey: 'postId', onDelete: 'CASCADE' });
+db.RSVP.belongsTo(db.Post, { foreignKey: 'postId' });
 
+// ── User ↔ Report (as reporter) ─────────────────────────────
 db.User.hasMany(db.Report, { foreignKey: 'reporterId', onDelete: 'CASCADE' });
 db.Report.belongsTo(db.User, { foreignKey: 'reporterId', as: 'reporter' });
+
+// ── User ↔ ModerationLog (as moderator) ─────────────────────
+db.User.hasMany(db.ModerationLog, { foreignKey: 'moderatorId', onDelete: 'CASCADE' });
+db.ModerationLog.belongsTo(db.User, { foreignKey: 'moderatorId', as: 'moderator' });
 
 module.exports = db;
