@@ -1,72 +1,85 @@
-# C.M.D. - Connect. Meet. Discover.
+# C.M.D. — Connect. Meet. Discover.
 
-A simple landing page for a community events platform.
+A community events platform built with Node.js, Express, EJS, Sequelize, and MySQL.
 
-## How to Use
+## Team Setup (do this once per machine)
 
-Just open `index.html` in your web browser. That's it!
+### 1. Pull the repo
+```bash
+git pull
+```
 
-Double-click the file or right-click "Open with" and select your browser.
+### 2. Install dependencies
+```bash
+npm install
+```
+
+### 3. Create your `.env` file
+The `.env` file is not committed to git. Create a new file called `.env` in the project root and fill it in:
+
+```
+DB_NAME=cmd_db
+DB_USER=root
+DB_PASS=your_mysql_root_password
+DB_HOST=localhost
+SESSION_SECRET=any_long_random_string_here
+PORT=3000
+```
+
+### 4. Install MySQL (if you don't have it)
+Download MySQL Installer, choose **Developer Default**, and set a root password during setup. Write it down — you'll need it for `DB_PASS` above.
+
+### 5. Create the database
+Open MySQL Workbench and run:
+```sql
+CREATE DATABASE cmd_db;
+```
+
+### 6. Start the server
+```bash
+node app.js
+```
+
+You should see:
+```
+Database synced.
+C.M.D. running on http://localhost:3000
+```
+
+Sequelize will create all the tables automatically from the models — no migrations to run manually.
+
+> **Note:** Your database starts empty. Go to [http://localhost:3000/register](http://localhost:3000/register) to create a test account before trying to log in.
+
+---
 
 ## Project Structure
 
 ```
-📁 proposal-palette-quick/
-├── 📄 index.html              Main landing page
-├── 📁 css/
-│   └── home.css               Styles for index.html
-├── 📁 js/
-│   └── home.js                JavaScript for index.html
-├── 📁 pages/                  Future pages go here
-├── 📁 public/                 Images and assets
-│   ├── favicon.ico
-│   ├── robots.txt
-│   └── *.jpg (hero images)
-└── 📄 README.md
+cmd-connect-meet-discover/
+├── app.js                  Express app entry point
+├── .env                    Local environment variables (not committed)
+├── models/                 Sequelize models (User, Post, Event, etc.)
+├── controllers/            Route handler logic
+├── routes/                 Express routers
+├── middleware/             Auth middleware (requireAuth, requireRole)
+├── views/                  EJS templates
+│   ├── auth/               login.ejs, register.ejs
+│   ├── users/              profile.ejs, settings.ejs
+│   ├── posts/              index.ejs, create.ejs, show.ejs
+│   ├── events/             index.ejs, create.ejs, show.ejs
+│   ├── moderator/          dashboard.ejs, reports.ejs
+│   ├── admin/              dashboard.ejs, users.ejs, reports.ejs
+│   └── partials/           header.ejs, footer.ejs
+├── public/                 Static assets (CSS, client JS, images)
+└── pages/                  Legacy static HTML mockups (not served by Express)
 ```
 
-## Files
+## Tech Stack
 
-- **index.html** - The main landing page with all the content
-- **css/home.css** - All the styling and design for the home page
-- **js/home.js** - Interactive features (slideshow, smooth scrolling, animations)
-- **pages/** - Directory for additional pages (about, events, community, etc.)
-- **public/** - Contains images, favicon, and robots.txt
-
-## Editing
-
-Open the files in any text editor and make your changes:
-- Edit content in `index.html`
-- Change colors and styling in `css/home.css`
-- Modify interactions in `js/home.js`
-
-## Adding New Pages
-
-1. Create new HTML files in the `pages/` folder (e.g., `pages/about.html`)
-2. Create page-specific CSS in `css/` folder (e.g., `css/about.css`)
-3. Create page-specific JS in `js/` folder if needed (e.g., `js/about.js`)
-
-No build process, no dependencies, just simple HTML/CSS/JS!
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- **Runtime:** Node.js
+- **Framework:** Express
+- **Templating:** EJS
+- **ORM:** Sequelize
+- **Database:** MySQL
+- **Auth:** express-session + bcrypt
+- **Other:** connect-flash, method-override
