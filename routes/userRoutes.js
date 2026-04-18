@@ -3,9 +3,11 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const { requireAuth } = require('../middleware/authMiddleware');
 
-router.get('/profile', requireAuth, userController.getOwnProfile);
-router.get('/profile/:id', requireAuth, userController.getUserProfile);
-router.get('/settings', requireAuth, userController.getSettings);
-router.put('/settings', requireAuth, userController.updateSettings);
+router.get('/profile',          requireAuth, userController.getOwnProfile);
+router.get('/settings',         requireAuth, userController.getSettings);
+router.post('/settings',        requireAuth, userController.updateSettings);
+router.get('/profile/:id',      userController.getUserById);
+router.get('/:id',              userController.getUserById);
+router.post('/:id/report',      requireAuth, userController.reportUser);
 
 module.exports = router;

@@ -1,8 +1,29 @@
 <%- include('../partials/header', { pageCSS: 'CM_Events' }) %>
 <main>
   <h1><%= post.title %></h1>
-  <p>by <a href="/users/profile/<%= post.User.id %>"><%= post.User.username %></a></p>
-  <p><%= post.content %></p>
+
+  <% if (post.author) { %>
+    <p>by <a href="/users/<%= post.author.id %>"><%= post.author.name %></a></p>
+  <% } %>
+  <% if (post.category) { %><span><%= post.category %></span><% } %>
+  <% if (post.location) { %><span> &middot; <%= post.location %></span><% } %>
+  <% if (post.date) { %><span> &middot; <%= new Date(post.date).toLocaleDateString() %></span><% } %>
+
+  <% if (post.description) { %><p><%= post.description %></p><% } %>
+
+  <p><strong><%= rsvpCount %></strong> RSVP<%= rsvpCount !== 1 ? 's' : '' %></p>
+
+  <% if (currentUser) { %>
+    <% if (hasRsvp) { %>
+      <form action="/posts/<%= post.id %>/rsvp?_method=DELETE" method="POST" style="display:inline">
+        <button type="submit">Cancel RSVP</button>
+      </form>
+    <% } else { %>
+      <form action="/posts/<%= post.id %>/rsvp" method="POST" style="display:inline">
+        <button type="submit">RSVP</button>
+      </form>
+    <% } %>
+  <% } %>
 
   <% if (currentUser && currentUser !== post.userId) { %>
     <details>

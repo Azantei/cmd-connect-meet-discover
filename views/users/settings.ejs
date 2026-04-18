@@ -23,7 +23,7 @@
             <% if (currentUser) { %>
                 <span><%= currentUsername %></span>
                 <form action="/logout" method="POST" style="display:inline">
-                    <button type="submit" style="margin-left:1rem;color:hsl(20,90%,55%);text-decoration:none;background:none;border:none;cursor:pointer;font:inherit;">Log Out</button>
+                    <button type="submit" style="margin-left:1rem;color:hsl(20,90%,55%);background:none;border:none;cursor:pointer;font:inherit;">Log Out</button>
                 </form>
             <% } else { %>
                 <a href="/login" style="color:hsl(20,90%,55%);text-decoration:none;">Sign In</a>
@@ -31,176 +31,72 @@
         </div>
     </nav>
 
+    <% if (success && success.length) { %><div class="flash success"><%= success %></div><% } %>
+    <% if (error && error.length) { %><div class="flash error"><%= error %></div><% } %>
+
     <div class="settings-layout">
         <aside class="settings-sidebar">
             <button class="nav-item active" onclick="setSection(this, 'profile')">Profile</button>
-            <button class="nav-item" onclick="setSection(this, 'account')">Account</button>
             <button class="nav-item" onclick="setSection(this, 'interests')">Interests</button>
             <button class="nav-item" onclick="setSection(this, 'location')">Location</button>
-            <button class="nav-item" onclick="setSection(this, 'privacy')">Privacy</button>
-            <button class="nav-item" onclick="setSection(this, 'notifications')">Notifications</button>
         </aside>
 
         <div class="settings-content">
 
-            <div class="section" id="section-profile">
-                <h2 class="section-title">Profile</h2>
-                <div class="field">
-                    <label class="field-label">Display Name</label>
-                    <input type="text" class="field-input" value="Alex Johnson">
-                </div>
-                <div class="field">
-                    <label class="field-label">Bio</label>
-                    <textarea class="field-input field-textarea" placeholder="Tell your community about yourself..."></textarea>
-                </div>
-                <div class="field">
-                    <label class="field-label">Avatar</label>
-                    <div class="upload-box">[ Upload photo ]</div>
-                </div>
-                <div class="save-bar">
-                    <button class="btn-save" onclick="showToast()">Save Changes</button>
-                    <button class="btn-discard">Discard Changes</button>
-                </div>
-            </div>
+            <form action="/users/settings" method="POST" id="settingsForm">
 
-            <div class="section" id="section-account" style="display:none;">
-                <h2 class="section-title">Account</h2>
-                <div class="field">
-                    <label class="field-label">Email Address</label>
-                    <input type="email" class="field-input" value="alexj@email.com">
-                </div>
-                <div class="field">
-                    <label class="field-label">Username</label>
-                    <input type="text" class="field-input" value="alexj">
-                </div>
-                <div class="field">
-                    <label class="field-label">New Password</label>
-                    <input type="password" class="field-input" placeholder="Leave blank to keep current">
-                </div>
-                <div class="field">
-                    <label class="field-label">Confirm New Password</label>
-                    <input type="password" class="field-input" placeholder="Confirm new password">
-                </div>
-                <div class="save-bar">
-                    <button class="btn-save" onclick="showToast()">Save Changes</button>
-                    <button class="btn-discard">Discard Changes</button>
-                </div>
-                <div class="danger-zone">
-                    <div class="danger-title">Danger Zone</div>
-                    <button class="btn-danger">Delete Account</button>
-                </div>
-            </div>
-
-            <div class="section" id="section-interests" style="display:none;">
-                <h2 class="section-title">Interests</h2>
-                <p class="section-desc">Select your interests to help us show you relevant events and connect you with your community.</p>
-                <div class="pills-wrap" id="interestPills"></div>
-                <div class="save-bar">
-                    <button class="btn-save" onclick="showToast()">Save Changes</button>
-                    <button class="btn-discard">Discard Changes</button>
-                </div>
-            </div>
-
-            <div class="section" id="section-location" style="display:none;">
-                <h2 class="section-title">Location</h2>
-                <div class="field">
-                    <label class="field-label">City</label>
-                    <input type="text" class="field-input" value="Seattle">
-                </div>
-                <div class="field">
-                    <label class="field-label">Neighborhood</label>
-                    <input type="text" class="field-input" value="Capitol Hill">
-                </div>
-                <div class="save-bar">
-                    <button class="btn-save" onclick="showToast()">Save Changes</button>
-                    <button class="btn-discard">Discard Changes</button>
-                </div>
-            </div>
-
-            <div class="section" id="section-privacy" style="display:none;">
-                <h2 class="section-title">Privacy</h2>
-                <div class="toggle-row">
-                    <div class="toggle-info"><div class="toggle-label">Show Location</div><div class="toggle-desc">Display your neighborhood on your profile.</div></div>
-                    <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
-                </div>
-                <div class="toggle-row">
-                    <div class="toggle-info"><div class="toggle-label">Show Stats</div><div class="toggle-desc">Display your post count and RSVP count on your profile.</div></div>
-                    <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
-                </div>
-                <div class="toggle-row">
-                    <div class="toggle-info"><div class="toggle-label">Show Previous RSVPs</div><div class="toggle-desc">Let others see events you've previously attended.</div></div>
-                    <div class="toggle" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
-                </div>
-                <div class="save-bar" style="margin-top:20px;">
-                    <button class="btn-save" onclick="showToast()">Save Changes</button>
-                    <button class="btn-discard">Discard Changes</button>
-                </div>
-            </div>
-
-            <div class="section" id="section-notifications" style="display:none;">
-                <h2 class="section-title">Notifications</h2>
-                <div class="toggle-row">
-                    <div class="toggle-info">
-                        <div class="toggle-label">Email Notifications</div>
-                        <div class="toggle-desc">Receive notifications via email.</div>
+                <div class="section" id="section-profile">
+                    <h2 class="section-title">Profile</h2>
+                    <div class="field">
+                        <label class="field-label" for="settingName">Display Name</label>
+                        <input type="text" id="settingName" name="name" class="field-input"
+                               value="<%= user.name %>" required />
                     </div>
-                    <div class="toggle on" onclick="toggleEmailNotifications(this)"><div class="toggle-knob"></div></div>
-                </div>
-                <div id="emailNotificationOptions" class="nested-options">
-                    <div class="toggle-row nested">
-                        <div class="toggle-info">
-                            <div class="toggle-label">Event Reminders</div>
-                            <div class="toggle-desc">Get reminded before events you've RSVP'd to.</div>
-                        </div>
-                        <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
-                    </div>
-                    <div class="toggle-row nested">
-                        <div class="toggle-info">
-                            <div class="toggle-label">Nearby Events</div>
-                            <div class="toggle-desc">Get notified about new events near you.</div>
-                        </div>
-                        <div class="toggle on" onclick="toggleNearbyEvents(this)"><div class="toggle-knob"></div></div>
-                    </div>
-                    <div id="nearbyEventsOptions" class="nested-options nested-level-2">
-                        <div class="toggle-row nested">
-                            <div class="toggle-info">
-                                <div class="toggle-label">By Interest</div>
-                                <div class="toggle-desc">Get notifications based on your selected interest categories.</div>
-                            </div>
-                            <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
-                        </div>
-                        <div class="toggle-row nested">
-                            <div class="toggle-info">
-                                <div class="toggle-label">By Your Neighborhood</div>
-                                <div class="toggle-desc">All events happening in your neighborhood.</div>
-                            </div>
-                            <div class="toggle" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
-                        </div>
-                        <div class="toggle-row nested">
-                            <div class="toggle-info">
-                                <div class="toggle-label">By Location</div>
-                                <div class="toggle-desc">Get all events at a certain place or location.</div>
-                            </div>
-                            <div class="toggle" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
-                        </div>
+                    <div class="save-bar">
+                        <button type="submit" class="btn-save">Save Changes</button>
+                        <a href="/users/profile" class="btn-discard">Discard</a>
                     </div>
                 </div>
-                <div class="save-bar" style="margin-top:20px;">
-                    <button class="btn-save" onclick="showToast()">Save Changes</button>
-                    <button class="btn-discard">Discard Changes</button>
-                </div>
-            </div>
 
-            <div class="section-note">Each settings section (Interests, Location, Privacy) has its own Save Changes / Discard buttons.</div>
+                <div class="section" id="section-interests" style="display:none;">
+                    <h2 class="section-title">Interests</h2>
+                    <p class="section-desc">Enter your interests as comma-separated values.</p>
+                    <div class="field">
+                        <label class="field-label" for="settingInterests">Interests</label>
+                        <input type="text" id="settingInterests" name="interests"
+                               class="field-input"
+                               value="<%= (user.interests || []).join(', ') %>"
+                               placeholder="e.g. Outdoors, Music, Tech" />
+                        <small>Separate each interest with a comma.</small>
+                    </div>
+                    <div class="save-bar">
+                        <button type="submit" class="btn-save">Save Changes</button>
+                        <a href="/users/profile" class="btn-discard">Discard</a>
+                    </div>
+                </div>
+
+                <div class="section" id="section-location" style="display:none;">
+                    <h2 class="section-title">Location</h2>
+                    <div class="field">
+                        <label class="field-label" for="settingLocation">City / Neighborhood</label>
+                        <input type="text" id="settingLocation" name="location" class="field-input"
+                               value="<%= user.location || '' %>"
+                               placeholder="e.g. Capitol Hill, Seattle" />
+                    </div>
+                    <div class="save-bar">
+                        <button type="submit" class="btn-save">Save Changes</button>
+                        <a href="/users/profile" class="btn-discard">Discard</a>
+                    </div>
+                </div>
+
+            </form>
         </div>
     </div>
-
-    <div class="toast" id="toast">✓ Changes saved successfully</div>
 
     <footer>
         <div class="container">
             <span class="logo">C.M.D.</span>
-            <p>Connect. Meet. Discover. © 2026</p>
+            <p>Connect. Meet. Discover. &copy; 2026</p>
         </div>
     </footer>
 
