@@ -81,12 +81,13 @@ exports.createPost = async (req, res, next) => {
       : (category ? [category] : []);
 
     const post = await Post.create({
-      title: title.trim(),
+      title:       title.trim(),
       description: description || null,
-      category: categoryArray,
-      location: location || null,
-      date: date || null,
-      userId: req.session.userId
+      category:    categoryArray,
+      location:    location || null,
+      date:        date || null,
+      imageUrl:    req.file ? `/uploads/${req.file.filename}` : null,
+      userId:      req.session.userId
     });
     req.flash('success', 'Post created!');
     res.redirect(`/posts/${post.id}`);

@@ -31,13 +31,12 @@
         </div>
     </nav>
 
-    <% if (success && success.length) { %><div class="flash success"><%= success %></div><% } %>
     <% if (error && error.length) { %><div class="flash error"><%= error %></div><% } %>
 
     <div class="content">
         <h1 class="page-title">Create a Post</h1>
 
-        <form action="/posts" method="POST" id="createPostForm">
+        <form action="/posts" method="POST" id="createPostForm" enctype="multipart/form-data">
 
             <div class="form-box">
                 <div class="section-label">TITLE &amp; DESCRIPTION <span class="req">*</span></div>
@@ -50,6 +49,7 @@
                     <label for="postDesc">Description</label>
                     <textarea rows="3" id="postDesc" name="description" placeholder="Describe your activity or gathering..."></textarea>
                 </div>
+                <span class="error-message" id="desc-error"></span>
             </div>
 
             <div class="form-box">
@@ -58,10 +58,12 @@
                     <label for="postDate">Date</label>
                     <input type="date" id="postDate" name="date" />
                 </div>
+                <span class="error-message" id="date-error"></span>
                 <div class="form-row">
                     <label for="postLocation">Location</label>
                     <input type="text" id="postLocation" name="location" placeholder="Enter a location..." />
                 </div>
+                <span class="error-message" id="location-error"></span>
             </div>
 
             <div class="form-box">
@@ -77,6 +79,35 @@
                     <% }) %>
                 </div>
                 <span class="error-message" id="categories-error"></span>
+            </div>
+
+            <div class="form-box">
+                <div class="section-label">EVENT BANNER <span class="optional">(optional)</span></div>
+                <div class="form-row">
+                    <input type="file" id="bannerUpload" name="imageUrl" accept="image/*"
+                           onchange="handleBannerUpload(event)" style="padding: 12px 16px;" />
+                    <div class="upload-note">Recommended size: 800x400px. Max 5MB.</div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <h2 class="preview-title">Post Preview</h2>
+                <div class="preview-card" id="previewCard">
+                    <div class="preview-banner" id="previewBanner">
+                        <div class="preview-banner-placeholder">Banner photo will appear here</div>
+                    </div>
+                    <div class="preview-body">
+                        <div class="preview-categories" id="previewCategories">
+                            <span class="preview-tag">Select categories above</span>
+                        </div>
+                        <h3 class="preview-event-title" id="previewTitle">Your post title will appear here</h3>
+                        <p class="preview-event-desc" id="previewDesc">Your description will appear here</p>
+                        <div class="preview-event-details" id="previewDetails">
+                            <span>📅 Date not set</span>
+                            <span>📍 Location not set</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="actions">

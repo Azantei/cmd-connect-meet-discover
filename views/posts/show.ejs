@@ -1,44 +1,162 @@
-<%- include('../partials/header', { pageCSS: 'CM_Events' }) %>
-<main>
-  <h1><%= post.title %></h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= post.title %> - C.M.D.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/CM_EventView.css">
+</head>
+<body>
 
-  <% if (post.author) { %>
-    <p>by <a href="/users/<%= post.author.id %>"><%= post.author.name %></a></p>
-  <% } %>
-  <% if (post.category) { %><span><%= post.category %></span><% } %>
-  <% if (post.location) { %><span> &middot; <%= post.location %></span><% } %>
-  <% if (post.date) { %><span> &middot; <%= new Date(post.date).toLocaleDateString() %></span><% } %>
+    <nav class="navbar">
+        <a href="/" class="brand"><span class="brand-light">C.M.</span><span class="brand-accent">D.</span></a>
+        <div class="nav-links">
+            <a href="/events">Explore</a>
+            <a href="/posts/create">Create</a>
+            <a href="/users/profile">Profile</a>
+            <a href="/about">About Us</a>
+        </div>
+        <div class="nav-right">
+            <% if (currentUser) { %>
+                <span><%= currentUsername %></span>
+                <form action="/logout" method="POST" style="display:inline">
+                    <button type="submit" style="margin-left:1rem;color:hsl(20,90%,55%);background:none;border:none;cursor:pointer;font:inherit;">Log Out</button>
+                </form>
+            <% } else { %>
+                <a href="/login" style="color:hsl(20,90%,55%);text-decoration:none;">Sign In</a>
+            <% } %>
+        </div>
+    </nav>
 
-  <% if (post.description) { %><p><%= post.description %></p><% } %>
+    <% if (success && success.length) { %><div class="flash success"><%= success %></div><% } %>
+    <% if (error && error.length) { %><div class="flash error"><%= error %></div><% } %>
 
-  <p><strong><%= rsvpCount %></strong> RSVP<%= rsvpCount !== 1 ? 's' : '' %></p>
+    <div class="banner">
+        <% if (post.imageUrl) { %>
+            <img src="<%= post.imageUrl %>" alt="Post banner" style="width:100%;height:100%;object-fit:cover;">
+        <% } else { %>
+            <div class="banner-icon"></div>
+            <span class="banner-text">Post Banner Image</span>
+        <% } %>
+    </div>
 
-  <% if (currentUser) { %>
-    <% if (hasRsvp) { %>
-      <form action="/posts/<%= post.id %>/rsvp?_method=DELETE" method="POST" style="display:inline">
-        <button type="submit">Cancel RSVP</button>
-      </form>
-    <% } else { %>
-      <form action="/posts/<%= post.id %>/rsvp" method="POST" style="display:inline">
-        <button type="submit">RSVP</button>
-      </form>
+    <div class="content">
+        <div class="two-column-layout">
+            <div class="left-column">
+                <% if (post.date) { %>
+                <div class="info-box">
+                    <div class="info-label">📅 Date</div>
+                    <div class="info-value"><%= new Date(post.date).toDateString() %></div>
+                </div>
+                <% } %>
+                <% if (post.location) { %>
+                <div class="info-box">
+                    <div class="info-label">📍 Location</div>
+                    <div class="info-value"><%= post.location %></div>
+                </div>
+                <% } %>
+                <div class="info-box">
+                    <div class="info-label">👥 RSVPs</div>
+                    <div class="info-value"><%= rsvpCount %> going</div>
+                </div>
+                <% if (currentUser) { %>
+                    <% if (hasRsvp) { %>
+                        <form action="/posts/<%= post.id %>/rsvp?_method=DELETE" method="POST" style="margin-top:1rem;">
+                            <button type="submit" class="btn-rsvp rsvp-active">Cancel RSVP</button>
+                        </form>
+                    <% } else { %>
+                        <form action="/posts/<%= post.id %>/rsvp" method="POST" style="margin-top:1rem;">
+                            <button type="submit" class="btn-rsvp">RSVP</button>
+                        </form>
+                    <% } %>
+                <% } %>
+            </div>
+
+            <div class="right-column">
+                <h1 class="event-title"><%= post.title %></h1>
+
+                <% if (post.category && post.category.length) { %>
+                <div class="tags">
+                    <% post.category.forEach(cat => { %><span class="tag"><%= cat %></span><% }) %>
+                </div>
+                <% } %>
+
+                <% if (post.description) { %>
+                <div class="desc-lines">
+                    <div style="width:100%"><%= post.description %></div>
+                </div>
+                <% } %>
+
+                <div class="action-row">
+                    <% if (currentUser && currentUser !== post.userId) { %>
+                        <button class="btn-report" id="reportBtn" onclick="document.getElementById('reportModal').style.display='flex'">&#9889; Report Post</button>
+                    <% } %>
+                    <% if (currentUser === post.userId || currentRole === 'admin' || currentRole === 'moderator') { %>
+                        <form action="/posts/<%= post.id %>?_method=DELETE" method="POST" style="display:inline"
+                              onsubmit="return confirm('Delete this post?')">
+                            <button type="submit" class="btn-report" style="background:hsl(0,70%,55%);">Delete Post</button>
+                        </form>
+                    <% } %>
+                </div>
+
+                <% if (post.author) { %>
+                <div class="section-divider">
+                    <h3 class="section-title">Post Creator</h3>
+                </div>
+                <div class="host-card">
+                    <div class="host-left">
+                        <div class="avatar"><%= post.author.name ? post.author.name.charAt(0).toUpperCase() : '?' %></div>
+                        <div class="host-info">
+                            <div class="host-name"><%= post.author.name %></div>
+                            <div class="host-meta">
+                                Posted <%= new Date(post.createdAt).toLocaleDateString() %> &middot;
+                                <a href="/users/<%= post.author.id %>" class="view-profile">View profile</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <% if (currentUser && currentUser !== post.userId) { %>
+    <div class="modal-overlay" id="reportModal" style="display:none;">
+        <div class="modal">
+            <div class="modal-title">Report this post?</div>
+            <div class="modal-desc">Please describe the issue. Our moderation team will review your report.</div>
+            <form action="/posts/<%= post.id %>/report" method="POST">
+                <div class="modal-reasons">
+                    <label><input type="radio" name="reason" value="Spam or misleading content"> Spam or misleading content</label>
+                    <label><input type="radio" name="reason" value="Inappropriate content"> Inappropriate content</label>
+                    <label><input type="radio" name="reason" value="Harassment or bullying"> Harassment or bullying</label>
+                    <label><input type="radio" name="reason" value="Violates community guidelines"> Violates community guidelines</label>
+                    <label><input type="radio" name="reason" value="Other"> Other</label>
+                </div>
+                <div class="modal-comment-section">
+                    <label for="reportComment" class="comment-label">Additional Comments (optional)</label>
+                    <textarea id="reportComment" name="reason" class="report-textarea" rows="3"
+                              placeholder="Provide any additional details..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="document.getElementById('reportModal').style.display='none'">Cancel</button>
+                    <button type="submit" class="btn-submit">Submit Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <% } %>
-  <% } %>
 
-  <% if (currentUser && currentUser !== post.userId) { %>
-    <details>
-      <summary>Report this post</summary>
-      <form action="/posts/<%= post.id %>/report" method="POST">
-        <textarea name="reason" required placeholder="Reason for report"></textarea>
-        <button type="submit">Submit Report</button>
-      </form>
-    </details>
-  <% } %>
+    <footer>
+        <div class="container">
+            <span class="logo">C.M.D.</span>
+            <p>Connect. Meet. Discover. &copy; 2026</p>
+        </div>
+    </footer>
 
-  <% if (currentUser === post.userId || currentRole === 'admin' || currentRole === 'moderator') { %>
-    <form action="/posts/<%= post.id %>?_method=DELETE" method="POST">
-      <button type="submit">Delete Post</button>
-    </form>
-  <% } %>
-</main>
-<%- include('../partials/footer') %>
+    <script src="/js/CM_EventView.js"></script>
+</body>
+</html>
