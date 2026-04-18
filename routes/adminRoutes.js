@@ -5,14 +5,20 @@ const { requireAuth, requireRole } = require('../middleware/authMiddleware');
 
 router.use(requireAuth, requireRole('admin'));
 
-router.get('/dashboard', adminController.getDashboard);
 router.get('/users', adminController.getUsers);
-router.put('/users/:id/ban', adminController.banUser);
-router.put('/users/:id/role', adminController.changeRole);
-router.get('/reports', adminController.getEscalatedReports);
-router.put('/reports/:id/resolve', adminController.resolveReport);
+router.post('/users/:id/ban', adminController.banUser);
+router.post('/users/:id/unban', adminController.unbanUser);
+router.post('/users/:id/promote', adminController.promoteUser);
+router.post('/users/:id/demote', adminController.demoteUser);
+
+router.get('/escalated', adminController.getEscalated);
+router.post('/escalated/:id/remove', adminController.removeEscalated);
+router.post('/escalated/:id/dismiss', adminController.dismissEscalated);
+
 router.get('/analytics', adminController.getAnalytics);
+
 router.get('/settings', adminController.getSettings);
-router.put('/settings', adminController.updateSettings);
+router.post('/settings/categories', adminController.addCategory);
+router.delete('/settings/categories/:id', adminController.deleteCategory);
 
 module.exports = router;

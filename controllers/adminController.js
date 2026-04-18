@@ -1,76 +1,119 @@
-const { User, Post, Event, Report } = require('../models');
-
-exports.getDashboard = async (req, res, next) => {
-  try {
-    const [userCount, postCount, eventCount, reportCount] = await Promise.all([
-      User.count(), Post.count(), Event.count(), Report.count({ where: { status: 'pending' } })
-    ]);
-    res.render('admin/dashboard', { title: 'Admin Dashboard', userCount, postCount, eventCount, reportCount });
-  } catch (err) { next(err); }
-};
+const { User, Post, Report, Category } = require('../models');
 
 exports.getUsers = async (req, res, next) => {
   try {
-    const users = await User.findAll({ order: [['createdAt', 'DESC']] });
+    const users = await User.findAll({
+      attributes: ['id', 'name', 'email', 'role', 'isBanned', 'createdAt'],
+      order: [['createdAt', 'DESC']]
+    });
     res.render('admin/users', { title: 'User Management', users });
   } catch (err) { next(err); }
 };
 
 exports.banUser = async (req, res, next) => {
   try {
-    const user = await User.findByPk(req.params.id);
-    if (!user) return res.redirect('/admin/users');
-    await user.update({ isBanned: !user.isBanned });
-    req.flash('success', `User ${user.isBanned ? 'banned' : 'unbanned'}.`);
+    await User.update({ isBanned: true }, { where: { id: req.params.id } });
+    req.flash('success', 'User banned.');
     res.redirect('/admin/users');
   } catch (err) { next(err); }
 };
 
-exports.changeRole = async (req, res, next) => {
+exports.unbanUser = async (req, res, next) => {
   try {
-    const { role } = req.body;
-    await User.update({ role }, { where: { id: req.params.id } });
-    req.flash('success', 'Role updated.');
+    await User.update({ isBanned: false }, { where: { id: req.params.id } });
+    req.flash('success', 'User unbanned.');
     res.redirect('/admin/users');
   } catch (err) { next(err); }
 };
 
-exports.getEscalatedReports = async (req, res, next) => {
+exports.promoteUser = async (req, res, next) => {
+  try {
+    await User.update({ role: 'moderator' }, { where: { id: req.params.id } });
+    req.flash('success', 'User promoted to moderator.');
+    res.redirect('/admin/users');
+  } catch (err) { next(err); }
+};
+
+exports.demoteUser = async (req, res, next) => {
+  try {
+    await User.update({ role: 'community_member' }, { where: { id: req.params.id } });
+    req.flash('success', 'User demoted to community member.');
+    res.redirect('/admin/users');
+  } catch (err) { next(err); }
+};
+
+exports.getEscalated = async (req, res, next) => {
   try {
     const reports = await Report.findAll({
       where: { status: 'escalated' },
-      include: [
-        { model: Post },
-        { model: User, as: 'reporter', attributes: ['id', 'username'] }
-      ],
+      include: [{ model: User, as: 'reporter', attributes: ['id', 'name', 'email'] }],
       order: [['createdAt', 'DESC']]
     });
-    res.render('admin/reports', { title: 'Escalated Reports', reports });
+    res.render('admin/escalated', { title: 'Escalated Reports', reports });
   } catch (err) { next(err); }
 };
 
-exports.resolveReport = async (req, res, next) => {
+exports.removeEscalated = async (req, res, next) => {
   try {
-    await Report.update({ status: 'resolved' }, { where: { id: req.params.id } });
-    req.flash('success', 'Report resolved.');
-    res.redirect('/admin/reports');
+    const report = await Report.findByPk(req.params.id);
+    if (!report) { req.flash('error', 'Report not found.'); return res.redirect('/admin/escalated'); }
+    if (report.targetType === 'post') {
+      await Post.destroy({ where: { id: report.targetId } });
+    }
+    await report.update({ status: 'resolved', notes: 'Content removed by admin.' });
+    req.flash('success', 'Post removed and report resolved.');
+    res.redirect('/admin/escalated');
+  } catch (err) { next(err); }
+};
+
+exports.dismissEscalated = async (req, res, next) => {
+  try {
+    const report = await Report.findByPk(req.params.id);
+    if (!report) { req.flash('error', 'Report not found.'); return res.redirect('/admin/escalated'); }
+    await report.update({ status: 'resolved', notes: 'Dismissed by admin.' });
+    req.flash('success', 'Report dismissed.');
+    res.redirect('/admin/escalated');
   } catch (err) { next(err); }
 };
 
 exports.getAnalytics = async (req, res, next) => {
   try {
-    const [userCount, postCount, eventCount] = await Promise.all([
-      User.count(), Post.count(), Event.count()
+    const [userCount, postCount, pendingReportCount] = await Promise.all([
+      User.count(),
+      Post.count(),
+      Report.count({ where: { status: 'pending' } })
     ]);
-    res.render('admin/analytics', { title: 'Analytics', userCount, postCount, eventCount });
+    res.render('admin/analytics', { title: 'Analytics', userCount, postCount, pendingReportCount });
   } catch (err) { next(err); }
 };
 
-exports.getSettings = (req, res) => {
-  res.render('admin/settings', { title: 'Admin Settings' });
+exports.getSettings = async (req, res, next) => {
+  try {
+    const categories = await Category.findAll({ order: [['name', 'ASC']] });
+    res.render('admin/settings', { title: 'Platform Settings', categories });
+  } catch (err) { next(err); }
 };
 
-exports.updateSettings = (req, res) => {
-  req.flash('success', 'Settings saved.');
-  res.redirect('/admin/settings');
+exports.addCategory = async (req, res, next) => {
+  try {
+    const { name } = req.body;
+    if (!name || !name.trim()) { req.flash('error', 'Category name is required.'); return res.redirect('/admin/settings'); }
+    await Category.create({ name: name.trim() });
+    req.flash('success', `Category "${name.trim()}" added.`);
+    res.redirect('/admin/settings');
+  } catch (err) {
+    if (err.name === 'SequelizeUniqueConstraintError') {
+      req.flash('error', 'That category already exists.');
+      return res.redirect('/admin/settings');
+    }
+    next(err);
+  }
+};
+
+exports.deleteCategory = async (req, res, next) => {
+  try {
+    await Category.destroy({ where: { id: req.params.id } });
+    req.flash('success', 'Category removed.');
+    res.redirect('/admin/settings');
+  } catch (err) { next(err); }
 };
