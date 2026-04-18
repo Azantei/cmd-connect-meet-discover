@@ -4,7 +4,7 @@ const { Post, User, RSVP, Report, Category } = require('../models');
 exports.getFeed = async (req, res, next) => {
   try {
     const { q, category } = req.query;
-    const where = { isHidden: false };
+    const where = { isHidden: false, status: 'published' };
 
     if (q && q.trim()) {
       where[Op.or] = [
@@ -80,6 +80,7 @@ exports.createPost = async (req, res, next) => {
       ? category
       : (category ? [category] : []);
 
+    const status = req.body.status === 'draft' ? 'draft' : 'published';
     const post = await Post.create({
       title:       title.trim(),
       description: description || null,
@@ -87,9 +88,56 @@ exports.createPost = async (req, res, next) => {
       location:    location || null,
       date:        date || null,
       imageUrl:    req.file ? `/uploads/${req.file.filename}` : null,
-      userId:      req.session.userId
+      userId:      req.session.userId,
+      status
     });
+    if (status === 'draft') {
+      req.flash('success', 'Draft saved!');
+      return res.redirect('/users/profile');
+    }
     req.flash('success', 'Post created!');
+    res.redirect(`/posts/${post.id}`);
+  } catch (err) { next(err); }
+};
+
+exports.getEditPost = async (req, res, next) => {
+  try {
+    const post = await Post.findByPk(req.params.id);
+    if (!post || post.userId !== req.session.userId) {
+      req.flash('error', 'Post not found.');
+      return res.redirect('/users/profile');
+    }
+    const categories = await Category.findAll({ order: [['name', 'ASC']] });
+    res.render('posts/edit', { title: 'Edit Post', post, categories });
+  } catch (err) { next(err); }
+};
+
+exports.updatePost = async (req, res, next) => {
+  try {
+    const post = await Post.findByPk(req.params.id);
+    if (!post || post.userId !== req.session.userId) {
+      req.flash('error', 'Unauthorized.');
+      return res.redirect('/users/profile');
+    }
+    const { title, description, category, location, date } = req.body;
+    const categoryArray = Array.isArray(category) ? category : (category ? [category] : []);
+    const status = req.body.status === 'draft' ? 'draft' : 'published';
+
+    await post.update({
+      title:       title && title.trim() ? title.trim() : post.title,
+      description: description || null,
+      category:    categoryArray,
+      location:    location || null,
+      date:        date || null,
+      imageUrl:    req.file ? `/uploads/${req.file.filename}` : post.imageUrl,
+      status
+    });
+
+    if (status === 'draft') {
+      req.flash('success', 'Draft saved.');
+      return res.redirect('/users/profile');
+    }
+    req.flash('success', 'Post published!');
     res.redirect(`/posts/${post.id}`);
   } catch (err) { next(err); }
 };

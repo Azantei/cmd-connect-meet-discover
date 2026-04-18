@@ -37,6 +37,10 @@ module.exports = (sequelize, DataTypes) => {
     isHidden: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
+    },
+    status: {
+      type: DataTypes.ENUM('published', 'draft'),
+      defaultValue: 'published'
     }
   }, {
     tableName: 'posts',

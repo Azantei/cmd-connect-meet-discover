@@ -97,7 +97,7 @@
                     <% if (currentUser === post.userId || currentRole === 'admin' || currentRole === 'moderator') { %>
                         <form action="/posts/<%= post.id %>?_method=DELETE" method="POST" style="display:inline"
                               onsubmit="return confirm('Delete this post?')">
-                            <button type="submit" class="btn-report" style="background:hsl(0,70%,55%);">Delete Post</button>
+                            <button type="submit" class="btn-report" style="background:hsl(0,70%,55%);color:#fff;font-weight:700;">Delete Post</button>
                         </form>
                     <% } %>
                 </div>

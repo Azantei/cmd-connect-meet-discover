@@ -347,7 +347,6 @@ function handlePost() {
  * Saves current form state without validation
  */
 function handleSaveDraft() {
-    console.log('Saving draft...');
-    // In a real implementation, this would save to local storage or backend
-    alert('Draft saved! You can continue editing later.');
+    document.getElementById('postStatus').value = 'draft';
+    document.getElementById('createPostForm').submit();
 }

@@ -2,21 +2,25 @@ const { User, Post, RSVP, Report } = require('../models');
 
 exports.getOwnProfile = async (req, res, next) => {
   try {
-    const [user, posts, rsvps] = await Promise.all([
+    const [user, posts, rsvps, drafts] = await Promise.all([
       User.findByPk(req.session.userId, {
         attributes: ['id', 'name', 'email', 'location', 'interests', 'role', 'profilePic']
       }),
       Post.findAll({
-        where: { userId: req.session.userId, isHidden: false },
+        where: { userId: req.session.userId, isHidden: false, status: 'published' },
         order: [['createdAt', 'DESC']]
       }),
       RSVP.findAll({
         where: { userId: req.session.userId },
-        include: [{ model: Post, where: { isHidden: false }, required: true }],
+        include: [{ model: Post, where: { isHidden: false, status: 'published' }, required: true }],
+        order: [['createdAt', 'DESC']]
+      }),
+      Post.findAll({
+        where: { userId: req.session.userId, status: 'draft' },
         order: [['createdAt', 'DESC']]
       })
     ]);
-    res.render('users/profile', { title: 'My Profile', profileUser: user, posts, rsvps });
+    res.render('users/profile', { title: 'My Profile', profileUser: user, posts, rsvps, drafts });
   } catch (err) { next(err); }
 };
 

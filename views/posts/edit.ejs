@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C.M.D. - Create a Post</title>
+    <title>C.M.D. - Edit Post</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
@@ -31,24 +31,27 @@
         </div>
     </nav>
 
+    <% if (success && success.length) { %><div class="flash success"><%= success %></div><% } %>
     <% if (error && error.length) { %><div class="flash error"><%= error %></div><% } %>
 
     <div class="content">
-        <h1 class="page-title">Create a Post</h1>
+        <h1 class="page-title">Edit Post</h1>
 
-        <form action="/posts" method="POST" id="createPostForm" enctype="multipart/form-data">
+        <form action="/posts/<%= post.id %>/edit" method="POST" id="createPostForm" enctype="multipart/form-data">
             <input type="hidden" name="status" id="postStatus" value="published">
 
             <div class="form-box">
                 <div class="section-label">TITLE &amp; DESCRIPTION <span class="req">*</span></div>
                 <div class="form-row border-bottom">
                     <label for="postTitle">Title</label>
-                    <input type="text" id="postTitle" name="title" placeholder="Enter a title..." required />
+                    <input type="text" id="postTitle" name="title" placeholder="Enter a title..."
+                           value="<%= post.title %>" required />
                 </div>
                 <span class="error-message" id="title-error"></span>
                 <div class="form-row textarea-row">
                     <label for="postDesc">Description</label>
-                    <textarea rows="3" id="postDesc" name="description" placeholder="Describe your activity or gathering..."></textarea>
+                    <textarea rows="3" id="postDesc" name="description"
+                              placeholder="Describe your activity or gathering..."><%= post.description || '' %></textarea>
                 </div>
                 <span class="error-message" id="desc-error"></span>
             </div>
@@ -57,12 +60,14 @@
                 <div class="section-label">DATE &amp; LOCATION <span class="optional">(optional)</span></div>
                 <div class="form-row border-bottom">
                     <label for="postDate">Date</label>
-                    <input type="date" id="postDate" name="date" />
+                    <input type="date" id="postDate" name="date"
+                           value="<%= post.date ? new Date(post.date).toISOString().split('T')[0] : '' %>" />
                 </div>
                 <span class="error-message" id="date-error"></span>
                 <div class="form-row">
                     <label for="postLocation">Location</label>
-                    <input type="text" id="postLocation" name="location" placeholder="Enter a location..." />
+                    <input type="text" id="postLocation" name="location"
+                           placeholder="Enter a location..." value="<%= post.location || '' %>" />
                 </div>
                 <span class="error-message" id="location-error"></span>
             </div>
@@ -71,9 +76,10 @@
                 <div class="categories-label">CATEGORIES <span class="optional">(optional)</span></div>
                 <div class="pills" id="categoryPills">
                     <% categories.forEach(cat => { %>
-                        <label class="pill">
+                        <label class="pill<%= (Array.isArray(post.category) && post.category.includes(cat.name)) ? ' active' : '' %>">
                             <input type="checkbox" name="category" value="<%= cat.name %>"
                                    style="display:none"
+                                   <%= (Array.isArray(post.category) && post.category.includes(cat.name)) ? 'checked' : '' %>
                                    onchange="this.closest('.pill').classList.toggle('active', this.checked)">
                             <%= cat.name %>
                         </label>
@@ -84,6 +90,13 @@
 
             <div class="form-box">
                 <div class="section-label">EVENT BANNER <span class="optional">(optional)</span></div>
+                <% if (post.imageUrl) { %>
+                    <div style="margin-bottom:0.75rem;">
+                        <img src="<%= post.imageUrl %>" alt="Current banner"
+                             style="width:100%;max-height:200px;object-fit:cover;border-radius:8px;">
+                        <small style="color:#888;">Upload a new image below to replace it.</small>
+                    </div>
+                <% } %>
                 <div class="form-row">
                     <input type="file" id="bannerUpload" name="imageUrl" accept="image/*"
                            onchange="handleBannerUpload(event)" style="padding: 12px 16px;" />
@@ -95,27 +108,36 @@
                 <h2 class="preview-title">Post Preview</h2>
                 <div class="preview-card" id="previewCard">
                     <div class="preview-banner" id="previewBanner">
-                        <div class="preview-banner-placeholder">Banner photo will appear here</div>
+                        <% if (post.imageUrl) { %>
+                            <img src="<%= post.imageUrl %>" alt="" style="width:100%;height:100%;object-fit:cover;">
+                        <% } else { %>
+                            <div class="preview-banner-placeholder">Banner photo will appear here</div>
+                        <% } %>
                     </div>
                     <div class="preview-body">
                         <div class="preview-categories" id="previewCategories">
-                            <span class="preview-tag">Select categories above</span>
+                            <% (Array.isArray(post.category) && post.category.length) ? post.category.forEach(c => { %><span class="preview-tag"><%= c %></span><% }) : '' %>
+                            <% if (!Array.isArray(post.category) || !post.category.length) { %><span class="preview-tag">Select categories above</span><% } %>
                         </div>
-                        <h3 class="preview-event-title" id="previewTitle">Your post title will appear here</h3>
-                        <p class="preview-event-desc" id="previewDesc">Your description will appear here</p>
+                        <h3 class="preview-event-title" id="previewTitle"><%= post.title %></h3>
+                        <p class="preview-event-desc" id="previewDesc"><%= post.description || 'Your description will appear here' %></p>
                         <div class="preview-event-details" id="previewDetails">
-                            <span>📅 Date not set</span>
-                            <span>📍 Location not set</span>
+                            <span>📅 <%= post.date ? new Date(post.date).toDateString() : 'Date not set' %></span>
+                            <span>📍 <%= post.location || 'Location not set' %></span>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="actions">
-                <a href="/posts" class="btn-cancel">Cancel</a>
+                <a href="/users/profile" class="btn-cancel">Cancel</a>
                 <div class="actions-right">
+                    <form action="/posts/<%= post.id %>?_method=DELETE" method="POST" style="display:inline"
+                          onsubmit="return confirm('Delete this draft?')">
+                        <button type="submit" class="btn-draft" style="background:#c0392b;color:#fff;">Delete Draft</button>
+                    </form>
                     <button type="button" class="btn-draft" onclick="handleSaveDraft()">Save as Draft</button>
-                    <button type="submit" class="btn-post">Post</button>
+                    <button type="submit" class="btn-post">Publish</button>
                 </div>
             </div>
 

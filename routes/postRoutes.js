@@ -8,6 +8,8 @@ router.get('/',        postController.getFeed);
 router.get('/new',     requireAuth, postController.getCreatePost);
 router.get('/create',  requireAuth, postController.getCreatePost);
 router.post('/',       requireAuth, postUpload.single('imageUrl'), postController.createPost);
+router.get('/:id/edit',  requireAuth, postController.getEditPost);
+router.post('/:id/edit', requireAuth, postUpload.single('imageUrl'), postController.updatePost);
 router.get('/:id',     postController.getPost);
 router.delete('/:id',  requireAuth, postController.deletePost);
 router.post('/:id/rsvp',    requireAuth, postController.createRsvp);

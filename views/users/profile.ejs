@@ -129,7 +129,8 @@
           color: '#2e3a4e',
           tags:  Array.isArray(p.category) ? p.category : [],
           status: 'Published',
-          id: p.id
+          id: p.id,
+          imageUrl: p.imageUrl || null
         };
       })) %>;
       UPCOMING_EVENTS = <%- JSON.stringify(rsvps.map(function(r) {
@@ -143,12 +144,25 @@
           color: '#3b4a2e',
           tags:  Array.isArray(p.category) ? p.category : [],
           rsvp:  'Going',
-          id:    p.id
+          id:    p.id,
+          imageUrl: p.imageUrl || null
         };
       })) %>;
       PREVIOUS_EVENTS  = [];
       INTERESTED_EVENTS = [];
-      DRAFTS = [];
+      DRAFTS = <%- JSON.stringify(drafts.map(function(p) {
+        return {
+          title: p.title || '',
+          desc:  p.description || '',
+          date:  'Draft',
+          going: 0,
+          color: '#3b3b3b',
+          tags:  Array.isArray(p.category) ? p.category : [],
+          status: 'Draft',
+          id: p.id,
+          imageUrl: p.imageUrl || null
+        };
+      })) %>;
       renderCards();
     </script>
 </body>
