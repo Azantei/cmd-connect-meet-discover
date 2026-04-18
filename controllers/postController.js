@@ -12,7 +12,10 @@ exports.getFeed = async (req, res, next) => {
         { description: { [Op.like]: `%${q.trim()}%` } }
       ];
     }
-    if (category && category.trim()) where.category = category.trim();
+    if (category && category.trim()) {
+      const safe = category.trim().replace(/["%_\\]/g, '\\$&');
+      where.category = { [Op.like]: `%"${safe}"%` };
+    }
 
     const [posts, categories] = await Promise.all([
       Post.findAll({
@@ -73,10 +76,14 @@ exports.createPost = async (req, res, next) => {
       req.flash('error', 'Title is required.');
       return res.redirect('/posts/new');
     }
+    const categoryArray = Array.isArray(category)
+      ? category
+      : (category ? [category] : []);
+
     const post = await Post.create({
       title: title.trim(),
       description: description || null,
-      category: category || null,
+      category: categoryArray,
       location: location || null,
       date: date || null,
       userId: req.session.userId

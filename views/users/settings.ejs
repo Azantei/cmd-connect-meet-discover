@@ -43,7 +43,7 @@
 
         <div class="settings-content">
 
-            <form action="/users/settings" method="POST" id="settingsForm">
+            <form action="/users/settings" method="POST" id="settingsForm" enctype="multipart/form-data">
 
                 <div class="section" id="section-profile">
                     <h2 class="section-title">Profile</h2>
@@ -51,6 +51,16 @@
                         <label class="field-label" for="settingName">Display Name</label>
                         <input type="text" id="settingName" name="name" class="field-input"
                                value="<%= user.name %>" required />
+                    </div>
+                    <div class="field">
+                        <label class="field-label">Profile Picture</label>
+                        <% if (user.profilePic) { %>
+                            <img src="<%= user.profilePic %>" alt="Profile picture"
+                                 style="width:80px;height:80px;border-radius:50%;object-fit:cover;display:block;margin-bottom:0.5rem;">
+                        <% } %>
+                        <input type="file" name="profilePic" accept="image/jpeg,image/png,image/webp,image/gif"
+                               class="field-input" style="padding:8px 0;">
+                        <small>JPG, PNG, WebP or GIF &mdash; max 5 MB</small>
                     </div>
                     <div class="save-bar">
                         <button type="submit" class="btn-save">Save Changes</button>

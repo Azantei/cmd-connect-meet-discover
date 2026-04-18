@@ -28,7 +28,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE
     },
     category: {
-      type: DataTypes.STRING(50)
+      type: DataTypes.JSON,
+      defaultValue: []
     },
     imageUrl: {
       type: DataTypes.STRING(255)

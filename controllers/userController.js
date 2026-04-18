@@ -4,7 +4,7 @@ exports.getOwnProfile = async (req, res, next) => {
   try {
     const [user, posts, rsvps] = await Promise.all([
       User.findByPk(req.session.userId, {
-        attributes: ['id', 'name', 'email', 'location', 'interests', 'role']
+        attributes: ['id', 'name', 'email', 'location', 'interests', 'role', 'profilePic']
       }),
       Post.findAll({
         where: { userId: req.session.userId, isHidden: false },
@@ -23,7 +23,7 @@ exports.getOwnProfile = async (req, res, next) => {
 exports.getUserById = async (req, res, next) => {
   try {
     const user = await User.findByPk(req.params.id, {
-      attributes: ['id', 'name', 'location', 'interests']
+      attributes: ['id', 'name', 'location', 'interests', 'profilePic']
     });
     if (!user) { req.flash('error', 'User not found.'); return res.redirect('/feed'); }
     const posts = await Post.findAll({
@@ -41,7 +41,7 @@ exports.getUserById = async (req, res, next) => {
 exports.getSettings = async (req, res, next) => {
   try {
     const user = await User.findByPk(req.session.userId, {
-      attributes: ['id', 'name', 'email', 'location', 'interests']
+      attributes: ['id', 'name', 'email', 'location', 'interests', 'profilePic']
     });
     res.render('users/settings', { title: 'Settings', user });
   } catch (err) { next(err); }
@@ -54,14 +54,17 @@ exports.updateSettings = async (req, res, next) => {
       ? interests
       : (interests ? interests.split(',').map(s => s.trim()).filter(Boolean) : []);
 
-    await User.update(
-      {
-        name:      name && name.trim() ? name.trim() : undefined,
-        location:  location || null,
-        interests: interestsArray
-      },
-      { where: { id: req.session.userId } }
-    );
+    const updates = {
+      name:      name && name.trim() ? name.trim() : undefined,
+      location:  location || null,
+      interests: interestsArray
+    };
+
+    if (req.file) {
+      updates.profilePic = `/uploads/${req.file.filename}`;
+    }
+
+    await User.update(updates, { where: { id: req.session.userId } });
 
     if (name && name.trim()) req.session.username = name.trim();
     req.flash('success', 'Settings updated.');

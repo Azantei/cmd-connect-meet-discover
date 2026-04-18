@@ -36,7 +36,12 @@
 
     <div class="profile-header">
         <div class="profile-left">
-            <div class="avatar"><%= profileUser.name ? profileUser.name.charAt(0).toUpperCase() : '?' %></div>
+            <% if (profileUser.profilePic) { %>
+                <img src="<%= profileUser.profilePic %>" alt="Profile picture"
+                     class="avatar" style="object-fit:cover;">
+            <% } else { %>
+                <div class="avatar"><%= profileUser.name ? profileUser.name.charAt(0).toUpperCase() : '?' %></div>
+            <% } %>
             <div class="profile-info">
                 <div class="profile-name-row">
                     <span class="profile-name"><%= profileUser.name %></span>

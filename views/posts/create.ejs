@@ -65,15 +65,18 @@
             </div>
 
             <div class="form-box">
-                <div class="categories-label">CATEGORY <span class="optional">(optional)</span></div>
-                <div class="form-row">
-                    <select name="category" id="postCategory" class="form-input">
-                        <option value="">Select a category...</option>
-                        <% categories.forEach(cat => { %>
-                            <option value="<%= cat.name %>"><%= cat.name %></option>
-                        <% }) %>
-                    </select>
+                <div class="categories-label">CATEGORIES <span class="optional">(optional)</span></div>
+                <div class="pills" id="categoryPills">
+                    <% categories.forEach(cat => { %>
+                        <label class="pill">
+                            <input type="checkbox" name="category" value="<%= cat.name %>"
+                                   style="display:none"
+                                   onchange="this.closest('.pill').classList.toggle('active', this.checked)">
+                            <%= cat.name %>
+                        </label>
+                    <% }) %>
                 </div>
+                <span class="error-message" id="categories-error"></span>
             </div>
 
             <div class="actions">
