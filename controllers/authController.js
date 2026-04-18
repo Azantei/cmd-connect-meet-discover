@@ -2,9 +2,9 @@ const bcrypt = require('bcrypt');
 const { User } = require('../models');
 
 const ROLE_REDIRECTS = {
-  community_member: '/feed',
-  moderator: '/moderator',
-  admin: '/admin'
+  community_member: '/users/profile',
+  moderator: '/moderator/dashboard',
+  admin: '/admin/users'
 };
 
 exports.getHome = (req, res) => {
@@ -73,7 +73,7 @@ exports.postRegister = async (req, res, next) => {
     req.session.role = user.role;
     req.session.username = user.name;
 
-    res.redirect('/feed');
+    res.redirect(ROLE_REDIRECTS[user.role] || '/users/profile');
   } catch (err) {
     if (err.name === 'SequelizeUniqueConstraintError') {
       req.flash('error', 'An account with that email already exists.');
