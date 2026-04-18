@@ -23,7 +23,7 @@
             <% if (currentUser) { %>
                 <span><%= currentUsername %></span>
                 <form action="/logout" method="POST" style="display:inline">
-                    <button type="submit" style="margin-left:1rem;color:hsl(20,90%,55%);background:none;border:none;cursor:pointer;font:inherit;">Log Out</button>
+                    <button type="submit" style="margin-left:1rem;color:hsl(20,90%,55%);text-decoration:none;background:none;border:none;cursor:pointer;font:inherit;">Log Out</button>
                 </form>
             <% } else { %>
                 <a href="/login" style="color:hsl(20,90%,55%);text-decoration:none;">Sign In</a>
@@ -31,24 +31,23 @@
         </div>
     </nav>
 
-    <% if (success && success.length) { %><div class="flash success"><%= success %></div><% } %>
-    <% if (error && error.length) { %><div class="flash error"><%= error %></div><% } %>
+    <%
+      const nameParts = (profileUser.name || '').split(' ').filter(Boolean);
+      const initials = nameParts.slice(0,2).map(p => p[0].toUpperCase()).join('') || '?';
+    %>
 
     <div class="profile-header">
         <div class="profile-left">
             <% if (profileUser.profilePic) { %>
-                <img src="<%= profileUser.profilePic %>" alt="Profile picture"
-                     class="avatar" style="object-fit:cover;">
+                <img src="<%= profileUser.profilePic %>" class="avatar" style="object-fit:cover;" alt="Profile picture">
             <% } else { %>
-                <div class="avatar"><%= profileUser.name ? profileUser.name.charAt(0).toUpperCase() : '?' %></div>
+                <div class="avatar"><%= initials %></div>
             <% } %>
             <div class="profile-info">
                 <div class="profile-name-row">
                     <span class="profile-name"><%= profileUser.name %></span>
                 </div>
-                <% if (profileUser.location) { %>
-                    <div class="profile-handle"><%= profileUser.location %></div>
-                <% } %>
+                <div class="profile-handle"><%= profileUser.location || 'C.M.D. Community' %></div>
                 <div class="profile-stats">
                     <div><span class="stat-num"><%= posts.length %></span><span class="stat-label">Posts</span></div>
                     <div><span class="stat-num"><%= rsvps.length %></span><span class="stat-label">RSVPs</span></div>
@@ -58,50 +57,55 @@
         <a href="/users/settings" class="btn-edit">Edit Profile</a>
     </div>
 
+    <div class="tabs">
+        <button class="tab active" onclick="setTab(this, 'my-posts')">My Posts</button>
+        <button class="tab" onclick="setTab(this, 'upcoming')">Upcoming Events</button>
+        <button class="tab" onclick="setTab(this, 'interested')">Interested</button>
+        <button class="tab" onclick="setTab(this, 'previous')">Previous Events</button>
+        <button class="tab" onclick="setTab(this, 'drafts')">Drafts</button>
+    </div>
+
     <div class="main-layout">
         <div class="sidebar">
-            <% if (profileUser.interests && profileUser.interests.length) { %>
-                <div class="sidebar-section-title">INTERESTS</div>
-                <div class="interests-box">
-                    <% profileUser.interests.forEach(interest => { %>
-                        <span class="interest-tag"><%= interest %></span>
-                    <% }) %>
-                </div>
-            <% } %>
+            <div class="sidebar-section-title">INTERESTS</div>
+            <div class="interests-box">
+                <% (profileUser.interests || []).forEach(function(interest) { %>
+                    <span class="interest-tag"><%= interest %></span>
+                <% }); %>
+                <% if (!profileUser.interests || profileUser.interests.length === 0) { %>
+                    <span style="color:#888;font-size:0.85rem;">No interests set yet.</span>
+                <% } %>
+            </div>
         </div>
 
         <div class="posts-area">
-            <h2>My Posts</h2>
-            <% if (posts.length === 0) { %>
-                <p>No posts yet. <a href="/posts/new">Create one!</a></p>
-            <% } else { %>
-                <div class="cards-grid">
-                    <% posts.forEach(post => { %>
-                        <div class="post-card">
-                            <h3><a href="/posts/<%= post.id %>"><%= post.title %></a></h3>
-                            <% if (post.category) { %><span class="tag"><%= post.category %></span><% } %>
-                            <% if (post.description) { %>
-                                <p><%= post.description.substring(0, 120) %><%= post.description.length > 120 ? '...' : '' %></p>
-                            <% } %>
-                            <small><%= new Date(post.createdAt).toLocaleDateString() %></small>
-                        </div>
-                    <% }) %>
+            <div class="toolbar">
+                <div class="dropdown-wrap">
+                    <button class="toolbar-btn" onclick="toggleSort()">↕ Sort: <span id="sortLabel">Newest</span> ▾</button>
+                    <div class="dropdown" id="sortDropdown">
+                        <div class="dropdown-item active-item" onclick="setSort(this, 'Newest')">Newest</div>
+                        <div class="dropdown-item" onclick="setSort(this, 'Oldest')">Oldest</div>
+                        <div class="dropdown-item" onclick="setSort(this, 'Most Popular')">Most Popular</div>
+                        <div class="dropdown-item" onclick="setSort(this, 'Upcoming')">Upcoming</div>
+                    </div>
                 </div>
-            <% } %>
+                <button class="toolbar-btn" id="filterBtn" onclick="toggleFilter()">⚙ Filter by Interests <span id="filterCount"></span> ▾</button>
+                <button class="clear-btn" id="clearBtn" onclick="clearFilters()" style="display:none;">✕ Clear</button>
+            </div>
 
-            <% if (rsvps.length > 0) { %>
-                <h2>RSVPs</h2>
-                <div class="cards-grid">
-                    <% rsvps.forEach(rsvp => { %>
-                        <% if (rsvp.Post) { %>
-                            <div class="post-card">
-                                <h3><a href="/posts/<%= rsvp.Post.id %>"><%= rsvp.Post.title %></a></h3>
-                                <% if (rsvp.Post.category) { %><span class="tag"><%= rsvp.Post.category %></span><% } %>
-                            </div>
-                        <% } %>
-                    <% }) %>
+            <div class="filter-panel" id="filterPanel" style="display:none;">
+                <div class="filter-title">FILTER BY INTERESTS</div>
+                <div class="filter-pills">
+                    <% (profileUser.interests || []).forEach(function(interest) { %>
+                        <button class="fpill" onclick="toggleCatFilter(this)" data-cat="<%= interest %>"><%= interest %></button>
+                    <% }); %>
                 </div>
-            <% } %>
+            </div>
+
+            <div class="scrollable-content">
+                <div class="cards-grid" id="cardsGrid"></div>
+                <div class="no-results" id="noResults" style="display:none;">No posts match the selected filters.</div>
+            </div>
         </div>
     </div>
 
@@ -113,5 +117,39 @@
     </footer>
 
     <script src="/js/CM_Profile.js"></script>
+    <script>
+      // Seed JS data arrays with real server data then re-render
+      MY_POSTS = <%- JSON.stringify(posts.map(function(p) {
+        return {
+          title: p.title || '',
+          desc:  p.description || '',
+          date:  p.date ? new Date(p.date).toDateString() : 'Date TBD',
+          going: 0,
+          maxAttendees: null,
+          color: '#2e3a4e',
+          tags:  Array.isArray(p.category) ? p.category : [],
+          status: 'Published',
+          id: p.id
+        };
+      })) %>;
+      UPCOMING_EVENTS = <%- JSON.stringify(rsvps.map(function(r) {
+        var p = r.Post || {};
+        return {
+          title: p.title || '',
+          desc:  p.description || '',
+          date:  p.date ? new Date(p.date).toDateString() : 'Date TBD',
+          going: 0,
+          maxAttendees: null,
+          color: '#3b4a2e',
+          tags:  Array.isArray(p.category) ? p.category : [],
+          rsvp:  'Going',
+          id:    p.id
+        };
+      })) %>;
+      PREVIOUS_EVENTS  = [];
+      INTERESTED_EVENTS = [];
+      DRAFTS = [];
+      renderCards();
+    </script>
 </body>
 </html>

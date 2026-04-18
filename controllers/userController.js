@@ -25,7 +25,7 @@ exports.getUserById = async (req, res, next) => {
     const user = await User.findByPk(req.params.id, {
       attributes: ['id', 'name', 'location', 'interests', 'profilePic']
     });
-    if (!user) { req.flash('error', 'User not found.'); return res.redirect('/feed'); }
+    if (!user) { req.flash('error', 'User not found.'); return res.redirect('/posts'); }
     const posts = await Post.findAll({
       where: { userId: user.id, isHidden: false },
       order: [['createdAt', 'DESC']]

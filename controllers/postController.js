@@ -43,7 +43,7 @@ exports.getPost = async (req, res, next) => {
     });
     if (!post || post.isHidden) {
       req.flash('error', 'Post not found.');
-      return res.redirect('/feed');
+      return res.redirect('/posts');
     }
 
     const [rsvpCount, existingRsvp] = await Promise.all([
@@ -115,7 +115,7 @@ exports.deleteRsvp = async (req, res, next) => {
 exports.deletePost = async (req, res, next) => {
   try {
     const post = await Post.findByPk(req.params.id);
-    if (!post) return res.redirect('/feed');
+    if (!post) return res.redirect('/posts');
     const canDelete = req.session.userId === post.userId ||
       ['admin', 'moderator'].includes(req.session.role);
     if (!canDelete) {
@@ -124,7 +124,7 @@ exports.deletePost = async (req, res, next) => {
     }
     await post.destroy();
     req.flash('success', 'Post deleted.');
-    res.redirect('/feed');
+    res.redirect('/posts');
   } catch (err) { next(err); }
 };
 

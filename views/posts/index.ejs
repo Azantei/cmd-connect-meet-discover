@@ -2,7 +2,7 @@
 <main>
   <h1>Community Feed</h1>
 
-  <form action="/feed" method="GET" style="margin-bottom:1rem;">
+  <form action="/posts" method="GET" style="margin-bottom:1rem;">
     <input type="text" name="q" value="<%= q %>" placeholder="Search posts..." />
     <select name="category">
       <option value="">All categories</option>
@@ -14,7 +14,7 @@
     </select>
     <button type="submit">Search</button>
     <% if (q || selectedCategory) { %>
-      <a href="/feed">Clear</a>
+      <a href="/posts">Clear</a>
     <% } %>
   </form>
 

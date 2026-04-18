@@ -23,7 +23,7 @@
             <% if (currentUser) { %>
                 <span><%= currentUsername %></span>
                 <form action="/logout" method="POST" style="display:inline">
-                    <button type="submit" style="margin-left:1rem;color:hsl(20,90%,55%);background:none;border:none;cursor:pointer;font:inherit;">Log Out</button>
+                    <button type="submit" style="margin-left:1rem;color:hsl(20,90%,55%);text-decoration:none;background:none;border:none;cursor:pointer;font:inherit;">Log Out</button>
                 </form>
             <% } else { %>
                 <a href="/login" style="color:hsl(20,90%,55%);text-decoration:none;">Sign In</a>
@@ -34,74 +34,147 @@
     <% if (success && success.length) { %><div class="flash success"><%= success %></div><% } %>
     <% if (error && error.length) { %><div class="flash error"><%= error %></div><% } %>
 
+    <form action="/users/settings" method="POST" id="settingsForm" enctype="multipart/form-data">
     <div class="settings-layout">
         <aside class="settings-sidebar">
-            <button class="nav-item active" onclick="setSection(this, 'profile')">Profile</button>
-            <button class="nav-item" onclick="setSection(this, 'interests')">Interests</button>
-            <button class="nav-item" onclick="setSection(this, 'location')">Location</button>
+            <button type="button" class="nav-item active" onclick="setSection(this, 'profile')">Profile</button>
+            <button type="button" class="nav-item" onclick="setSection(this, 'account')">Account</button>
+            <button type="button" class="nav-item" onclick="setSection(this, 'interests')">Interests</button>
+            <button type="button" class="nav-item" onclick="setSection(this, 'location')">Location</button>
+            <button type="button" class="nav-item" onclick="setSection(this, 'privacy')">Privacy</button>
+            <button type="button" class="nav-item" onclick="setSection(this, 'notifications')">Notifications</button>
         </aside>
 
         <div class="settings-content">
 
-            <form action="/users/settings" method="POST" id="settingsForm" enctype="multipart/form-data">
+            <div class="section" id="section-profile">
+                <h2 class="section-title">Profile</h2>
+                <div class="field">
+                    <label class="field-label" for="settingName">Display Name</label>
+                    <input type="text" id="settingName" name="name" class="field-input"
+                           value="<%= user.name %>" required>
+                </div>
+                <div class="field">
+                    <label class="field-label">Profile Picture</label>
+                    <% if (user.profilePic) { %>
+                        <img src="<%= user.profilePic %>" alt="Profile picture"
+                             style="width:72px;height:72px;border-radius:50%;object-fit:cover;display:block;margin-bottom:0.5rem;">
+                    <% } else { %>
+                        <div class="upload-box" style="margin-bottom:0.5rem;">No photo set</div>
+                    <% } %>
+                    <input type="file" name="profilePic" accept="image/jpeg,image/png,image/webp,image/gif"
+                           class="field-input" style="padding:8px 0;">
+                    <small>JPG, PNG, WebP or GIF &mdash; max 5 MB</small>
+                </div>
+                <div class="save-bar">
+                    <button type="submit" class="btn-save">Save Changes</button>
+                    <a href="/users/profile" class="btn-discard">Discard Changes</a>
+                </div>
+            </div>
 
-                <div class="section" id="section-profile">
-                    <h2 class="section-title">Profile</h2>
-                    <div class="field">
-                        <label class="field-label" for="settingName">Display Name</label>
-                        <input type="text" id="settingName" name="name" class="field-input"
-                               value="<%= user.name %>" required />
+            <div class="section" id="section-account" style="display:none;">
+                <h2 class="section-title">Account</h2>
+                <div class="field">
+                    <label class="field-label">Email Address</label>
+                    <input type="email" class="field-input" value="<%= user.email %>" disabled
+                           style="opacity:0.6;cursor:not-allowed;">
+                </div>
+                <div class="save-bar">
+                    <button type="button" class="btn-save" onclick="showToast()">Save Changes</button>
+                    <button type="button" class="btn-discard">Discard Changes</button>
+                </div>
+                <div class="danger-zone">
+                    <div class="danger-title">Danger Zone</div>
+                    <button type="button" class="btn-danger">Delete Account</button>
+                </div>
+            </div>
+
+            <div class="section" id="section-interests" style="display:none;">
+                <h2 class="section-title">Interests</h2>
+                <p class="section-desc">Select your interests to help us show you relevant events and connect you with your community.</p>
+                <div class="pills-wrap" id="interestPills"></div>
+                <input type="hidden" name="interests" id="interestsHidden" value="">
+                <div class="save-bar">
+                    <button type="submit" class="btn-save" onclick="serializeInterests()">Save Changes</button>
+                    <a href="/users/profile" class="btn-discard">Discard Changes</a>
+                </div>
+            </div>
+
+            <div class="section" id="section-location" style="display:none;">
+                <h2 class="section-title">Location</h2>
+                <div class="field">
+                    <label class="field-label" for="settingLocation">City / Neighborhood</label>
+                    <input type="text" id="settingLocation" name="location" class="field-input"
+                           value="<%= user.location || '' %>"
+                           placeholder="e.g. Capitol Hill, Seattle">
+                </div>
+                <div class="save-bar">
+                    <button type="submit" class="btn-save">Save Changes</button>
+                    <a href="/users/profile" class="btn-discard">Discard Changes</a>
+                </div>
+            </div>
+
+            <div class="section" id="section-privacy" style="display:none;">
+                <h2 class="section-title">Privacy</h2>
+                <div class="toggle-row">
+                    <div class="toggle-info"><div class="toggle-label">Show Location</div><div class="toggle-desc">Display your neighborhood on your profile.</div></div>
+                    <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
+                </div>
+                <div class="toggle-row">
+                    <div class="toggle-info"><div class="toggle-label">Show Stats</div><div class="toggle-desc">Display your post count and RSVP count on your profile.</div></div>
+                    <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
+                </div>
+                <div class="toggle-row">
+                    <div class="toggle-info"><div class="toggle-label">Show Previous RSVPs</div><div class="toggle-desc">Let others see events you've previously attended.</div></div>
+                    <div class="toggle" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
+                </div>
+                <div class="save-bar" style="margin-top:20px;">
+                    <button type="button" class="btn-save" onclick="showToast()">Save Changes</button>
+                    <button type="button" class="btn-discard">Discard Changes</button>
+                </div>
+            </div>
+
+            <div class="section" id="section-notifications" style="display:none;">
+                <h2 class="section-title">Notifications</h2>
+                <div class="toggle-row">
+                    <div class="toggle-info">
+                        <div class="toggle-label">Email Notifications</div>
+                        <div class="toggle-desc">Receive notifications via email.</div>
                     </div>
-                    <div class="field">
-                        <label class="field-label">Profile Picture</label>
-                        <% if (user.profilePic) { %>
-                            <img src="<%= user.profilePic %>" alt="Profile picture"
-                                 style="width:80px;height:80px;border-radius:50%;object-fit:cover;display:block;margin-bottom:0.5rem;">
-                        <% } %>
-                        <input type="file" name="profilePic" accept="image/jpeg,image/png,image/webp,image/gif"
-                               class="field-input" style="padding:8px 0;">
-                        <small>JPG, PNG, WebP or GIF &mdash; max 5 MB</small>
+                    <div class="toggle on" onclick="toggleEmailNotifications(this)"><div class="toggle-knob"></div></div>
+                </div>
+                <div id="emailNotificationOptions" class="nested-options">
+                    <div class="toggle-row nested">
+                        <div class="toggle-info"><div class="toggle-label">Event Reminders</div><div class="toggle-desc">Get reminded before events you've RSVP'd to.</div></div>
+                        <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
                     </div>
-                    <div class="save-bar">
-                        <button type="submit" class="btn-save">Save Changes</button>
-                        <a href="/users/profile" class="btn-discard">Discard</a>
+                    <div class="toggle-row nested">
+                        <div class="toggle-info"><div class="toggle-label">Nearby Events</div><div class="toggle-desc">Get notified about new events near you.</div></div>
+                        <div class="toggle on" onclick="toggleNearbyEvents(this)"><div class="toggle-knob"></div></div>
+                    </div>
+                    <div id="nearbyEventsOptions" class="nested-options nested-level-2">
+                        <div class="toggle-row nested">
+                            <div class="toggle-info"><div class="toggle-label">By Interest</div><div class="toggle-desc">Get notifications based on your selected interest categories.</div></div>
+                            <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
+                        </div>
+                        <div class="toggle-row nested">
+                            <div class="toggle-info"><div class="toggle-label">By Your Neighborhood</div><div class="toggle-desc">All events happening in your neighborhood.</div></div>
+                            <div class="toggle" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
+                        </div>
                     </div>
                 </div>
-
-                <div class="section" id="section-interests" style="display:none;">
-                    <h2 class="section-title">Interests</h2>
-                    <p class="section-desc">Enter your interests as comma-separated values.</p>
-                    <div class="field">
-                        <label class="field-label" for="settingInterests">Interests</label>
-                        <input type="text" id="settingInterests" name="interests"
-                               class="field-input"
-                               value="<%= (user.interests || []).join(', ') %>"
-                               placeholder="e.g. Outdoors, Music, Tech" />
-                        <small>Separate each interest with a comma.</small>
-                    </div>
-                    <div class="save-bar">
-                        <button type="submit" class="btn-save">Save Changes</button>
-                        <a href="/users/profile" class="btn-discard">Discard</a>
-                    </div>
+                <div class="save-bar" style="margin-top:20px;">
+                    <button type="button" class="btn-save" onclick="showToast()">Save Changes</button>
+                    <button type="button" class="btn-discard">Discard Changes</button>
                 </div>
+            </div>
 
-                <div class="section" id="section-location" style="display:none;">
-                    <h2 class="section-title">Location</h2>
-                    <div class="field">
-                        <label class="field-label" for="settingLocation">City / Neighborhood</label>
-                        <input type="text" id="settingLocation" name="location" class="field-input"
-                               value="<%= user.location || '' %>"
-                               placeholder="e.g. Capitol Hill, Seattle" />
-                    </div>
-                    <div class="save-bar">
-                        <button type="submit" class="btn-save">Save Changes</button>
-                        <a href="/users/profile" class="btn-discard">Discard</a>
-                    </div>
-                </div>
-
-            </form>
+            <div class="section-note">Each settings section has its own Save Changes button.</div>
         </div>
     </div>
+    </form>
+
+    <div class="toast" id="toast">&#10003; Changes saved successfully</div>
 
     <footer>
         <div class="container">
@@ -111,5 +184,27 @@
     </footer>
 
     <script src="/js/CM_UserSettings.js"></script>
+    <script>
+      // Seed interest pills with real user data
+      activeInterests = <%- JSON.stringify(user.interests || []) %>;
+      var pillsWrap = document.getElementById('interestPills');
+      pillsWrap.innerHTML = '';
+      ALL_INTERESTS.forEach(function(cat) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'pill' + (activeInterests.includes(cat) ? ' active' : '');
+        btn.textContent = cat;
+        btn.onclick = function() { btn.classList.toggle('active'); };
+        pillsWrap.appendChild(btn);
+      });
+
+      function serializeInterests() {
+        var selected = [];
+        document.querySelectorAll('#interestPills .pill.active').forEach(function(btn) {
+          selected.push(btn.textContent.trim());
+        });
+        document.getElementById('interestsHidden').value = selected.join(',');
+      }
+    </script>
 </body>
 </html>
