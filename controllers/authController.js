@@ -12,7 +12,7 @@ exports.getHome = (req, res) => {
 };
 
 exports.getLogin = (req, res) => {
-  if (req.session.userId) return res.redirect(ROLE_REDIRECTS[req.session.role] || '/feed');
+  if (req.session.userId) return res.redirect(ROLE_REDIRECTS[req.session.role] || '/posts');
   res.render('auth/login', { title: 'Login' });
 };
 
@@ -41,14 +41,14 @@ exports.postLogin = async (req, res, next) => {
     req.session.role = user.role;
     req.session.username = user.name;
 
-    res.redirect(ROLE_REDIRECTS[user.role] || '/feed');
+    res.redirect(ROLE_REDIRECTS[user.role] || '/posts');
   } catch (err) {
     next(err);
   }
 };
 
 exports.getRegister = (req, res) => {
-  if (req.session.userId) return res.redirect(ROLE_REDIRECTS[req.session.role] || '/feed');
+  if (req.session.userId) return res.redirect(ROLE_REDIRECTS[req.session.role] || '/posts');
   res.render('auth/register', { title: 'Register' });
 };
 

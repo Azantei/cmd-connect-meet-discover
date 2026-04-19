@@ -33,6 +33,10 @@ module.exports = (sequelize, DataTypes) => {
     interests: {
       type: DataTypes.JSON,
       defaultValue: []
+    },
+    profilePic: {
+      type: DataTypes.STRING(255),
+      defaultValue: null
     }
   }, {
     tableName: 'users',

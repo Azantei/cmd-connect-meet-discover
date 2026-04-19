@@ -70,10 +70,14 @@ function applyFilters() {
         const categoryMatch = activeCategories.length === 0 || 
                              activeCategories.some(cat => cardTags.includes(cat));
         
-        // Check search match
-        const searchMatch = searchTerm === '' || 
-                           cardTitle.includes(searchTerm) || 
-                           cardDesc.includes(searchTerm);
+        // Check search match (title, description, location, author)
+        const cardLocation = card.querySelector('.card-location')?.textContent.toLowerCase() || '';
+        const cardAuthor = card.querySelector('.card-footer')?.textContent.toLowerCase() || '';
+        const searchMatch = searchTerm === '' ||
+                           cardTitle.includes(searchTerm) ||
+                           cardDesc.includes(searchTerm) ||
+                           cardLocation.includes(searchTerm) ||
+                           cardAuthor.includes(searchTerm);
         
         // Check distance match
         const distanceMatch = cardDistance <= maxDistance;

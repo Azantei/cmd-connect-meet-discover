@@ -28,14 +28,27 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE
     },
     category: {
-      type: DataTypes.STRING(50)
+      type: DataTypes.JSON,
+      defaultValue: []
     },
     imageUrl: {
       type: DataTypes.STRING(255)
     },
+    maxAttendees: {
+      type: DataTypes.INTEGER,
+      defaultValue: null
+    },
+    rsvpEnabled: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
     isHidden: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
+    },
+    status: {
+      type: DataTypes.ENUM('published', 'draft'),
+      defaultValue: 'published'
     }
   }, {
     tableName: 'posts',

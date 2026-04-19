@@ -144,12 +144,16 @@ function renderCards() {
                 footer = '<span style="color: #888;">📝 Draft</span><span style="color: #d32f2f; font-weight: 600; cursor: pointer;" onclick="removeEvent(\'' + currentTab + '\', ' + index + ')">✕ Remove</span>';
             }
             
-            return '<div class="card">' +
-                '<div class="card-img" style="background-color:' + card.color + '"><div class="card-img-icon"></div></div>' +
+            var cardLink = card.id ? (card.status === 'Draft' ? '/posts/' + card.id + '/edit' : '/posts/' + card.id) : '#';
+            var imgHtml = card.imageUrl
+                ? '<div class="card-img" style="background-color:' + card.color + '"><img src="' + card.imageUrl + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+                : '<div class="card-img" style="background-color:' + card.color + '"><div class="card-img-icon"></div></div>';
+            return '<a href="' + cardLink + '" class="card" style="text-decoration:none;color:inherit;display:block;">' +
+                imgHtml +
                 '<div class="card-tags">' + card.tags.map(function(t) { return '<span class="card-tag">' + t + '</span>'; }).join('') + '<span class="card-tag">1.2 mi</span>' + statusBadge + '</div>' +
                 '<div class="card-body"><div class="card-title">' + card.title + '</div><div class="card-desc">' + card.desc + '</div></div>' +
                 '<div class="card-footer">' + footer + '</div>' +
-                '</div>';
+                '</a>';
         }).join('');
     }
 }

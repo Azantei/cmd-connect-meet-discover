@@ -19,7 +19,16 @@
                 <a href="/users/profile">Profile</a>
                 <a href="/about">About Us</a>
             </div>
-            <button class="btn" onclick="window.location.href='/login'">Sign In</button>
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+                <% if (currentUser) { %>
+                    <span style="color:rgba(250,245,240,0.7);font-size:0.875rem;"><%= currentUsername %></span>
+                    <form action="/logout" method="POST" style="display:inline">
+                        <button type="submit" class="btn">Log Out</button>
+                    </form>
+                <% } else { %>
+                    <button class="btn" onclick="window.location.href='/login'">Sign In</button>
+                <% } %>
+            </div>
         </div>
     </nav>
 

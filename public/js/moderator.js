@@ -26,7 +26,7 @@ const mockReports = [
     { id: 7, type: 'post', title: "Lost Dog - Please Help", reporter: "concerned", author: "@petowner", time: "1 day ago", reason: "Spam", note: "", submittedAt: now - 1 * ms.day - 2 * ms.hour, userActive: true }
 ];
 
-let activeReports = [...mockReports];  // Reports still in queue
+let activeReports = [...(window.REPORTS_DATA || mockReports)];  // Reports still in queue
 let hiddenPosts = [];                   // Reports that were hidden (moved here when Hide is clicked)
 let escalatedReports = [];             // Reports escalated to system admin (with moderator note)
 let moderationHistory = [];             // Log of all moderation actions (dismiss, hide, escalate, warn)

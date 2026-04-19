@@ -112,11 +112,12 @@ nav .btn {
     background: hsl(20, 90%, 55%);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.875rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
-    font-size: 0.875rem;
+    transition: background 0.3s;
 }
 
 nav .btn:hover {

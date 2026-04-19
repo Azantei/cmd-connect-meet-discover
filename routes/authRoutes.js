@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
+const postController = require('../controllers/postController');
 
 router.get('/', authController.getHome);
 router.get('/about', (req, res) => res.render('about', { title: 'About Us' }));

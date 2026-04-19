@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C.M.D. - User Profile</title>
+    <title>C.M.D. - <%= profileUser.name %>'s Profile</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
@@ -23,7 +23,7 @@
             <% if (currentUser) { %>
                 <span><%= currentUsername %></span>
                 <form action="/logout" method="POST" style="display:inline">
-                    <button type="submit" style="margin-left:1rem;color:hsl(20,90%,55%);text-decoration:none;background:none;border:none;cursor:pointer;font:inherit;">Log Out</button>
+                    <button type="submit" style="margin-left:1rem;color:hsl(20,90%,55%);background:none;border:none;cursor:pointer;font:inherit;">Log Out</button>
                 </form>
             <% } else { %>
                 <a href="/login" style="color:hsl(20,90%,55%);text-decoration:none;">Sign In</a>
@@ -31,105 +31,123 @@
         </div>
     </nav>
 
+    <% if (success && success.length) { %><div class="flash success"><%= success %></div><% } %>
+    <% if (error && error.length) { %><div class="flash error"><%= error %></div><% } %>
+
     <div class="profile-header">
         <div class="profile-left">
-            <div class="avatar">?</div>
+            <% if (profileUser.profilePic) { %>
+                <img src="<%= profileUser.profilePic %>" alt="Profile picture"
+                     class="avatar" style="object-fit:cover;">
+            <% } else { %>
+                <div class="avatar"><%= profileUser.name ? profileUser.name.charAt(0).toUpperCase() : '?' %></div>
+            <% } %>
             <div class="profile-info">
-                <div class="profile-name">Other User's Name</div>
-                <div class="profile-meta">
-                    <span class="meta-link">@username</span>
-                    <span class="meta-link">Location</span>
-                </div>
+                <div class="profile-name"><%= profileUser.name %></div>
+                <% if (profileUser.location) { %>
+                    <div class="profile-meta">
+                        <span class="meta-link"><%= profileUser.location %></span>
+                    </div>
+                <% } %>
                 <div class="profile-stats">
-                    <div><span class="stat-num">16</span><span class="stat-label">Posts</span></div>
-                    <div><span class="stat-num">78</span><span class="stat-label">RSVPs</span></div>
+                    <div><span class="stat-num"><%= posts.length %></span><span class="stat-label">Posts</span></div>
                 </div>
             </div>
         </div>
-        <button class="btn-report" id="reportBtn" onclick="openReportModal()">Report User</button>
+        <% if (currentUser && currentUser !== profileUser.id) { %>
+            <button class="btn-report" id="reportBtn" onclick="document.getElementById('reportModal').style.display='flex'">Report User</button>
+        <% } %>
     </div>
 
     <div class="main-layout">
         <div class="sidebar">
-            <div class="sidebar-section-title">ABOUT</div>
-            <div class="placeholder-lines">Example Bio</div>
-            <hr class="sidebar-divider">
-            <div class="sidebar-section-title">INTERESTS</div>
-            <div class="interests-box">
-                <span class="interest-tag">Music</span>
-                <span class="interest-tag">Sports</span>
-                <span class="interest-tag">Tech</span>
-            </div>
+            <% if (profileUser.interests && profileUser.interests.length) { %>
+                <div class="sidebar-section-title">INTERESTS</div>
+                <div class="interests-box">
+                    <% profileUser.interests.forEach(interest => { %>
+                        <span class="interest-tag"><%= interest %></span>
+                    <% }) %>
+                </div>
+            <% } %>
         </div>
 
         <div class="posts-area">
             <div class="section-header">
-                <h2 class="section-title">Previously Attended Events</h2>
-                <p class="section-subtitle">Only visible if privacy settings allow</p>
+                <div class="section-title"><%= profileUser.name %>'s Posts</div>
+                <div class="section-subtitle"><%= posts.length %> post<%= posts.length !== 1 ? 's' : '' %></div>
             </div>
-
             <div class="toolbar">
                 <div class="dropdown-wrap">
-                    <button class="toolbar-btn" onclick="toggleSort()">↕ Sort: <span id="sortLabel">Newest</span> ▾</button>
+                    <button class="toolbar-btn" onclick="toggleSort()">Sort: <span id="sortLabel">Newest</span> ▾</button>
                     <div class="dropdown" id="sortDropdown">
-                        <div class="dropdown-item active-item" onclick="setSort(this, 'Newest')">Newest</div>
-                        <div class="dropdown-item" onclick="setSort(this, 'Oldest')">Oldest</div>
-                        <div class="dropdown-item" onclick="setSort(this, 'Most Popular')">Most Popular</div>
+                        <div class="dropdown-item active-item" onclick="setSort(this,'Newest')">Newest</div>
+                        <div class="dropdown-item" onclick="setSort(this,'Oldest')">Oldest</div>
                     </div>
                 </div>
-                <button class="toolbar-btn" id="filterBtn" onclick="toggleFilter()">⚙ Filter by Interests <span id="filterCount"></span> ▾</button>
-                <button class="clear-btn" id="clearBtn" onclick="clearFilters()" style="display:none;">✕ Clear</button>
+                <button class="toolbar-btn" id="filterBtn" onclick="toggleFilter()">Filter <span id="filterCount"></span> ▾</button>
+                <button class="clear-btn" id="clearBtn" style="display:none" onclick="clearFilters()">Clear Filters</button>
             </div>
-
             <div class="filter-panel" id="filterPanel" style="display:none;">
-                <div class="filter-title">FILTER BY INTERESTS</div>
+                <div class="filter-title">CATEGORIES</div>
                 <div class="filter-pills">
-                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Outdoors">Outdoors</button>
-                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Music">Music</button>
-                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Sports">Sports</button>
-                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Food">Food</button>
-                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Arts">Arts</button>
-                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Tech">Tech</button>
-                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Fitness">Fitness</button>
-                    <button class="fpill" onclick="toggleCatFilter(this)" data-cat="Games">Games</button>
+                    <span class="fpill" data-cat="Outdoors" onclick="toggleCatFilter(this)">Outdoors</span>
+                    <span class="fpill" data-cat="Music" onclick="toggleCatFilter(this)">Music</span>
+                    <span class="fpill" data-cat="Food" onclick="toggleCatFilter(this)">Food</span>
+                    <span class="fpill" data-cat="Fitness" onclick="toggleCatFilter(this)">Fitness</span>
+                    <span class="fpill" data-cat="Sports" onclick="toggleCatFilter(this)">Sports</span>
+                    <span class="fpill" data-cat="Arts" onclick="toggleCatFilter(this)">Arts</span>
+                    <span class="fpill" data-cat="Social" onclick="toggleCatFilter(this)">Social</span>
+                    <span class="fpill" data-cat="Tech" onclick="toggleCatFilter(this)">Tech</span>
                 </div>
             </div>
-
             <div class="scrollable-content">
                 <div class="cards-grid" id="cardsGrid"></div>
-                <div class="no-results" id="noResults" style="display:none;">This user's previously attended events are not public.</div>
+                <div class="no-results" id="noResults" style="display:none;">No posts found.</div>
             </div>
         </div>
     </div>
 
+    <% if (currentUser && currentUser !== profileUser.id) { %>
     <div class="modal-overlay" id="reportModal" style="display:none;">
         <div class="modal">
             <div class="modal-title">Report this user?</div>
-            <div class="modal-desc">Please select a reason for reporting this user. Our team will review the report.</div>
-            <div class="modal-reasons">
-                <label><input type="radio" name="reason"> Spam or misleading content</label>
-                <label><input type="radio" name="reason"> Harassment or bullying</label>
-                <label><input type="radio" name="reason"> Inappropriate content</label>
-                <label><input type="radio" name="reason"> Other</label>
-            </div>
-            <div class="modal-comment-section">
-                <label for="reportComment" class="comment-label">Additional Comments (optional)</label>
-                <textarea id="reportComment" class="report-textarea" rows="3" placeholder="Provide any additional details that might help our moderation team..."></textarea>
-            </div>
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeReportModal()">Cancel</button>
-                <button class="btn-submit" onclick="submitReport()">Submit Report</button>
-            </div>
+            <div class="modal-desc">Please describe why you are reporting this user.</div>
+            <form action="/users/<%= profileUser.id %>/report" method="POST">
+                <div class="modal-comment-section">
+                    <label for="reportReason" class="comment-label">Reason <span style="color:red">*</span></label>
+                    <textarea id="reportReason" name="reason" class="report-textarea" rows="3"
+                        placeholder="Describe the issue..." required></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="document.getElementById('reportModal').style.display='none'">Cancel</button>
+                    <button type="submit" class="btn-submit">Submit Report</button>
+                </div>
+            </form>
         </div>
     </div>
+    <% } %>
 
     <footer>
         <div class="container">
             <span class="logo">C.M.D.</span>
-            <p>Connect. Meet. Discover. © 2026</p>
+            <p>Connect. Meet. Discover. &copy; 2026</p>
         </div>
     </footer>
 
+    <script>
+      var CARD_COLORS = ['#2e3a4e','#3b4a2e','#3b2e4a','#4a3b2e','#2e4a3b'];
+      ATTENDED_EVENTS = <%- JSON.stringify(posts.map(function(p, i) {
+        return {
+          id: p.id,
+          title: p.title || '',
+          desc: p.description || '',
+          date: p.date ? new Date(p.date).toDateString() : 'Date not set',
+          color: ['#2e3a4e','#3b4a2e','#3b2e4a','#4a3b2e','#2e4a3b'][i % 5],
+          tags: Array.isArray(p.category) ? p.category : [],
+          imageUrl: p.imageUrl || null
+        };
+      })) %>;
+    </script>
     <script src="/js/CM_OtherUserProfile.js"></script>
 </body>
 </html>

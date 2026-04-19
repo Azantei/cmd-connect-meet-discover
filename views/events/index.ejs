@@ -114,10 +114,22 @@
         <div class="cards-panel">
             <div class="cards-grid">
 
-                <div class="card" onclick="window.location.href='/events/1'" style="cursor: pointer;">
-                    <div class="card-img" style="background-color:#2e3a4e;"><div class="img-placeholder"></div></div>
+                <% var colors = ['#2e3a4e','#3b4a2e','#3b2e4a','#2e4a3b','#4a3b2e','#4a2e3b']; %>
+                <% posts.forEach(function(post, i) { %>
+                <div class="card" onclick="window.location.href='/posts/<%= post.id %>'" style="cursor:pointer;">
+                    <% if (post.imageUrl) { %>
+                        <div class="card-img" style="background-color:<%= colors[i % colors.length] %>;">
+                            <img src="<%= post.imageUrl %>" alt="" style="width:100%;height:100%;object-fit:cover;">
+                        </div>
+                    <% } else { %>
+                        <div class="card-img" style="background-color:<%= colors[i % colors.length] %>;"><div class="img-placeholder"></div></div>
+                    <% } %>
                     <div class="card-tags">
-                        <div class="tags-left"><span class="tag">Outdoors</span><span class="tag">1.2 mi</span></div>
+                        <div class="tags-left">
+                            <% (Array.isArray(post.category) ? post.category : []).forEach(function(cat) { %>
+                                <span class="tag"><%= cat %></span>
+                            <% }); %>
+                        </div>
                         <button class="star-btn" onclick="event.stopPropagation(); toggleStar(this)" aria-label="Mark as interested">
                             <svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -126,83 +138,24 @@
                         </button>
                     </div>
                     <div class="card-body">
-                        <div class="card-title">Morning Trail Hike</div>
-                        <div class="card-desc">Join us for a scenic morning hike through the local trails. All skill levels welcome.</div>
+                        <div class="card-title"><%= post.title %></div>
+                        <div class="card-desc"><%= post.description ? post.description.substring(0, 100) + (post.description.length > 100 ? '...' : '') : '' %></div>
                     </div>
-                    <div class="card-footer"><span>📅 Sat Mar 7</span><span>👥 12/20 going</span></div>
+                    <div class="card-footer">
+                        <span><% if (post.date) { %>📅 <%= new Date(post.date).toDateString() %><% } else { %>📅 Date TBD<% } %></span>
+                        <% if (post.location) { %><span class="card-location">📍 <%= post.location %></span><% } %>
+                        <% if (post.author) { %><span>👤 <%= post.author.name %></span><% } %>
+                    </div>
                 </div>
+                <% }); %>
 
-                <div class="card">
-                    <div class="card-img" style="background-color:#3b4a2e;"><div class="img-placeholder"></div></div>
-                    <div class="card-tags">
-                        <div class="tags-left"><span class="tag">Music</span><span class="tag">Outdoors</span><span class="tag">0.8 mi</span></div>
-                        <button class="star-btn" onclick="toggleStar(this)" aria-label="Mark as interested">
-                            <svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                            </svg>
-                            <span class="interested-label">Interested</span>
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <div class="card-title">Acoustic Jam Session</div>
-                        <div class="card-desc">Bring your instrument or just your ears. Casual outdoor music gathering.</div>
-                    </div>
-                    <div class="card-footer"><span>📅 Sat Mar 8</span><span>👥 8/15 going</span></div>
+                <% if (posts.length === 0) { %>
+                <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#666;">
+                    <div style="font-size:3rem;margin-bottom:16px;">📭</div>
+                    <h3 style="margin-bottom:8px;">No posts yet</h3>
+                    <p>Be the first to <a href="/posts/create" style="color:hsl(20,90%,55%);">create a post</a>!</p>
                 </div>
-
-                <div class="card">
-                    <div class="card-img" style="background-color:#3b2e4a;"><div class="img-placeholder"></div></div>
-                    <div class="card-tags">
-                        <div class="tags-left"><span class="tag">Outdoors</span><span class="tag">1.2 mi</span></div>
-                        <button class="star-btn" onclick="toggleStar(this)" aria-label="Mark as interested">
-                            <svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                            </svg>
-                            <span class="interested-label">Interested</span>
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <div class="card-title">Community Picnic</div>
-                        <div class="card-desc">A relaxed afternoon picnic in the park. Food, games, and good company.</div>
-                    </div>
-                    <div class="card-footer"><span>📅 Sat Mar 14</span><span>👥 20 going</span></div>
-                </div>
-
-                <div class="card">
-                    <div class="card-img" style="background-color:#2e3a4e;"><div class="img-placeholder"></div></div>
-                    <div class="card-tags">
-                        <div class="tags-left"><span class="tag">Fitness</span><span class="tag">0.5 mi</span></div>
-                        <button class="star-btn" onclick="toggleStar(this)" aria-label="Mark as interested">
-                            <svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                            </svg>
-                            <span class="interested-label">Interested</span>
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <div class="card-title">Sunset Yoga</div>
-                        <div class="card-desc">Wind down with a group yoga session as the sun sets over the park.</div>
-                    </div>
-                    <div class="card-footer"><span>📅 Sat Mar 7</span><span>👥 15 going</span></div>
-                </div>
-
-                <div class="card">
-                    <div class="card-img" style="background-color:#2e4a3b;"><div class="img-placeholder"></div></div>
-                    <div class="card-tags">
-                        <div class="tags-left"><span class="tag">Sports</span><span class="tag">2.1 mi</span></div>
-                        <button class="star-btn" onclick="toggleStar(this)" aria-label="Mark as interested">
-                            <svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                            </svg>
-                            <span class="interested-label">Interested</span>
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <div class="card-title">Pickup Basketball</div>
-                        <div class="card-desc">Friendly pickup basketball game at the rec center. All skill levels welcome!</div>
-                    </div>
-                    <div class="card-footer"><span>📅 Sun Mar 8</span><span>👥 10/12 going</span></div>
-                </div>
+                <% } %>
 
             </div>
         </div>
