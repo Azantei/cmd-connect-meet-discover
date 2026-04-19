@@ -156,13 +156,22 @@ exports.escalateReport = async (req, res, next) => {
       return res.redirect('/moderator/dashboard');
     }
 
+    if (!req.body.escalationReason || !req.body.escalationReason.trim()) {
+      req.flash('error', 'Please select a reason for escalation.');
+      return res.redirect('/moderator/dashboard');
+    }
+
+    const fullNote = req.body.notes
+      ? `${req.body.escalationReason}: ${req.body.notes.trim()}`
+      : req.body.escalationReason;
+
     const ops = [
       ModerationLog.create({
         moderatorId: req.session.userId,
         action:      'escalate',
         targetType:  report.targetType,
         targetId:    report.targetId,
-        notes:       req.body.notes || null
+        notes:       fullNote
       }),
       report.update({ status: 'escalated' })
     ];

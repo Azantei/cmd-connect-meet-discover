@@ -263,37 +263,24 @@ function completeEscalate() {
     const report = pendingEscalateReport;
     const note = document.getElementById('escalateNote').value.trim();
 
-    // Remove from active queue
-    activeReports = activeReports.filter(r => r.id !== report.id);
-    
-    // Add to escalated reports with reason and note
-    escalatedReports.unshift({
-        ...report,
-        escalatedAt: new Date().toISOString(),
-        escalationReason: reason,
-        moderatorNote: note || '(No additional notes provided)'
-    });
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/moderator/reports/${report.id}/escalate`;
 
-    // Also hide the post if it's a post type
-    if (report.type === 'post') {
-        hiddenPosts.unshift({ 
-            ...report, 
-            hiddenAt: new Date().toISOString(),
-            hiddenReason: 'Escalated to admin'
-        });
-    }
+    const reasonInput = document.createElement('input');
+    reasonInput.type = 'hidden';
+    reasonInput.name = 'escalationReason';
+    reasonInput.value = reason;
+    form.appendChild(reasonInput);
 
-    // Log to moderation history with reason and note
-    const fullNote = `${reason}${note ? ': ' + note : ''}`;
-    logModerationAction('escalate', report, fullNote);
+    const noteInput = document.createElement('input');
+    noteInput.type = 'hidden';
+    noteInput.name = 'notes';
+    noteInput.value = note;
+    form.appendChild(noteInput);
 
-    closeEscalateModal();
-    pendingEscalateReport = null;
-    applyFilter(currentFilter);
-    updateBadge();
-
-    alert('This report has been sent to a system admin for review');
-    console.log(`Escalated report #${report.id} - Reason: ${reason}, Note: ${note || '(none)'}`);
+    document.body.appendChild(form);
+    form.submit();
 }
 
 /**
