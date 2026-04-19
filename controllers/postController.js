@@ -150,6 +150,22 @@ exports.updatePost = async (req, res, next) => {
 
 exports.createRsvp = async (req, res, next) => {
   try {
+    const post = await Post.findByPk(req.params.id);
+    if (!post) return res.redirect('/posts');
+
+    if (post.date && new Date(post.date) < new Date()) {
+      req.flash('error', 'This event has already taken place.');
+      return res.redirect(`/posts/${req.params.id}`);
+    }
+
+    if (post.rsvpEnabled && post.maxAttendees) {
+      const count = await RSVP.count({ where: { postId: post.id } });
+      if (count >= post.maxAttendees) {
+        req.flash('error', 'This event is full.');
+        return res.redirect(`/posts/${req.params.id}`);
+      }
+    }
+
     await RSVP.findOrCreate({
       where: { postId: req.params.id, userId: req.session.userId }
     });
