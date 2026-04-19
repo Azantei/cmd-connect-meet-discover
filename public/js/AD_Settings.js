@@ -67,20 +67,17 @@ function setupEventListeners() {
     document.getElementById('saveChanges').addEventListener('click', saveChanges);
     document.getElementById('discardChanges').addEventListener('click', discardChanges);
 
-    // Tag management
-    document.getElementById('addTagBtn').addEventListener('click', addTag);
-    document.getElementById('newTagInput').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            addTag();
-        }
-    });
-
-    // Remove tag buttons
-    document.querySelectorAll('.remove-tag').forEach(button => {
-        button.addEventListener('click', (e) => {
-            removeTag(e.target.dataset.tag);
+    // Tag management — skip if the add button is a server-side submit
+    const addBtn = document.getElementById('addTagBtn');
+    if (addBtn && addBtn.type !== 'submit') {
+        addBtn.addEventListener('click', addTag);
+        document.getElementById('newTagInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addTag();
         });
-    });
+        document.querySelectorAll('.remove-tag').forEach(button => {
+            button.addEventListener('click', (e) => removeTag(e.target.dataset.tag));
+        });
+    }
 }
 
 // ==========================================

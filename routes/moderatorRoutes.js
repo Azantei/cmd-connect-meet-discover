@@ -5,10 +5,11 @@ const { requireAuth, requireRole } = require('../middleware/authMiddleware');
 
 router.use(requireAuth, requireRole('moderator', 'admin'));
 
-router.get('/dashboard', moderatorController.getDashboard);
-router.get('/reports', moderatorController.getReports);
-router.put('/reports/:id/review', moderatorController.reviewReport);
-router.put('/reports/:id/escalate', moderatorController.escalateReport);
-router.put('/posts/:id/hide', moderatorController.hidePost);
+router.get('/dashboard',              moderatorController.getDashboard);
+router.get('/reports/:id',            moderatorController.getReport);
+router.post('/reports/:id/warn',      moderatorController.warnReport);
+router.post('/reports/:id/dismiss',   moderatorController.dismissReport);
+router.post('/reports/:id/escalate',  moderatorController.escalateReport);
+router.get('/history',                moderatorController.getHistory);
 
 module.exports = router;

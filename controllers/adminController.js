@@ -1,12 +1,16 @@
-const { User, Post, Report, Category } = require('../models');
+const { User, Post, Report, Category, RSVP } = require('../models');
 
 exports.getUsers = async (req, res, next) => {
   try {
-    const users = await User.findAll({
-      attributes: ['id', 'name', 'email', 'role', 'isBanned', 'createdAt'],
-      order: [['createdAt', 'DESC']]
-    });
-    res.render('admin/users', { title: 'User Management', users });
+    const [users, activePosts, reportCount] = await Promise.all([
+      User.findAll({
+        attributes: ['id', 'name', 'email', 'role', 'isBanned', 'createdAt'],
+        order: [['createdAt', 'DESC']]
+      }),
+      Post.count(),
+      Report.count({ where: { status: 'pending' } })
+    ]);
+    res.render('admin/users', { title: 'User Management', users, activePosts, reportCount });
   } catch (err) { next(err); }
 };
 
@@ -78,12 +82,13 @@ exports.dismissEscalated = async (req, res, next) => {
 
 exports.getAnalytics = async (req, res, next) => {
   try {
-    const [userCount, postCount, pendingReportCount] = await Promise.all([
+    const [userCount, postCount, pendingReportCount, rsvpCount] = await Promise.all([
       User.count(),
       Post.count(),
-      Report.count({ where: { status: 'pending' } })
+      Report.count({ where: { status: 'pending' } }),
+      RSVP.count()
     ]);
-    res.render('admin/analytics', { title: 'Analytics', userCount, postCount, pendingReportCount });
+    res.render('admin/analytics', { title: 'Analytics', userCount, postCount, pendingReportCount, rsvpCount });
   } catch (err) { next(err); }
 };
 

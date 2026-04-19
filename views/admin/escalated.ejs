@@ -42,47 +42,67 @@
   </aside>
 
   <main class="main-content">
-    <section class="page-header">
-      <h1>Escalated Reports</h1>
-      <span class="report-count"><%= reports.length %> report<%= reports.length !== 1 ? 's' : '' %></span>
-    </section>
-
     <% if (success && success.length) { %><div class="flash success"><%= success %></div><% } %>
     <% if (error && error.length) { %><div class="flash error"><%= error %></div><% } %>
 
-    <section class="reports-list">
-      <% if (reports.length === 0) { %>
-        <p class="empty-state">No escalated reports at this time.</p>
-      <% } else { %>
-        <% reports.forEach(report => { %>
-        <div class="report-card">
-          <div class="report-meta">
-            <span class="report-type"><%= report.targetType %> #<%= report.targetId %></span>
-            <span class="report-date"><%= new Date(report.createdAt).toLocaleDateString() %></span>
-          </div>
-          <div class="report-reason"><strong>Reason:</strong> <%= report.reason %></div>
-          <% if (report.reporter) { %>
-            <div class="report-reporter">Reported by: <%= report.reporter.name %> (<%= report.reporter.email %>)</div>
-          <% } %>
-          <% if (report.notes) { %>
-            <div class="report-notes"><strong>Notes:</strong> <%= report.notes %></div>
-          <% } %>
-          <div class="report-actions">
-            <% if (report.targetType === 'post') { %>
-              <form action="/admin/escalated/<%= report.id %>/remove" method="POST" style="display:inline"
-                    onsubmit="return confirm('Delete this post and resolve the report?')">
-                <button type="submit" class="btn-remove">Remove Post</button>
-              </form>
-            <% } %>
-            <form action="/admin/escalated/<%= report.id %>/dismiss" method="POST" style="display:inline">
-              <button type="submit" class="btn-dismiss">Dismiss</button>
-            </form>
-          </div>
-        </div>
-        <% }) %>
-      <% } %>
+    <section class="page-header">
+      <h1>Escalated Reports</h1>
+      <div class="filter-group">
+        <label for="statusFilter">Status:</label>
+        <select id="statusFilter" class="status-filter">
+          <option value="all">All</option>
+          <option value="open">Open</option>
+          <option value="resolved">Resolved</option>
+        </select>
+      </div>
     </section>
+
+    <section class="reports-list" id="reportsList"></section>
   </main>
+
+  <div id="reportDetailModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalReportTitle">Report Details</h2>
+        <button class="modal-close" onclick="closeReportDetail()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="detail-section">
+          <h3>Report Information</h3>
+          <div id="modalReportMeta" class="detail-meta"></div>
+        </div>
+        <div class="detail-section">
+          <h3>Moderator Notes</h3>
+          <div id="modalModeratorNotes" class="detail-content"></div>
+        </div>
+        <div class="detail-section">
+          <h3>Reported Content</h3>
+          <div id="modalContentPreview" class="detail-content"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="btnBanUser" class="modal-action-btn ban-user" onclick="handleBanUser()">Ban User</button>
+        <button id="btnRemoveContent" class="modal-action-btn remove-content" onclick="handleRemoveContent()">Remove Content</button>
+        <button id="btnDismissReport" class="modal-action-btn dismiss" onclick="handleDismissReport()">Dismiss Report</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="confirmationModal" class="modal">
+    <div class="modal-content modal-small">
+      <div class="modal-header">
+        <h2>Confirm Action</h2>
+      </div>
+      <div class="modal-body">
+        <p id="confirmationMessage" class="confirmation-text"></p>
+        <p class="warning-text">&#9888;&#65039; This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-action-btn secondary" onclick="closeConfirmation()">Cancel</button>
+        <button id="confirmActionBtn" class="modal-action-btn primary">Confirm</button>
+      </div>
+    </div>
+  </div>
 
   <footer>
     <div class="container">
@@ -90,5 +110,35 @@
       <p>Connect. Meet. Discover. &copy; 2026</p>
     </div>
   </footer>
+
+  <script>
+    function _relTime(d) {
+      var diff = Date.now() - new Date(d).getTime();
+      var mins = Math.floor(diff / 60000);
+      if (mins < 60) return mins + ' min ago';
+      var hrs = Math.floor(mins / 60);
+      if (hrs < 24) return hrs + (hrs > 1 ? ' hrs ago' : ' hr ago');
+      var days = Math.floor(hrs / 24);
+      return days + (days > 1 ? ' days ago' : ' day ago');
+    }
+    window.ADMIN_ESCALATED = <%- JSON.stringify(reports.map(function(r) {
+      return {
+        id: r.id,
+        type: r.targetType,
+        targetId: r.targetId,
+        title: r.targetType === 'post' ? ('Post #' + r.targetId) : (r.reporter ? r.reporter.name : 'Unknown User'),
+        reportedUser: r.reporter ? r.reporter.name : 'Unknown',
+        reportedUserEmail: r.reporter ? r.reporter.email : '',
+        escalatedBy: r.reporter ? r.reporter.name : 'Moderator',
+        originalReason: r.reason || '',
+        moderatorNotes: r.notes || 'No additional notes.',
+        contentPreview: '',
+        status: r.status === 'escalated' ? 'open' : 'resolved',
+        createdAt: r.createdAt
+      };
+    })) %>;
+    window.ADMIN_ESCALATED.forEach(function(r) { r.timeAgo = _relTime(r.createdAt); });
+  </script>
+  <script src="/js/AD_EscalatedReports.js"></script>
 </body>
 </html>

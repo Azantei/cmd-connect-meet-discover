@@ -44,20 +44,99 @@
   <main class="main-content">
     <section class="page-header">
       <h1>Analytics</h1>
+      <div class="date-selector">
+        <label for="dateRange">Date range:</label>
+        <select id="dateRange" class="date-filter">
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+          <option value="quarter">This Quarter</option>
+          <option value="year">This Year</option>
+        </select>
+      </div>
     </section>
 
     <section class="stats-grid">
       <div class="stat-card orange">
         <div class="stat-label">Total Users</div>
-        <div class="stat-value"><%= userCount %></div>
+        <div class="stat-value" id="totalUsers"><%= userCount %></div>
       </div>
       <div class="stat-card orange">
-        <div class="stat-label">Total Posts</div>
-        <div class="stat-value"><%= postCount %></div>
+        <div class="stat-label">Active Posts</div>
+        <div class="stat-value" id="activePosts"><%= postCount %></div>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-label">RSVPs</div>
+        <div class="stat-value" id="rsvps"><%= rsvpCount %></div>
       </div>
       <div class="stat-card gray">
-        <div class="stat-label">Pending Reports</div>
-        <div class="stat-value"><%= pendingReportCount %></div>
+        <div class="stat-label">Reports</div>
+        <div class="stat-value" id="reports"><%= pendingReportCount %></div>
+      </div>
+    </section>
+
+    <section class="chart-section">
+      <div class="chart-header">
+        <span class="chart-icon">&#9632;</span>
+        <h2>User Growth Chart (bar/line &mdash; new users per day)</h2>
+      </div>
+      <div class="chart-container" id="userGrowthChart">
+        <div class="chart-placeholder">
+          <div class="bar-chart">
+            <div class="bar" style="height:40%"></div>
+            <div class="bar" style="height:45%"></div>
+            <div class="bar" style="height:50%"></div>
+            <div class="bar" style="height:55%"></div>
+            <div class="bar" style="height:60%"></div>
+            <div class="bar" style="height:65%"></div>
+            <div class="bar" style="height:70%"></div>
+            <div class="bar" style="height:75%"></div>
+            <div class="bar" style="height:80%"></div>
+            <div class="bar" style="height:85%"></div>
+            <div class="bar" style="height:90%"></div>
+            <div class="bar" style="height:95%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bottom-grid">
+      <div class="section-card">
+        <div class="section-header">
+          <span class="section-icon">&#9632;</span>
+          <h3>Top Categories</h3>
+        </div>
+        <div class="categories-list">
+          <div class="category-item">
+            <span class="category-label">Outdoors</span>
+            <div class="category-bar" style="width:100%"></div>
+          </div>
+          <div class="category-item">
+            <span class="category-label">Music</span>
+            <div class="category-bar" style="width:75%"></div>
+          </div>
+          <div class="category-item">
+            <span class="category-label">Food &amp; Drink</span>
+            <div class="category-bar" style="width:60%"></div>
+          </div>
+          <div class="category-item">
+            <span class="category-label">Sports</span>
+            <div class="category-bar" style="width:50%"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-header">
+          <span class="section-icon">&#9632;</span>
+          <h3>Recent Activity Log</h3>
+        </div>
+        <div class="activity-list" id="activityLog">
+          <div class="activity-item">
+            <span class="activity-date">—</span>
+            <span class="activity-separator">—</span>
+            <span class="activity-text">Loading activity...</span>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -68,5 +147,7 @@
       <p>Connect. Meet. Discover. &copy; 2026</p>
     </div>
   </footer>
+
+  <script src="/js/AD_Analytics.js"></script>
 </body>
 </html>

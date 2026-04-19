@@ -48,53 +48,35 @@
     <section class="stats-section">
       <div class="stat-card">
         <div class="stat-label">Total Users</div>
-        <div class="stat-value"><%= users.length %></div>
+        <div class="stat-value" id="totalUsers"><%= users.length %></div>
       </div>
+      <div class="stat-card">
+        <div class="stat-label">Active Posts</div>
+        <div class="stat-value" id="activePosts"><%= activePosts %></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Reports</div>
+        <div class="stat-value" id="reports"><%= reportCount %></div>
+      </div>
+    </section>
+
+    <section class="search-section">
+      <input type="text" id="searchInput" placeholder="Search by name or email" class="search-input">
+      <button class="search-btn">Search</button>
     </section>
 
     <section class="table-section">
       <table class="users-table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Email</th>
+            <th>User (name + email)</th>
             <th>Role</th>
             <th>Status</th>
             <th>Joined</th>
             <th>Actions</th>
           </tr>
         </thead>
-        <tbody>
-          <% users.forEach(user => { %>
-          <tr>
-            <td><%= user.name %></td>
-            <td><%= user.email %></td>
-            <td><%= user.role %></td>
-            <td><%= user.isBanned ? 'Banned' : 'Active' %></td>
-            <td><%= new Date(user.createdAt).toLocaleDateString() %></td>
-            <td class="action-btns">
-              <% if (user.isBanned) { %>
-                <form action="/admin/users/<%= user.id %>/unban" method="POST" style="display:inline">
-                  <button type="submit" class="btn-unban">Unban</button>
-                </form>
-              <% } else { %>
-                <form action="/admin/users/<%= user.id %>/ban" method="POST" style="display:inline">
-                  <button type="submit" class="btn-ban">Ban</button>
-                </form>
-              <% } %>
-              <% if (user.role === 'community_member') { %>
-                <form action="/admin/users/<%= user.id %>/promote" method="POST" style="display:inline">
-                  <button type="submit" class="btn-promote">Promote</button>
-                </form>
-              <% } else if (user.role === 'moderator') { %>
-                <form action="/admin/users/<%= user.id %>/demote" method="POST" style="display:inline">
-                  <button type="submit" class="btn-demote">Demote</button>
-                </form>
-              <% } %>
-            </td>
-          </tr>
-          <% }) %>
-        </tbody>
+        <tbody id="usersTableBody"></tbody>
       </table>
     </section>
   </main>
@@ -105,5 +87,25 @@
       <p>Connect. Meet. Discover. &copy; 2026</p>
     </div>
   </footer>
+
+  <script>
+    window.ADMIN_USERS = <%- JSON.stringify(users.map(function(u, i) {
+      var nameParts = (u.name || '').trim().split(/\s+/);
+      var initials = nameParts.map(function(p) { return p.charAt(0).toUpperCase(); }).join('').substring(0, 2) || '?';
+      var colors = ['#D2691E','#C85A54','#CD853F','#A0522D','#8B4513','#6B4423','#B87333'];
+      return {
+        id: u.id,
+        firstName: u.name || '',
+        lastName: '',
+        email: u.email || '',
+        role: u.role === 'admin' ? 'Admin' : (u.role === 'moderator' ? 'Mod' : 'Member'),
+        status: u.isBanned ? 'banned' : 'active',
+        joinDate: new Date(u.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).replace(',', ''),
+        initials: initials,
+        avatarColor: colors[i % colors.length]
+      };
+    })) %>;
+  </script>
+  <script src="/js/AD_UserManagement.js"></script>
 </body>
 </html>

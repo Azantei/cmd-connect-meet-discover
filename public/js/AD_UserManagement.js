@@ -108,11 +108,9 @@ function generateSampleUsers() {
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Load sample data
-    users = generateSampleUsers();
+    users = window.ADMIN_USERS || generateSampleUsers();
     filteredUsers = [...users];
-    
-    // Initialize UI
+
     updateStatistics();
     renderUsers();
     setupEventListeners();
@@ -123,13 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 
 function updateStatistics() {
-    const totalUsers = 2847;
-    const activePosts = 391;
-    const reports = 7;
-    
-    document.getElementById('totalUsers').textContent = totalUsers.toLocaleString();
-    document.getElementById('activePosts').textContent = activePosts.toLocaleString();
-    document.getElementById('reports').textContent = reports;
+    // Stat values are pre-rendered server-side; no override needed.
 }
 
 // ==========================================
@@ -165,34 +157,21 @@ function renderUsers() {
             </div>
         `;
         
-        // Build action buttons based on status
+        const makeForm = (action, label, cls) =>
+            `<form action="/admin/users/${user.id}/${action}" method="POST" style="display:inline">` +
+            `<button type="submit" class="action-btn${cls ? ' ' + cls : ''}">${label}</button></form>`;
+
         let actionButtons = '';
-        if (user.status === 'active') {
-            if (user.role === 'Member') {
-                actionButtons = `
-                    <button class="action-btn">Promote</button>
-                    <button class="action-btn danger">Ban</button>
-                `;
-            } else if (user.role === 'Mod') {
-                actionButtons = `
-                    <button class="action-btn">Demote</button>
-                    <button class="action-btn danger">Ban</button>
-                `;
-            } else if (user.role === 'Admin') {
-                actionButtons = `
-                    <button class="action-btn">Demote</button>
-                `;
-            }
-        } else if (user.status === 'flagged') {
-            actionButtons = `
-                <button class="action-btn danger">Ban</button>
-            `;
-        } else if (user.status === 'banned') {
-            actionButtons = `
-                <button class="action-btn">Unban</button>
-            `;
+        if (user.status === 'banned') {
+            actionButtons = makeForm('unban', 'Unban', '');
+        } else if (user.role === 'Member' || user.role === 'Mod' || user.status === 'flagged') {
+            if (user.role === 'Member') actionButtons += makeForm('promote', 'Promote', '');
+            if (user.role === 'Mod')    actionButtons += makeForm('demote',  'Demote',  '');
+            actionButtons += makeForm('ban', 'Ban', 'danger');
+        } else if (user.role === 'Admin') {
+            actionButtons = makeForm('demote', 'Demote', '');
         }
-        
+
         row.innerHTML = `
             <td>${userCell}</td>
             <td>${user.role}</td>
@@ -242,65 +221,6 @@ function setupEventListeners() {
     // Real-time search as user types (optional - can be removed if not desired)
     searchInput.addEventListener('input', applySearch);
 
-    // Action button clicks (event delegation)
-    document.getElementById('usersTableBody').addEventListener('click', (e) => {
-        const btn = e.target.closest('button.action-btn');
-        if (!btn) return;
-
-        const row = btn.closest('tr');
-        const userEmail = row?.querySelector('.user-email')?.textContent;
-        const user = users.find(u => u.email === userEmail);
-        if (!user) return;
-
-        const fullName = user.lastName ? `${user.firstName} ${user.lastName}` : user.firstName;
-
-        if (btn.textContent === 'Ban') {
-            if (user.status === 'banned') {
-                alert('This user is already banned.');
-                return;
-            }
-            if (confirm(`Are you sure you want to BAN the user associated with "${fullName}"? This is a serious action.`)) {
-                user.status = 'banned';
-                renderUsers();
-                alert('User banned successfully!');
-            }
-        } else if (btn.textContent === 'Unban') {
-            if (user.status !== 'banned') {
-                alert('This user is not banned.');
-                return;
-            }
-            if (confirm(`Are you sure you want to UNBAN the user associated with "${fullName}"? They will be able to log in again.`)) {
-                user.status = 'active';
-                renderUsers();
-                alert('User unbanned successfully!');
-            }
-        } else if (btn.textContent === 'Promote') {
-            if (user.role === 'Mod') {
-                alert('This user is already a moderator.');
-                return;
-            }
-            if (user.status !== 'active') {
-                alert('Only active users can be promoted.');
-                return;
-            }
-            if (confirm(`Are you sure you want to promote "${fullName}" to Moderator? They will gain access to moderation tools.`)) {
-                user.role = 'Mod';
-                renderUsers();
-                alert('User promoted to moderator successfully!');
-            }
-        } else if (btn.textContent === 'Demote') {
-            if (user.role === 'Member') {
-                alert('This user is not a moderator.');
-                return;
-            }
-            const targetRole = user.role === 'Admin' ? 'Moderator' : 'Member';
-            if (confirm(`Are you sure you want to demote "${fullName}"? They will lose access to moderation tools and become a ${targetRole}.`)) {
-                user.role = user.role === 'Admin' ? 'Mod' : 'Member';
-                renderUsers();
-                alert('User demoted successfully!');
-            }
-        }
-    });
 }
 
 // ==========================================

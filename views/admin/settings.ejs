@@ -49,15 +49,60 @@
     <% if (success && success.length) { %><div class="flash success"><%= success %></div><% } %>
     <% if (error && error.length) { %><div class="flash error"><%= error %></div><% } %>
 
-    <section class="settings-section">
-      <h2>Categories &amp; Tags</h2>
+    <section class="settings-tabs">
+      <button class="tab-button active" data-tab="general">General</button>
+      <button class="tab-button" data-tab="categories">Categories &amp; Tags</button>
+    </section>
+
+    <section id="general-tab" class="tab-content active">
+      <h2>GENERAL SETTINGS</h2>
+
+      <div class="form-group">
+        <label for="platformName">Platform Name</label>
+        <input type="text" id="platformName" class="form-input" value="C.M.D. &mdash; Connect. Meet. Discover.">
+      </div>
+
+      <div class="form-group">
+        <label for="distanceRadius">Default Distance Radius</label>
+        <input type="text" id="distanceRadius" class="form-input" value="10 mi">
+      </div>
+
+      <div class="toggles-grid">
+        <div class="toggle-group">
+          <label>Allow Guest Browsing</label>
+          <button class="toggle-switch on" data-setting="guestBrowsing">
+            <span class="toggle-text">ON</span>
+          </button>
+        </div>
+        <div class="toggle-group">
+          <label>Registration Open</label>
+          <button class="toggle-switch on" data-setting="registrationOpen">
+            <span class="toggle-text">ON</span>
+          </button>
+        </div>
+        <div class="toggle-group">
+          <label>Maintenance Mode</label>
+          <button class="toggle-switch off" data-setting="maintenanceMode">
+            <span class="toggle-text">OFF</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn-save" id="saveChanges">Save Changes</button>
+        <button class="btn-discard" id="discardChanges">Discard Changes</button>
+      </div>
+    </section>
+
+    <section id="categories-tab" class="tab-content">
+      <h2>CATEGORIES &amp; TAGS</h2>
 
       <form action="/admin/settings/categories" method="POST" class="add-tag-section">
-        <input type="text" name="name" class="form-input" placeholder="New category name..." required>
-        <button type="submit" class="btn-add-tag">+ Add</button>
+        <input type="text" id="newTagInput" name="name" class="form-input" placeholder="New category name..." required>
+        <button type="submit" class="btn-add-tag" id="addTagBtn">+ Add</button>
       </form>
 
-      <div class="tags-container">
+      <div class="tags-container" id="tagsList">
         <% if (categories.length === 0) { %>
           <p class="empty-state">No categories yet.</p>
         <% } else { %>
@@ -65,7 +110,7 @@
             <div class="tag-chip">
               <%= cat.name %>
               <form action="/admin/settings/categories/<%= cat.id %>?_method=DELETE" method="POST" style="display:inline">
-                <button type="submit" class="remove-tag" aria-label="Remove <%= cat.name %>">&#x2715;</button>
+                <button type="submit" class="remove-tag" data-tag="<%= cat.name %>" aria-label="Remove <%= cat.name %>">X</button>
               </form>
             </div>
           <% }) %>
@@ -80,5 +125,7 @@
       <p>Connect. Meet. Discover. &copy; 2026</p>
     </div>
   </footer>
+
+  <script src="/js/AD_Settings.js"></script>
 </body>
 </html>
