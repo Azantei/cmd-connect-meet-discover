@@ -34,6 +34,14 @@ module.exports = (sequelize, DataTypes) => {
     imageUrl: {
       type: DataTypes.STRING(255)
     },
+    maxAttendees: {
+      type: DataTypes.INTEGER,
+      defaultValue: null
+    },
+    rsvpEnabled: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
     isHidden: {
       type: DataTypes.BOOLEAN,
       defaultValue: false

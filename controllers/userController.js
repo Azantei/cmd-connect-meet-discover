@@ -31,7 +31,7 @@ exports.getUserById = async (req, res, next) => {
     });
     if (!user) { req.flash('error', 'User not found.'); return res.redirect('/posts'); }
     const posts = await Post.findAll({
-      where: { userId: user.id, isHidden: false },
+      where: { userId: user.id, isHidden: false, status: 'published' },
       order: [['createdAt', 'DESC']]
     });
     res.render('users/otherProfile', {
@@ -53,7 +53,8 @@ exports.getSettings = async (req, res, next) => {
 
 exports.updateSettings = async (req, res, next) => {
   try {
-    const { name, location, interests } = req.body;
+    const bcrypt = require('bcrypt');
+    const { name, location, interests, newPassword, confirmPassword } = req.body;
     const interestsArray = Array.isArray(interests)
       ? interests
       : (interests ? interests.split(',').map(s => s.trim()).filter(Boolean) : []);
@@ -66,6 +67,18 @@ exports.updateSettings = async (req, res, next) => {
 
     if (req.file) {
       updates.profilePic = `/uploads/${req.file.filename}`;
+    }
+
+    if (newPassword && newPassword.trim()) {
+      if (newPassword !== confirmPassword) {
+        req.flash('error', 'Passwords do not match.');
+        return res.redirect('/users/settings');
+      }
+      if (newPassword.length < 8) {
+        req.flash('error', 'Password must be at least 8 characters.');
+        return res.redirect('/users/settings');
+      }
+      updates.password = await bcrypt.hash(newPassword, 12);
     }
 
     await User.update(updates, { where: { id: req.session.userId } });

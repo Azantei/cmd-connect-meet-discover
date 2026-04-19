@@ -79,9 +79,24 @@
                     <input type="email" class="field-input" value="<%= user.email %>" disabled
                            style="opacity:0.6;cursor:not-allowed;">
                 </div>
+                <div class="field">
+                    <label class="field-label" for="accountUsername">Username</label>
+                    <input type="text" id="accountUsername" name="name" class="field-input"
+                           value="<%= user.name %>">
+                </div>
+                <div class="field">
+                    <label class="field-label" for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" name="newPassword" class="field-input"
+                           placeholder="Leave blank to keep current password" autocomplete="new-password">
+                </div>
+                <div class="field">
+                    <label class="field-label" for="confirmPassword">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="field-input"
+                           placeholder="Repeat new password" autocomplete="new-password">
+                </div>
                 <div class="save-bar">
-                    <button type="button" class="btn-save" onclick="showToast()">Save Changes</button>
-                    <button type="button" class="btn-discard">Discard Changes</button>
+                    <button type="submit" class="btn-save">Save Changes</button>
+                    <a href="/users/profile" class="btn-discard">Discard Changes</a>
                 </div>
                 <div class="danger-zone">
                     <div class="danger-title">Danger Zone</div>

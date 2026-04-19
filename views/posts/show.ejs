@@ -48,8 +48,11 @@
             <div class="left-column">
                 <% if (post.date) { %>
                 <div class="info-box">
-                    <div class="info-label">📅 Date</div>
-                    <div class="info-value"><%= new Date(post.date).toDateString() %></div>
+                    <div class="info-label">📅 Date & Time</div>
+                    <% var _pd = new Date(post.date); var _ph = _pd.getHours(), _pm = _pd.getMinutes(); %>
+                    <div class="info-value">
+                        <%= _pd.toDateString() %><% if (_ph || _pm) { var _sfx = _ph >= 12 ? 'PM' : 'AM'; var _h12 = _ph % 12 || 12; var _mm = String(_pm).padStart(2, '0'); %> &middot; <%= _h12 %>:<%= _mm %> <%= _sfx %><% } %>
+                    </div>
                 </div>
                 <% } %>
                 <% if (post.location) { %>
@@ -60,7 +63,9 @@
                 <% } %>
                 <div class="info-box">
                     <div class="info-label">👥 RSVPs</div>
-                    <div class="info-value"><%= rsvpCount %> going</div>
+                    <div class="info-value">
+                        <%= rsvpCount %><% if (post.maxAttendees) { %>/<%= post.maxAttendees %><% } %> going
+                    </div>
                 </div>
                 <% if (currentUser) { %>
                     <% if (hasRsvp) { %>

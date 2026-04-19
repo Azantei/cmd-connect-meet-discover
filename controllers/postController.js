@@ -71,7 +71,7 @@ exports.getCreatePost = async (req, res, next) => {
 
 exports.createPost = async (req, res, next) => {
   try {
-    const { title, description, category, location, date } = req.body;
+    const { title, description, category, location, date, time, rsvpEnabled, maxAttendees } = req.body;
     if (!title || !title.trim()) {
       req.flash('error', 'Title is required.');
       return res.redirect('/posts/new');
@@ -80,16 +80,19 @@ exports.createPost = async (req, res, next) => {
       ? category
       : (category ? [category] : []);
 
+    const combinedDate = date ? new Date(`${date}T${time || '00:00'}`) : null;
     const status = req.body.status === 'draft' ? 'draft' : 'published';
     const post = await Post.create({
-      title:       title.trim(),
-      description: description || null,
-      category:    categoryArray,
-      location:    location || null,
-      date:        date || null,
-      imageUrl:    req.file ? `/uploads/${req.file.filename}` : null,
-      userId:      req.session.userId,
-      status
+      title:        title.trim(),
+      description:  description || null,
+      category:     categoryArray,
+      location:     location || null,
+      date:         combinedDate,
+      imageUrl:     req.file ? `/uploads/${req.file.filename}` : null,
+      userId:       req.session.userId,
+      status,
+      rsvpEnabled:  rsvpEnabled === 'on',
+      maxAttendees: (rsvpEnabled === 'on' && maxAttendees) ? parseInt(maxAttendees) : null
     });
     if (status === 'draft') {
       req.flash('success', 'Draft saved!');
@@ -119,18 +122,21 @@ exports.updatePost = async (req, res, next) => {
       req.flash('error', 'Unauthorized.');
       return res.redirect('/users/profile');
     }
-    const { title, description, category, location, date } = req.body;
+    const { title, description, category, location, date, time, rsvpEnabled, maxAttendees } = req.body;
     const categoryArray = Array.isArray(category) ? category : (category ? [category] : []);
     const status = req.body.status === 'draft' ? 'draft' : 'published';
+    const combinedDate = date ? new Date(`${date}T${time || '00:00'}`) : null;
 
     await post.update({
-      title:       title && title.trim() ? title.trim() : post.title,
-      description: description || null,
-      category:    categoryArray,
-      location:    location || null,
-      date:        date || null,
-      imageUrl:    req.file ? `/uploads/${req.file.filename}` : post.imageUrl,
-      status
+      title:        title && title.trim() ? title.trim() : post.title,
+      description:  description || null,
+      category:     categoryArray,
+      location:     location || null,
+      date:         combinedDate,
+      imageUrl:     req.file ? `/uploads/${req.file.filename}` : post.imageUrl,
+      status,
+      rsvpEnabled:  rsvpEnabled === 'on',
+      maxAttendees: (rsvpEnabled === 'on' && maxAttendees) ? parseInt(maxAttendees) : null
     });
 
     if (status === 'draft') {

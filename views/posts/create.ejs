@@ -60,6 +60,11 @@
                     <input type="date" id="postDate" name="date" />
                 </div>
                 <span class="error-message" id="date-error"></span>
+                <div class="form-row border-bottom">
+                    <label for="postTime">Start Time</label>
+                    <input type="time" id="postTime" name="time" />
+                </div>
+                <span class="error-message" id="time-error"></span>
                 <div class="form-row">
                     <label for="postLocation">Location</label>
                     <input type="text" id="postLocation" name="location" placeholder="Enter a location..." />
@@ -80,6 +85,21 @@
                     <% }) %>
                 </div>
                 <span class="error-message" id="categories-error"></span>
+            </div>
+
+            <div class="form-box">
+                <div class="section-label">RSVP OPTIONS <span class="optional">(optional)</span></div>
+                <div class="form-row">
+                    <label>Enable RSVP</label>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="rsvpToggle" name="rsvpEnabled" onchange="toggleRsvpOptions()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="form-row border-bottom" id="maxAttendeesRow" style="display:none;">
+                    <label>Max Attendees<br><span class="optional">(optional)</span></label>
+                    <input type="number" id="maxAttendees" name="maxAttendees" placeholder="Enter maximum number" min="1" />
+                </div>
             </div>
 
             <div class="form-box">

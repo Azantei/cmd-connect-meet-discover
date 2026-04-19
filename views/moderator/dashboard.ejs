@@ -26,7 +26,7 @@
                 <a href="/users/profile">Profile</a>
                 <a href="/about">About Us</a>
             </div>
-            <span class="mod-user">Moderator: Sara M.
+            <span class="mod-user">Moderator: <%= currentUsername %>
                 <form action="/logout" method="POST" style="display:inline">
                     <button type="submit" style="margin-left:1rem;color:hsl(20,90%,55%);text-decoration:none;background:none;border:none;cursor:pointer;font:inherit;">Log Out</button>
                 </form>
@@ -38,7 +38,7 @@
         <aside class="mod-sidebar">
             <button class="mod-nav-item active" data-view="reports">
                 Reports Queue
-                <span class="mod-badge" id="reportCount">7</span>
+                <span class="mod-badge" id="reportCount"><%= reportsData.length %></span>
             </button>
             <button class="mod-nav-item" data-view="history">Moderation History</button>
         </aside>
@@ -124,6 +124,9 @@
         </div>
     </footer>
 
+    <script>
+        window.REPORTS_DATA = <%- JSON.stringify(reportsData) %>;
+    </script>
     <script src="/js/moderator.js"></script>
 </body>
 </html>

@@ -9,14 +9,7 @@
    View another user's previously attended events
 ========================================== */
 
-// Mock event data for other user's previously attended events
-var ATTENDED_EVENTS = [
-    { title: "Morning Trail Hike", desc: "Join us for a scenic morning hike through the local trails. All skill levels welcome.", date: "Sat Mar 7", going: 12, color: "#2e3a4e", tags: ["Outdoors"] },
-    { title: "Acoustic Jam Session", desc: "Bring your instrument or just your ears. Casual outdoor music gathering.", date: "Sun Mar 8", going: 8, color: "#3b4a2e", tags: ["Music"] },
-    { title: "Community Picnic", desc: "A relaxed afternoon picnic in the park. Food, games, and good company.", date: "Sat Feb 28", going: 20, color: "#3b2e4a", tags: ["Food"] },
-    { title: "Sunset Yoga", desc: "Wind down with a group yoga session as the sun sets over the park.", date: "Fri Feb 20", going: 15, color: "#2e3a4e", tags: ["Fitness"] },
-    { title: "5K Fun Run", desc: "A casual community run through Capitol Hill. All paces welcome!", date: "Sat Feb 14", going: 30, color: "#3b4a2e", tags: ["Sports", "Outdoors"] },
-];
+var ATTENDED_EVENTS = [];
 
 // Active filter categories
 var activeFilters = [];
@@ -43,14 +36,18 @@ function renderCards() {
         grid.style.display = 'grid';
         noResults.style.display = 'none';
         grid.innerHTML = filtered.map(function(card) {
-            var statusBadge = '<span class="status-badge" style="background-color: #2e7d32;">✓ Attended</span>';
-            
-            return '<div class="card">' +
-                '<div class="card-img" style="background-color:' + card.color + '"><div class="card-img-icon"></div></div>' +
-                '<div class="card-tags">' + card.tags.map(function(t) { return '<span class="card-tag">' + t + '</span>'; }).join('') + '<span class="card-tag">1.2 mi</span>' + statusBadge + '</div>' +
+            var imgHtml = card.imageUrl
+                ? '<div class="card-img" style="background-color:' + card.color + '"><img src="' + card.imageUrl + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+                : '<div class="card-img" style="background-color:' + card.color + '"><div class="card-img-icon"></div></div>';
+            var link = card.id ? '/posts/' + card.id : '#';
+            return '<a href="' + link + '" style="text-decoration:none;color:inherit;display:block;">' +
+                '<div class="card">' +
+                imgHtml +
+                '<div class="card-tags">' + card.tags.map(function(t) { return '<span class="card-tag">' + t + '</span>'; }).join('') + '</div>' +
                 '<div class="card-body"><div class="card-title">' + card.title + '</div><div class="card-desc">' + card.desc + '</div></div>' +
-                '<div class="card-footer"><span>📅 ' + card.date + '</span><span>👥 ' + card.going + ' attended</span></div>' +
-                '</div>';
+                '<div class="card-footer"><span>📅 ' + card.date + '</span></div>' +
+                '</div>' +
+                '</a>';
         }).join('');
     }
 }
