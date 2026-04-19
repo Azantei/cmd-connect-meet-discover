@@ -56,42 +56,52 @@
 
     <section id="general-tab" class="tab-content active">
       <h2>GENERAL SETTINGS</h2>
-
-      <div class="form-group">
-        <label for="platformName">Platform Name</label>
-        <input type="text" id="platformName" class="form-input" value="C.M.D. &mdash; Connect. Meet. Discover.">
-      </div>
-
-      <div class="form-group">
-        <label for="distanceRadius">Default Distance Radius</label>
-        <input type="text" id="distanceRadius" class="form-input" value="10 mi">
-      </div>
-
-      <div class="toggles-grid">
-        <div class="toggle-group">
-          <label>Allow Guest Browsing</label>
-          <button class="toggle-switch on" data-setting="guestBrowsing">
-            <span class="toggle-text">ON</span>
-          </button>
+      <form action="/admin/settings" method="POST" id="generalSettingsForm">
+        <div class="form-group">
+          <label for="platformName">Platform Name</label>
+          <input type="text" id="platformName" name="platformName" class="form-input"
+                 value="<%= platformSettings.platformName || 'C.M.D. — Connect. Meet. Discover.' %>">
         </div>
-        <div class="toggle-group">
-          <label>Registration Open</label>
-          <button class="toggle-switch on" data-setting="registrationOpen">
-            <span class="toggle-text">ON</span>
-          </button>
-        </div>
-        <div class="toggle-group">
-          <label>Maintenance Mode</label>
-          <button class="toggle-switch off" data-setting="maintenanceMode">
-            <span class="toggle-text">OFF</span>
-          </button>
-        </div>
-      </div>
 
-      <div class="action-buttons">
-        <button class="btn-save" id="saveChanges">Save Changes</button>
-        <button class="btn-discard" id="discardChanges">Discard Changes</button>
-      </div>
+        <div class="form-group">
+          <label for="distanceRadius">Default Distance Radius</label>
+          <input type="text" id="distanceRadius" name="distanceRadius" class="form-input"
+                 value="<%= platformSettings.distanceRadius || '10 mi' %>">
+        </div>
+
+        <input type="hidden" name="guestBrowsing"    id="guestBrowsingHidden"    value="<%= platformSettings.guestBrowsing    || 'true' %>">
+        <input type="hidden" name="registrationOpen" id="registrationOpenHidden" value="<%= platformSettings.registrationOpen || 'true' %>">
+        <input type="hidden" name="maintenanceMode"  id="maintenanceModeHidden"  value="<%= platformSettings.maintenanceMode  || 'false' %>">
+
+        <div class="toggles-grid">
+          <div class="toggle-group">
+            <label>Allow Guest Browsing</label>
+            <button type="button" class="toggle-switch <%= (platformSettings.guestBrowsing || 'true') === 'true' ? 'on' : 'off' %>"
+                    data-setting="guestBrowsing">
+              <span class="toggle-text"><%= (platformSettings.guestBrowsing || 'true') === 'true' ? 'ON' : 'OFF' %></span>
+            </button>
+          </div>
+          <div class="toggle-group">
+            <label>Registration Open</label>
+            <button type="button" class="toggle-switch <%= (platformSettings.registrationOpen || 'true') === 'true' ? 'on' : 'off' %>"
+                    data-setting="registrationOpen">
+              <span class="toggle-text"><%= (platformSettings.registrationOpen || 'true') === 'true' ? 'ON' : 'OFF' %></span>
+            </button>
+          </div>
+          <div class="toggle-group">
+            <label>Maintenance Mode</label>
+            <button type="button" class="toggle-switch <%= (platformSettings.maintenanceMode || 'false') === 'true' ? 'on' : 'off' %>"
+                    data-setting="maintenanceMode">
+              <span class="toggle-text"><%= (platformSettings.maintenanceMode || 'false') === 'true' ? 'ON' : 'OFF' %></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button type="submit" class="btn-save" id="saveChanges">Save Changes</button>
+          <button type="button" class="btn-discard" id="discardChanges">Discard Changes</button>
+        </div>
+      </form>
     </section>
 
     <section id="categories-tab" class="tab-content">

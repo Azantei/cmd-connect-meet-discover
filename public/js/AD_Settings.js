@@ -106,7 +106,6 @@ function handleToggle(toggleElement) {
     const settingName = toggleElement.dataset.setting;
     const isOn = toggleElement.classList.contains('on');
 
-    // Toggle state
     if (isOn) {
         toggleElement.classList.remove('on');
         toggleElement.classList.add('off');
@@ -118,6 +117,10 @@ function handleToggle(toggleElement) {
         toggleElement.querySelector('.toggle-text').textContent = 'ON';
         settings[settingName] = true;
     }
+
+    // Sync to hidden input so the form POST carries the value
+    const hidden = document.getElementById(settingName + 'Hidden');
+    if (hidden) hidden.value = settings[settingName] ? 'true' : 'false';
 }
 
 // ==========================================
@@ -156,25 +159,17 @@ function clearInvalidHighlights() {
 }
 
 function saveChanges() {
-    // Sync settings from form inputs before validation
     settings.platformName = document.getElementById('platformName').value;
     settings.distanceRadius = document.getElementById('distanceRadius').value;
 
     const invalidFields = validateSettings();
-
     if (invalidFields.length > 0) {
         highlightInvalidFields(invalidFields);
-        alert('One or more settings contain invalid values.');
         return;
     }
 
     clearInvalidHighlights();
-    originalSettings = { ...settings };
-
-    console.log('Settings saved:', settings);
-    alert('Settings saved successfully!');
-
-    // TODO: Send settings to backend API
+    document.getElementById('generalSettingsForm').submit();
 }
 
 function discardChanges() {

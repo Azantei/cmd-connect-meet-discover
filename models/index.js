@@ -23,7 +23,8 @@ db.Post           = require('./Post')(sequelize, Sequelize.DataTypes);
 db.RSVP           = require('./RSVP')(sequelize, Sequelize.DataTypes);
 db.Report         = require('./Report')(sequelize, Sequelize.DataTypes);
 db.Category       = require('./Category')(sequelize, Sequelize.DataTypes);
-db.ModerationLog  = require('./ModerationLog')(sequelize, Sequelize.DataTypes);
+db.ModerationLog      = require('./ModerationLog')(sequelize, Sequelize.DataTypes);
+db.PlatformSetting    = require('./PlatformSetting')(sequelize, Sequelize.DataTypes);
 
 // ── User ↔ Post ─────────────────────────────────────────────
 db.User.hasMany(db.Post, { foreignKey: 'userId', onDelete: 'CASCADE' });

@@ -1,4 +1,4 @@
-const { User, Post, Report, Category, RSVP } = require('../models');
+const { User, Post, Report, Category, RSVP, PlatformSetting } = require('../models');
 
 exports.getUsers = async (req, res, next) => {
   try {
@@ -106,8 +106,25 @@ exports.getAnalytics = async (req, res, next) => {
 
 exports.getSettings = async (req, res, next) => {
   try {
-    const categories = await Category.findAll({ order: [['name', 'ASC']] });
-    res.render('admin/settings', { title: 'Platform Settings', categories });
+    const [categories, settingRows] = await Promise.all([
+      Category.findAll({ order: [['name', 'ASC']] }),
+      PlatformSetting.findAll()
+    ]);
+    const platformSettings = Object.fromEntries(settingRows.map(s => [s.key, s.value]));
+    res.render('admin/settings', { title: 'Platform Settings', categories, platformSettings });
+  } catch (err) { next(err); }
+};
+
+exports.saveSettings = async (req, res, next) => {
+  try {
+    const allowed = ['platformName', 'distanceRadius', 'guestBrowsing', 'registrationOpen', 'maintenanceMode'];
+    await Promise.all(
+      allowed.map(key =>
+        PlatformSetting.upsert({ key, value: req.body[key] ?? '' })
+      )
+    );
+    req.flash('success', 'Settings saved.');
+    res.redirect('/admin/settings');
   } catch (err) { next(err); }
 };
 

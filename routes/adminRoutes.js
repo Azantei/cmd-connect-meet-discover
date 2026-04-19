@@ -17,8 +17,9 @@ router.post('/escalated/:id/dismiss', adminController.dismissEscalated);
 
 router.get('/analytics', adminController.getAnalytics);
 
-router.get('/settings', adminController.getSettings);
-router.post('/settings/categories', adminController.addCategory);
-router.delete('/settings/categories/:id', adminController.deleteCategory);
+router.get('/settings',                      adminController.getSettings);
+router.post('/settings',                     adminController.saveSettings);
+router.post('/settings/categories',          adminController.addCategory);
+router.delete('/settings/categories/:id',    adminController.deleteCategory);
 
 module.exports = router;
