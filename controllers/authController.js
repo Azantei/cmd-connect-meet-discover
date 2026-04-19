@@ -11,6 +11,10 @@ exports.getHome = (req, res) => {
   res.render('index', { title: 'C.M.D. - Connect, Meet, Discover' });
 };
 
+exports.getAbout = (req, res) => {
+  res.render('about', { title: 'About Us' });
+};
+
 exports.getLogin = (req, res) => {
   if (req.session.userId) return res.redirect(ROLE_REDIRECTS[req.session.role] || '/posts');
   res.render('auth/login', { title: 'Login' });
@@ -66,8 +70,7 @@ exports.postRegister = async (req, res, next) => {
       return res.redirect('/register');
     }
 
-    const hash = await bcrypt.hash(password, 12);
-    const user = await User.create({ name, email, password: hash });
+    const user = await User.create({ name, email, password });
 
     req.session.userId = user.id;
     req.session.role = user.role;

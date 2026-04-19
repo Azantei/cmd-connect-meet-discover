@@ -55,5 +55,26 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: true
   });
 
+  Post.search = async function(q, category) {
+    const { Op } = require('sequelize');
+    const where = { isHidden: false, status: 'published' };
+    if (q && q.trim()) {
+      where[Op.or] = [
+        { title:       { [Op.like]: `%${q.trim()}%` } },
+        { description: { [Op.like]: `%${q.trim()}%` } }
+      ];
+    }
+    if (category && category.trim()) {
+      const safe = category.trim().replace(/["%_\\]/g, '\\$&');
+      where.category = { [Op.like]: `%"${safe}"%` };
+    }
+    const User = Post.sequelize.models.User;
+    return Post.findAll({
+      where,
+      include: [{ model: User, as: 'author', attributes: ['id', 'name'] }],
+      order: [['createdAt', 'DESC']]
+    });
+  };
+
   return Post;
 };

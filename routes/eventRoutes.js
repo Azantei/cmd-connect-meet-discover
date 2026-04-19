@@ -4,9 +4,5 @@ const eventController = require('../controllers/eventController');
 const { requireAuth } = require('../middleware/authMiddleware');
 
 router.get('/', requireAuth, eventController.getAllEvents);
-router.get('/create', requireAuth, eventController.getCreateEvent);
-router.post('/', requireAuth, eventController.createEvent);
-router.get('/:id', eventController.getEvent);
-router.delete('/:id', requireAuth, eventController.deleteEvent);
 
 module.exports = router;

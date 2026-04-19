@@ -4,7 +4,7 @@ const authController = require('../controllers/authController');
 const postController = require('../controllers/postController');
 
 router.get('/', authController.getHome);
-router.get('/about', (req, res) => res.render('about', { title: 'About Us' }));
+router.get('/about', authController.getAbout);
 router.get('/login', authController.getLogin);
 router.post('/login', authController.postLogin);
 router.get('/register', authController.getRegister);

@@ -1,5 +1,4 @@
-const { Post, User, RSVP } = require('../models');
-const { Op } = require('sequelize');
+const { Post, User } = require('../models');
 
 exports.getAllEvents = async (req, res, next) => {
   try {
@@ -10,20 +9,4 @@ exports.getAllEvents = async (req, res, next) => {
     });
     res.render('events/index', { title: 'Explore Events', posts });
   } catch (err) { next(err); }
-};
-
-exports.getCreateEvent = (req, res) => {
-  res.redirect('/posts/create');
-};
-
-exports.createEvent = (req, res) => {
-  res.redirect('/posts/create');
-};
-
-exports.getEvent = (req, res) => {
-  res.redirect('/posts/' + req.params.id);
-};
-
-exports.deleteEvent = (req, res) => {
-  res.redirect('/events');
 };

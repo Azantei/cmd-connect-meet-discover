@@ -12,3 +12,22 @@ exports.requireRole = (...roles) => (req, res, next) => {
   }
   next();
 };
+
+exports.canModifyPost = async (req, res, next) => {
+  try {
+    const { Post } = require('../models');
+    const post = await Post.findByPk(req.params.id);
+    if (!post) {
+      req.flash('error', 'Post not found.');
+      return res.redirect('/posts');
+    }
+    const isOwner = req.session.userId === post.userId;
+    const isStaff = ['admin', 'moderator'].includes(req.session.role);
+    if (!isOwner && !isStaff) {
+      req.flash('error', 'Unauthorized.');
+      return res.redirect(`/posts/${post.id}`);
+    }
+    req.post = post;
+    next();
+  } catch (err) { next(err); }
+};

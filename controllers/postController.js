@@ -1,31 +1,12 @@
-const { Op } = require('sequelize');
 const { Post, User, RSVP, Report, Category } = require('../models');
 
 exports.getFeed = async (req, res, next) => {
   try {
     const { q, category } = req.query;
-    const where = { isHidden: false, status: 'published' };
-
-    if (q && q.trim()) {
-      where[Op.or] = [
-        { title:       { [Op.like]: `%${q.trim()}%` } },
-        { description: { [Op.like]: `%${q.trim()}%` } }
-      ];
-    }
-    if (category && category.trim()) {
-      const safe = category.trim().replace(/["%_\\]/g, '\\$&');
-      where.category = { [Op.like]: `%"${safe}"%` };
-    }
-
     const [posts, categories] = await Promise.all([
-      Post.findAll({
-        where,
-        include: [{ model: User, as: 'author', attributes: ['id', 'name'] }],
-        order: [['createdAt', 'DESC']]
-      }),
+      Post.search(q, category),
       Category.findAll({ order: [['name', 'ASC']] })
     ]);
-
     res.render('posts/index', {
       title: 'Feed',
       posts,
@@ -105,23 +86,14 @@ exports.createPost = async (req, res, next) => {
 
 exports.getEditPost = async (req, res, next) => {
   try {
-    const post = await Post.findByPk(req.params.id);
-    if (!post || post.userId !== req.session.userId) {
-      req.flash('error', 'Post not found.');
-      return res.redirect('/users/profile');
-    }
     const categories = await Category.findAll({ order: [['name', 'ASC']] });
-    res.render('posts/edit', { title: 'Edit Post', post, categories });
+    res.render('posts/edit', { title: 'Edit Post', post: req.post, categories });
   } catch (err) { next(err); }
 };
 
 exports.updatePost = async (req, res, next) => {
   try {
-    const post = await Post.findByPk(req.params.id);
-    if (!post || post.userId !== req.session.userId) {
-      req.flash('error', 'Unauthorized.');
-      return res.redirect('/users/profile');
-    }
+    const post = req.post;
     const { title, description, category, location, date, time, rsvpEnabled, maxAttendees } = req.body;
     const categoryArray = Array.isArray(category) ? category : (category ? [category] : []);
     const status = req.body.status === 'draft' ? 'draft' : 'published';
@@ -184,14 +156,7 @@ exports.deleteRsvp = async (req, res, next) => {
 
 exports.deletePost = async (req, res, next) => {
   try {
-    const post = await Post.findByPk(req.params.id);
-    if (!post) return res.redirect('/posts');
-    const canDelete = req.session.userId === post.userId ||
-      ['admin', 'moderator'].includes(req.session.role);
-    if (!canDelete) {
-      req.flash('error', 'Unauthorized.');
-      return res.redirect(`/posts/${post.id}`);
-    }
+    const post = req.post;
     await post.destroy();
     await Report.update(
       { status: 'resolved', notes: 'Auto-dismissed: post deleted by author.' },
