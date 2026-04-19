@@ -16,7 +16,10 @@ exports.getUsers = async (req, res, next) => {
 
 exports.banUser = async (req, res, next) => {
   try {
-    await User.update({ isBanned: true }, { where: { id: req.params.id } });
+    const user = await User.findByPk(req.params.id);
+    if (!user) { req.flash('error', 'User not found.'); return res.redirect('/admin/users'); }
+    if (user.isBanned) { req.flash('error', 'This user is already banned.'); return res.redirect('/admin/users'); }
+    await user.update({ isBanned: true });
     req.flash('success', 'User banned.');
     res.redirect('/admin/users');
   } catch (err) { next(err); }
@@ -24,7 +27,10 @@ exports.banUser = async (req, res, next) => {
 
 exports.unbanUser = async (req, res, next) => {
   try {
-    await User.update({ isBanned: false }, { where: { id: req.params.id } });
+    const user = await User.findByPk(req.params.id);
+    if (!user) { req.flash('error', 'User not found.'); return res.redirect('/admin/users'); }
+    if (!user.isBanned) { req.flash('error', 'This user is not banned.'); return res.redirect('/admin/users'); }
+    await user.update({ isBanned: false });
     req.flash('success', 'User unbanned.');
     res.redirect('/admin/users');
   } catch (err) { next(err); }
@@ -32,7 +38,10 @@ exports.unbanUser = async (req, res, next) => {
 
 exports.promoteUser = async (req, res, next) => {
   try {
-    await User.update({ role: 'moderator' }, { where: { id: req.params.id } });
+    const user = await User.findByPk(req.params.id);
+    if (!user) { req.flash('error', 'User not found.'); return res.redirect('/admin/users'); }
+    if (user.role === 'moderator') { req.flash('error', 'This user is already a moderator.'); return res.redirect('/admin/users'); }
+    await user.update({ role: 'moderator' });
     req.flash('success', 'User promoted to moderator.');
     res.redirect('/admin/users');
   } catch (err) { next(err); }
@@ -40,7 +49,10 @@ exports.promoteUser = async (req, res, next) => {
 
 exports.demoteUser = async (req, res, next) => {
   try {
-    await User.update({ role: 'community_member' }, { where: { id: req.params.id } });
+    const user = await User.findByPk(req.params.id);
+    if (!user) { req.flash('error', 'User not found.'); return res.redirect('/admin/users'); }
+    if (user.role !== 'moderator') { req.flash('error', 'This user is not a moderator.'); return res.redirect('/admin/users'); }
+    await user.update({ role: 'community_member' });
     req.flash('success', 'User demoted to community member.');
     res.redirect('/admin/users');
   } catch (err) { next(err); }
