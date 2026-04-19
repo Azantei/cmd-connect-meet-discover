@@ -11,69 +11,42 @@
 ========================================== */
 
 // ==========================================
-// STATE MANAGEMENT
+// DATE RANGE HELPERS
 // ==========================================
 
-let currentDateRange = 'week';
+var RANGE_DAYS = { week: 7, month: 30, quarter: 90, year: 365 };
+
+function getRangeDates(range) {
+    var end = new Date();
+    var start = new Date();
+    start.setDate(start.getDate() - (RANGE_DAYS[range] || 7));
+    return {
+        startDate: start.toISOString().slice(0, 10),
+        endDate: end.toISOString().slice(0, 10)
+    };
+}
+
+function detectRange(startDate) {
+    if (!startDate) return null;
+    var diffDays = Math.round((new Date() - new Date(startDate)) / 86400000);
+    if (diffDays <= 8)  return 'week';
+    if (diffDays <= 31) return 'month';
+    if (diffDays <= 92) return 'quarter';
+    return 'year';
+}
 
 // ==========================================
 // INITIALIZATION
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize UI
+    syncSelect();
     setupEventListeners();
-    updateAnalytics();
 });
 
-// ==========================================
-// UPDATE ANALYTICS DATA
-// ==========================================
-
-function updateAnalytics() {
-    // Placeholder statistics
-    // In production, these would be fetched from backend based on date range
-    
-    const stats = {
-        week: {
-            totalUsers: '2,847',
-            activePosts: '391',
-            rsvps: '1,204',
-            reports: '7'
-        },
-        month: {
-            totalUsers: '2,900',
-            activePosts: '1,243',
-            rsvps: '4,821',
-            reports: '28'
-        },
-        quarter: {
-            totalUsers: '3,100',
-            activePosts: '3,687',
-            rsvps: '14,563',
-            reports: '84'
-        },
-        year: {
-            totalUsers: '3,500',
-            activePosts: '14,892',
-            rsvps: '58,234',
-            reports: '312'
-        }
-    };
-    
-    const currentStats = stats[currentDateRange];
-    
-    document.getElementById('totalUsers').textContent = currentStats.totalUsers;
-    document.getElementById('activePosts').textContent = currentStats.activePosts;
-    document.getElementById('rsvps').textContent = currentStats.rsvps;
-    document.getElementById('reports').textContent = currentStats.reports;
-    
-    console.log(`Analytics updated for date range: ${currentDateRange}`);
-    
-    // TODO: Update charts when backend integration is complete
-    // updateUserGrowthChart();
-    // updateTopCategories();
-    // updateActivityLog();
+function syncSelect() {
+    var range = detectRange(window.ANALYTICS_START_DATE);
+    if (range) document.getElementById('dateRange').value = range;
 }
 
 // ==========================================
@@ -101,10 +74,9 @@ function updateActivityLog() {
 // ==========================================
 
 function setupEventListeners() {
-    // Date range filter
     document.getElementById('dateRange').addEventListener('change', (e) => {
-        currentDateRange = e.target.value;
-        updateAnalytics();
+        var dates = getRangeDates(e.target.value);
+        window.location.href = '/admin/analytics?startDate=' + dates.startDate + '&endDate=' + dates.endDate;
     });
 }
 

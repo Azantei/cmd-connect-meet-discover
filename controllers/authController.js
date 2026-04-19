@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { User } = require('../models');
+const { User, Category } = require('../models');
 
 const ROLE_REDIRECTS = {
   community_member: '/users/profile',
@@ -73,7 +73,7 @@ exports.postRegister = async (req, res, next) => {
     req.session.role = user.role;
     req.session.username = user.name;
 
-    res.redirect(ROLE_REDIRECTS[user.role] || '/users/profile');
+    res.redirect('/register/setup');
   } catch (err) {
     if (err.name === 'SequelizeUniqueConstraintError') {
       req.flash('error', 'An account with that email already exists.');
@@ -85,6 +85,31 @@ exports.postRegister = async (req, res, next) => {
     }
     next(err);
   }
+};
+
+exports.getSetup = async (req, res, next) => {
+  if (!req.session.userId) return res.redirect('/login');
+  try {
+    const categories = await Category.findAll({ order: [['name', 'ASC']] });
+    res.render('auth/setup', { title: 'Set Up Your Profile', categories });
+  } catch (err) { next(err); }
+};
+
+exports.postSetup = async (req, res, next) => {
+  if (!req.session.userId) return res.redirect('/login');
+  try {
+    let interests = [];
+    if (req.body.interests) {
+      try { interests = JSON.parse(req.body.interests); } catch (_) { interests = []; }
+    }
+    if (!Array.isArray(interests) || interests.length === 0) {
+      req.flash('error', 'Please select at least one interest.');
+      return res.redirect('/register/setup');
+    }
+    const location = (req.body.location || '').trim() || null;
+    await User.update({ interests, location }, { where: { id: req.session.userId } });
+    res.redirect('/users/profile');
+  } catch (err) { next(err); }
 };
 
 exports.logout = (req, res) => {

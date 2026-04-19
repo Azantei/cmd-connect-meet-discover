@@ -126,26 +126,6 @@
                         <span class="error-message" id="signup-password-error"></span>
                         <div class="password-hint">Must be at least 8 characters with uppercase, lowercase, and a number</div>
                     </div>
-                    <div class="form-group">
-                        <label>Interests <span style="color: #c0522a;">*</span></label>
-                        <p class="field-hint">Select at least one interest to personalize your feed</p>
-                        <div class="pills-wrap" id="interestPills"></div>
-                        <span class="error-message" id="signup-interests-error"></span>
-                    </div>
-                    <div class="form-group">
-                        <label>Location</label>
-                        <div class="location-controls">
-                            <input type="text" id="signup-location" name="location" placeholder="City, State">
-                            <button type="button" class="btn-gps" onclick="requestGPSLocation()" title="Use my current location">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                </svg>
-                                Use GPS
-                            </button>
-                        </div>
-                        <span class="error-message" id="signup-location-error"></span>
-                    </div>
                     <button type="button" class="btn-primary" onclick="validateSignUp(event)">Create Account</button>
                 </form>
                 <p class="form-footer">Already have an account? <a onclick="switchTab('signin')">Sign in</a></p>

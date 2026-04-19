@@ -21,7 +21,15 @@ let settings = {
     maintenanceMode: false
 };
 
-let originalSettings = { ...settings };
+let originalSettings = (typeof SAVED_PLATFORM_SETTINGS !== 'undefined')
+    ? {
+        platformName:     SAVED_PLATFORM_SETTINGS.platformName,
+        distanceRadius:   SAVED_PLATFORM_SETTINGS.distanceRadius,
+        guestBrowsing:    SAVED_PLATFORM_SETTINGS.guestBrowsing === 'true',
+        registrationOpen: SAVED_PLATFORM_SETTINGS.registrationOpen === 'true',
+        maintenanceMode:  SAVED_PLATFORM_SETTINGS.maintenanceMode === 'true'
+      }
+    : { ...settings };
 
 let tags = ['Outdoors', 'Music', 'Sports', 'Food & Drink', 'Arts', 'Tech', 'Fitness'];
 

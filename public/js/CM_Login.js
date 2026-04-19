@@ -125,21 +125,17 @@ function validateSignIn(event) {
 function validateSignUp(event) {
     event.preventDefault();
     clearAllErrors();
-    
+
     const name = document.getElementById('signup-name').value.trim();
     const email = document.getElementById('signup-email').value.trim();
     const password = document.getElementById('signup-password').value;
-    const location = document.getElementById('signup-location').value.trim();
-    const interests = getSelectedInterests();
     let isValid = true;
-    
-    // Validate name
+
     if (!name) {
         showError('signup-name', 'signup-name-error', 'Full name is required');
         isValid = false;
     }
-    
-    // Validate email
+
     if (!email) {
         showError('signup-email', 'signup-email-error', 'Email is required');
         isValid = false;
@@ -147,8 +143,7 @@ function validateSignUp(event) {
         showError('signup-email', 'signup-email-error', 'Not a valid email address');
         isValid = false;
     }
-    
-    // Validate password
+
     if (!password) {
         showError('signup-password', 'signup-password-error', 'Password is required');
         isValid = false;
@@ -156,30 +151,9 @@ function validateSignUp(event) {
         showError('signup-password', 'signup-password-error', 'Password must be at least 8 characters with uppercase, lowercase, and a number');
         isValid = false;
     }
-    
-    // Validate interests
-    if (interests.length === 0) {
-        showError('', 'signup-interests-error', 'Please select at least one interest');
-        isValid = false;
-    }
-    
-    // Validate location
-    if (!location) {
-        showError('signup-location', 'signup-location-error', 'Location is required');
-        isValid = false;
-    }
-    
+
     if (isValid) {
-        const form = document.getElementById('signupForm');
-        let hiddenInterests = form.querySelector('input[name="interests"]');
-        if (!hiddenInterests) {
-            hiddenInterests = document.createElement('input');
-            hiddenInterests.type = 'hidden';
-            hiddenInterests.name = 'interests';
-            form.appendChild(hiddenInterests);
-        }
-        hiddenInterests.value = JSON.stringify(interests);
-        form.submit();
+        document.getElementById('signupForm').submit();
     }
 }
 

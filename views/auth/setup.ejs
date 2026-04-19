@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C.M.D. - Set Up Your Profile</title>
+    <link rel="stylesheet" href="/css/CM_Login.css">
+    <style>
+        .login-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: hsl(215, 20%, 30%);
+            padding: 0 2rem;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .login-nav .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .login-nav .logo-light { color: white; }
+        .login-nav .logo-accent { color: hsl(20, 90%, 55%); }
+        body { padding-top: 60px; }
+    </style>
+</head>
+<body>
+    <nav class="login-nav">
+        <a href="/" class="logo"><span class="logo-light">C.M.</span><span class="logo-accent">D.</span></a>
+    </nav>
+
+    <div class="left-panel">
+        <div class="left-content">
+            <h1><span style="color: white;">C.M.</span><span style="color: hsl(20, 90%, 55%);">D.</span></h1>
+            <h2>Almost there.<br>Tell us about yourself.</h2>
+            <ul>
+                <li>• Pick interests to personalize your feed</li>
+                <li>• Add your location to find local events</li>
+                <li>• You can update these any time in settings</li>
+            </ul>
+        </div>
+        <div class="left-footer">
+            <span class="logo">C.M.D.</span>
+            <p>Connect. Meet. Discover. &copy; 2026</p>
+        </div>
+    </div>
+
+    <div class="right-panel">
+        <div class="form-container">
+            <% if (error && error.length) { %>
+                <p style="color:#c0392b;font-size:0.85rem;text-align:center;margin-bottom:0.75rem;"><%= error %></p>
+            <% } %>
+
+            <form action="/register/setup" method="POST" id="setupForm">
+                <div class="form-group">
+                    <label>Interests <span style="color: #c0522a;">*</span></label>
+                    <p class="field-hint">Select at least one interest to personalize your feed</p>
+                    <div class="pills-wrap" id="interestPills">
+                        <% categories.forEach(cat => { %>
+                            <button type="button" class="pill" data-interest="<%= cat.name %>"><%= cat.name %></button>
+                        <% }) %>
+                    </div>
+                    <span class="error-message" id="interests-error"></span>
+                    <input type="hidden" name="interests" id="interestsHidden">
+                </div>
+
+                <div class="form-group">
+                    <label>Location <span style="font-weight:400;color:#888;">(optional)</span></label>
+                    <div class="location-controls">
+                        <input type="text" id="location" name="location" placeholder="City, State">
+                        <button type="button" class="btn-gps" onclick="requestGPSLocation()" title="Use my current location">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            Use GPS
+                        </button>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-primary" onclick="submitSetup()">Finish Setup</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('#interestPills .pill').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                btn.classList.toggle('active');
+                document.getElementById('interests-error').textContent = '';
+            });
+        });
+
+        function submitSetup() {
+            var active = document.querySelectorAll('#interestPills .pill.active');
+            if (active.length === 0) {
+                document.getElementById('interests-error').textContent = 'Please select at least one interest';
+                return;
+            }
+            var interests = Array.from(active).map(function(b) { return b.dataset.interest; });
+            document.getElementById('interestsHidden').value = JSON.stringify(interests);
+            document.getElementById('setupForm').submit();
+        }
+
+        function requestGPSLocation() {
+            if (!navigator.geolocation) {
+                alert('Geolocation is not supported by your browser.');
+                return;
+            }
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                document.getElementById('location').value =
+                    pos.coords.latitude.toFixed(4) + ', ' + pos.coords.longitude.toFixed(4);
+            }, function() {
+                alert('Unable to retrieve your location. Please enter it manually.');
+            });
+        }
+    </script>
+</body>
+</html>

@@ -136,6 +136,15 @@
     </div>
   </footer>
 
+  <script>
+    var SAVED_PLATFORM_SETTINGS = {
+      platformName:     '<%= (platformSettings.platformName     || 'C.M.D. — Connect. Meet. Discover.').replace(/'/g, "\\'") %>',
+      distanceRadius:   '<%= (platformSettings.distanceRadius   || '10 mi').replace(/'/g, "\\'") %>',
+      guestBrowsing:    '<%= platformSettings.guestBrowsing    || 'true' %>',
+      registrationOpen: '<%= platformSettings.registrationOpen || 'true' %>',
+      maintenanceMode:  '<%= platformSettings.maintenanceMode  || 'false' %>'
+    };
+  </script>
   <script src="/js/AD_Settings.js"></script>
 </body>
 </html>

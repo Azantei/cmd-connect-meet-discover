@@ -1,4 +1,5 @@
 const { User, Post, Report, Category, RSVP, PlatformSetting } = require('../models');
+const { Op } = require('sequelize');
 
 exports.getUsers = async (req, res, next) => {
   try {
@@ -94,13 +95,27 @@ exports.dismissEscalated = async (req, res, next) => {
 
 exports.getAnalytics = async (req, res, next) => {
   try {
+    const { startDate, endDate } = req.query;
+    const dateWhere = {};
+    if (startDate || endDate) {
+      dateWhere.createdAt = {};
+      if (startDate) dateWhere.createdAt[Op.gte] = new Date(startDate);
+      if (endDate) {
+        const end = new Date(endDate);
+        end.setHours(23, 59, 59, 999);
+        dateWhere.createdAt[Op.lte] = end;
+      }
+    }
     const [userCount, postCount, pendingReportCount, rsvpCount] = await Promise.all([
-      User.count(),
-      Post.count(),
-      Report.count({ where: { status: 'pending' } }),
-      RSVP.count()
+      User.count({ where: dateWhere }),
+      Post.count({ where: dateWhere }),
+      Report.count({ where: { status: 'pending', ...dateWhere } }),
+      RSVP.count({ where: dateWhere })
     ]);
-    res.render('admin/analytics', { title: 'Analytics', userCount, postCount, pendingReportCount, rsvpCount });
+    res.render('admin/analytics', {
+      title: 'Analytics', userCount, postCount, pendingReportCount, rsvpCount,
+      startDate: startDate || '', endDate: endDate || ''
+    });
   } catch (err) { next(err); }
 };
 
