@@ -193,6 +193,10 @@ exports.deletePost = async (req, res, next) => {
       return res.redirect(`/posts/${post.id}`);
     }
     await post.destroy();
+    await Report.update(
+      { status: 'resolved', notes: 'Auto-dismissed: post deleted by author.' },
+      { where: { targetType: 'post', targetId: post.id, status: 'pending' } }
+    );
     req.flash('success', 'Post deleted.');
     res.redirect('/posts');
   } catch (err) { next(err); }
