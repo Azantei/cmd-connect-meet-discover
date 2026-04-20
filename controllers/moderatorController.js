@@ -1,3 +1,4 @@
+const { Op } = require('sequelize');
 const { Report, Post, ModerationLog, User } = require('../models');
 const { resolveTargets } = require('../utils/helpers');
 
@@ -9,17 +10,66 @@ exports.getDashboard = async (req, res, next) => {
       where.targetType = req.query.type;
     }
 
-    const reports = await Report.findAll({
-      where,
-      include: [{ model: User, as: 'reporter', attributes: ['id', 'name'] }],
-      order: [['createdAt', 'DESC']]
-    });
+    const [reports, historyLogs] = await Promise.all([
+      Report.findAll({
+        where,
+        include: [{ model: User, as: 'reporter', attributes: ['id', 'name'] }],
+        order: [['createdAt', 'DESC']]
+      }),
+      ModerationLog.findAll({
+        where: { moderatorId: req.session.userId },
+        order: [['createdAt', 'DESC']],
+        limit: 100
+      })
+    ]);
 
     const reportsData = await resolveTargets(reports);
+
+    // Resolve target names and related report data for history
+    let historyData = [];
+    if (historyLogs.length > 0) {
+      const postIds = [...new Set(historyLogs.filter(l => l.targetType === 'post').map(l => l.targetId))];
+      const userIds = [...new Set(historyLogs.filter(l => l.targetType === 'user').map(l => l.targetId))];
+      const logConditions = historyLogs.map(l => ({ targetType: l.targetType, targetId: l.targetId }));
+
+      const [histPosts, histUsers, relatedReports] = await Promise.all([
+        postIds.length ? Post.findAll({ where: { id: { [Op.in]: postIds } }, attributes: ['id', 'title'] }) : Promise.resolve([]),
+        userIds.length ? User.findAll({ where: { id: { [Op.in]: userIds } }, attributes: ['id', 'name'] }) : Promise.resolve([]),
+        Report.findAll({
+          where: { [Op.or]: logConditions },
+          include: [{ model: User, as: 'reporter', attributes: ['id', 'name'] }],
+          attributes: ['targetType', 'targetId', 'reason']
+        })
+      ]);
+
+      const postsMap   = Object.fromEntries(histPosts.map(p => [p.id, p.title]));
+      const usersMap   = Object.fromEntries(histUsers.map(u => [u.id, u.name]));
+      const reportMap  = {};
+      for (const r of relatedReports) {
+        const key = `${r.targetType}:${r.targetId}`;
+        if (!reportMap[key]) reportMap[key] = r;
+      }
+
+      historyData = historyLogs.map(log => {
+        const related = reportMap[`${log.targetType}:${log.targetId}`];
+        return {
+          action:    log.action,
+          timestamp: log.createdAt,
+          typeLabel: log.targetType === 'post' ? 'Post' : 'User',
+          title: log.targetType === 'post'
+            ? (postsMap[log.targetId] || 'Post #' + log.targetId)
+            : (usersMap[log.targetId] || 'User #' + log.targetId),
+          reporter: related && related.reporter ? related.reporter.name : 'Unknown',
+          reason:   related ? (related.reason || '') : '',
+          note:     log.notes || ''
+        };
+      });
+    }
 
     res.render('moderator/dashboard', {
       title: 'Moderator Dashboard',
       reportsData,
+      historyData,
       typeFilter: req.query.type || 'all'
     });
   } catch (err) { next(err); }
