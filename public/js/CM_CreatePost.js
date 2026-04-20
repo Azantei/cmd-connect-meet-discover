@@ -249,41 +249,6 @@ function validateForm() {
         isValid = false;
     }
     
-    // Validate description
-    const descInput = document.getElementById('eventDesc');
-    if (!descInput.value.trim()) {
-        showError('eventDesc', 'desc-error', 'Description is required');
-        isValid = false;
-    }
-    
-    // Validate date
-    const dateInput = document.getElementById('eventDate');
-    if (!dateInput.value) {
-        showError('eventDate', 'date-error', 'Date is required');
-        isValid = false;
-    }
-    
-    // Validate time
-    const timeInput = document.getElementById('eventTime');
-    if (!timeInput.value) {
-        showError('eventTime', 'time-error', 'Start time is required');
-        isValid = false;
-    }
-    
-    // Validate location
-    const locationInput = document.getElementById('eventLocation');
-    if (!locationInput.value.trim()) {
-        showError('eventLocation', 'location-error', 'Location is required');
-        isValid = false;
-    }
-    
-    // Validate categories (at least one must be selected)
-    const activePills = document.querySelectorAll('#categoryPills .pill.active');
-    if (activePills.length === 0) {
-        showError('categoryPills', 'categories-error', 'Please select at least one category');
-        isValid = false;
-    }
-    
     return isValid;
 }
 
