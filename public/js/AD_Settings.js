@@ -15,19 +15,13 @@
 
 let settings = {
     platformName: 'C.M.D. — Connect. Meet. Discover.',
-    distanceRadius: '10 mi',
-    guestBrowsing: true,
-    registrationOpen: true,
-    maintenanceMode: false
+    distanceRadius: '10 mi'
 };
 
 let originalSettings = (typeof SAVED_PLATFORM_SETTINGS !== 'undefined')
     ? {
-        platformName:     SAVED_PLATFORM_SETTINGS.platformName,
-        distanceRadius:   SAVED_PLATFORM_SETTINGS.distanceRadius,
-        guestBrowsing:    SAVED_PLATFORM_SETTINGS.guestBrowsing === 'true',
-        registrationOpen: SAVED_PLATFORM_SETTINGS.registrationOpen === 'true',
-        maintenanceMode:  SAVED_PLATFORM_SETTINGS.maintenanceMode === 'true'
+        platformName:   SAVED_PLATFORM_SETTINGS.platformName,
+        distanceRadius: SAVED_PLATFORM_SETTINGS.distanceRadius
       }
     : { ...settings };
 
@@ -38,6 +32,8 @@ let tags = ['Outdoors', 'Music', 'Sports', 'Food & Drink', 'Arts', 'Tech', 'Fitn
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    const savedTab = sessionStorage.getItem('settingsTab');
+    if (savedTab) switchTab(savedTab);
     setupEventListeners();
 });
 
@@ -50,13 +46,6 @@ function setupEventListeners() {
     document.querySelectorAll('.tab-button').forEach(button => {
         button.addEventListener('click', (e) => {
             switchTab(e.target.dataset.tab);
-        });
-    });
-
-    // Toggle switches
-    document.querySelectorAll('.toggle-switch').forEach(toggle => {
-        toggle.addEventListener('click', (e) => {
-            handleToggle(e.target.closest('.toggle-switch'));
         });
     });
 
@@ -104,31 +93,8 @@ function switchTab(tabName) {
         content.classList.remove('active');
     });
     document.getElementById(`${tabName}-tab`).classList.add('active');
-}
 
-// ==========================================
-// TOGGLE SWITCHES
-// ==========================================
-
-function handleToggle(toggleElement) {
-    const settingName = toggleElement.dataset.setting;
-    const isOn = toggleElement.classList.contains('on');
-
-    if (isOn) {
-        toggleElement.classList.remove('on');
-        toggleElement.classList.add('off');
-        toggleElement.querySelector('.toggle-text').textContent = 'OFF';
-        settings[settingName] = false;
-    } else {
-        toggleElement.classList.remove('off');
-        toggleElement.classList.add('on');
-        toggleElement.querySelector('.toggle-text').textContent = 'ON';
-        settings[settingName] = true;
-    }
-
-    // Sync to hidden input so the form POST carries the value
-    const hidden = document.getElementById(settingName + 'Hidden');
-    if (hidden) hidden.value = settings[settingName] ? 'true' : 'false';
+    sessionStorage.setItem('settingsTab', tabName);
 }
 
 // ==========================================
@@ -181,34 +147,10 @@ function saveChanges() {
 }
 
 function discardChanges() {
-    // Revert to original settings
     settings = { ...originalSettings };
-
-    // Update form inputs
     document.getElementById('platformName').value = settings.platformName;
     document.getElementById('distanceRadius').value = settings.distanceRadius;
-
     clearInvalidHighlights();
-
-    // Update toggles
-    updateToggle('guestBrowsing', settings.guestBrowsing);
-    updateToggle('registrationOpen', settings.registrationOpen);
-    updateToggle('maintenanceMode', settings.maintenanceMode);
-
-    console.log('Changes discarded');
-}
-
-function updateToggle(settingName, isOn) {
-    const toggle = document.querySelector(`[data-setting="${settingName}"]`);
-    if (isOn) {
-        toggle.classList.remove('off');
-        toggle.classList.add('on');
-        toggle.querySelector('.toggle-text').textContent = 'ON';
-    } else {
-        toggle.classList.remove('on');
-        toggle.classList.add('off');
-        toggle.querySelector('.toggle-text').textContent = 'OFF';
-    }
 }
 
 // ==========================================

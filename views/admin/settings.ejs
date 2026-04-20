@@ -69,34 +69,6 @@
                  value="<%= platformSettings.distanceRadius || '10 mi' %>">
         </div>
 
-        <input type="hidden" name="guestBrowsing"    id="guestBrowsingHidden"    value="<%= platformSettings.guestBrowsing    || 'true' %>">
-        <input type="hidden" name="registrationOpen" id="registrationOpenHidden" value="<%= platformSettings.registrationOpen || 'true' %>">
-        <input type="hidden" name="maintenanceMode"  id="maintenanceModeHidden"  value="<%= platformSettings.maintenanceMode  || 'false' %>">
-
-        <div class="toggles-grid">
-          <div class="toggle-group">
-            <label>Allow Guest Browsing</label>
-            <button type="button" class="toggle-switch <%= (platformSettings.guestBrowsing || 'true') === 'true' ? 'on' : 'off' %>"
-                    data-setting="guestBrowsing">
-              <span class="toggle-text"><%= (platformSettings.guestBrowsing || 'true') === 'true' ? 'ON' : 'OFF' %></span>
-            </button>
-          </div>
-          <div class="toggle-group">
-            <label>Registration Open</label>
-            <button type="button" class="toggle-switch <%= (platformSettings.registrationOpen || 'true') === 'true' ? 'on' : 'off' %>"
-                    data-setting="registrationOpen">
-              <span class="toggle-text"><%= (platformSettings.registrationOpen || 'true') === 'true' ? 'ON' : 'OFF' %></span>
-            </button>
-          </div>
-          <div class="toggle-group">
-            <label>Maintenance Mode</label>
-            <button type="button" class="toggle-switch <%= (platformSettings.maintenanceMode || 'false') === 'true' ? 'on' : 'off' %>"
-                    data-setting="maintenanceMode">
-              <span class="toggle-text"><%= (platformSettings.maintenanceMode || 'false') === 'true' ? 'ON' : 'OFF' %></span>
-            </button>
-          </div>
-        </div>
-
         <div class="action-buttons">
           <button type="submit" class="btn-save" id="saveChanges">Save Changes</button>
           <button type="button" class="btn-discard" id="discardChanges">Discard Changes</button>
@@ -138,11 +110,8 @@
 
   <script>
     var SAVED_PLATFORM_SETTINGS = {
-      platformName:     '<%= (platformSettings.platformName     || 'C.M.D. — Connect. Meet. Discover.').replace(/'/g, "\\'") %>',
-      distanceRadius:   '<%= (platformSettings.distanceRadius   || '10 mi').replace(/'/g, "\\'") %>',
-      guestBrowsing:    '<%= platformSettings.guestBrowsing    || 'true' %>',
-      registrationOpen: '<%= platformSettings.registrationOpen || 'true' %>',
-      maintenanceMode:  '<%= platformSettings.maintenanceMode  || 'false' %>'
+      platformName:   '<%= (platformSettings.platformName   || 'C.M.D. — Connect. Meet. Discover.').replace(/'/g, "\\'") %>',
+      distanceRadius: '<%= (platformSettings.distanceRadius || '10 mi').replace(/'/g, "\\'") %>'
     };
   </script>
   <script src="/js/AD_Settings.js"></script>

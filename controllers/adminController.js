@@ -135,7 +135,7 @@ exports.getSettings = async (req, res, next) => {
 
 exports.saveSettings = async (req, res, next) => {
   try {
-    const allowed = ['platformName', 'distanceRadius', 'guestBrowsing', 'registrationOpen', 'maintenanceMode'];
+    const allowed = ['platformName', 'distanceRadius'];
     await Promise.all(
       allowed.map(key =>
         PlatformSetting.upsert({ key, value: req.body[key] ?? '' })
