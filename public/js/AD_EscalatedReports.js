@@ -115,6 +115,10 @@ function renderReports() {
         const titlePrefix = report.type === 'post' ? 'Post: ' : 'User: ';
         const statusBadge = `<span class="status-badge ${report.status}">${report.status}</span>`;
         
+        const notesPreview = report.moderatorNotes
+            ? (report.moderatorNotes.substring(0, 100) + (report.moderatorNotes.length > 100 ? '...' : ''))
+            : 'No moderator notes.';
+
         card.innerHTML = `
             <div class="report-header">
                 <div class="report-title">${titlePrefix}'${report.title}' ${statusBadge}</div>
@@ -122,14 +126,9 @@ function renderReports() {
                     <span>Escalated by ${report.escalatedBy}</span>
                     <span class="separator">·</span>
                     <span>${report.timeAgo}</span>
-                    <span class="separator">·</span>
-                    <span>${report.originalReason}</span>
                 </div>
             </div>
-            
-            <div class="moderator-notes">
-                ${report.moderatorNotes.substring(0, 100)}${report.moderatorNotes.length > 100 ? '...' : ''}
-            </div>
+            <div class="moderator-notes">${notesPreview}</div>
         `;
         
         container.appendChild(card);
@@ -165,8 +164,10 @@ function openReportDetail(reportId) {
     const titlePrefix = report.type === 'post' ? 'Post: ' : 'User: ';
     document.getElementById('modalReportTitle').textContent = `${titlePrefix}"${report.title}"`;
     
+    const subjectLabel = report.type === 'post' ? 'Reported Post' : 'Reported User';
     document.getElementById('modalReportMeta').innerHTML = `
-        <span><strong>Reported ${report.type === 'post' ? 'Content' : 'User'}:</strong> ${report.reportedUser}</span>
+        <span><strong>${subjectLabel}:</strong> ${report.title}</span>
+        <span><strong>Reported by:</strong> ${report.reporterName}</span>
         <span><strong>Escalated by:</strong> ${report.escalatedBy}</span>
         <span><strong>Time:</strong> ${report.timeAgo}</span>
         <span><strong>Original Reason:</strong> ${report.originalReason}</span>
@@ -220,7 +221,7 @@ function handleBanUser() {
     const report = reports.find(r => r.id === currentReportId);
     if (!report) return;
 
-    const message = `Are you sure you want to ban user ${report.reportedUser}? This will permanently remove their access to the platform.`;
+    const message = `Are you sure you want to ban user ${report.title}? This will permanently remove their access to the platform.`;
 
     showConfirmation(message, () => {
         if (report.type === 'user') {

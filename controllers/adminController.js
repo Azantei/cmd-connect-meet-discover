@@ -1,4 +1,4 @@
-const { User, Post, Report, Category, RSVP, PlatformSetting } = require('../models');
+const { User, Post, Report, Category, RSVP, PlatformSetting, ModerationLog } = require('../models');
 const { Op } = require('sequelize');
 
 exports.getUsers = async (req, res, next) => {
@@ -62,11 +62,67 @@ exports.demoteUser = async (req, res, next) => {
 
 exports.getEscalated = async (req, res, next) => {
   try {
-    const reports = await Report.findAll({
+    const rawReports = await Report.findAll({
       where: { status: 'escalated' },
       include: [{ model: User, as: 'reporter', attributes: ['id', 'name', 'email'] }],
       order: [['createdAt', 'DESC']]
     });
+
+    let reports = rawReports.map(r => ({
+      id: r.id,
+      type: r.targetType,
+      targetId: r.targetId,
+      reporterName: r.reporter ? r.reporter.name : 'Unknown',
+      escalatedBy: 'Moderator',
+      originalReason: r.reason || '',
+      moderatorNotes: '',
+      targetName: null,
+      status: r.status,
+      createdAt: r.createdAt
+    }));
+
+    if (rawReports.length > 0) {
+      const userTargetIds  = [...new Set(rawReports.filter(r => r.targetType === 'user').map(r => r.targetId))];
+      const postTargetIds  = [...new Set(rawReports.filter(r => r.targetType === 'post').map(r => r.targetId))];
+
+      const [logs, targetUsers, targetPosts] = await Promise.all([
+        ModerationLog.findAll({
+          where: {
+            action: 'escalate',
+            [Op.or]: rawReports.map(r => ({ targetType: r.targetType, targetId: r.targetId }))
+          },
+          include: [{ model: User, as: 'moderator', attributes: ['id', 'name'] }],
+          order: [['createdAt', 'DESC']]
+        }),
+        userTargetIds.length
+          ? User.findAll({ where: { id: { [Op.in]: userTargetIds } }, attributes: ['id', 'name'] })
+          : Promise.resolve([]),
+        postTargetIds.length
+          ? Post.findAll({ where: { id: { [Op.in]: postTargetIds } }, attributes: ['id', 'title'] })
+          : Promise.resolve([])
+      ]);
+
+      const logMap       = {};
+      for (const log of logs) {
+        const key = `${log.targetType}:${log.targetId}`;
+        if (!logMap[key]) logMap[key] = log;
+      }
+      const usersMap = Object.fromEntries(targetUsers.map(u => [u.id, u.name]));
+      const postsMap = Object.fromEntries(targetPosts.map(p => [p.id, p.title]));
+
+      reports = reports.map(r => {
+        const log = logMap[`${r.type}:${r.targetId}`];
+        return {
+          ...r,
+          escalatedBy:   log && log.moderator ? log.moderator.name : 'Moderator',
+          moderatorNotes: log ? (log.notes || '') : '',
+          targetName: r.type === 'user'
+            ? (usersMap[r.targetId] || 'Unknown User')
+            : (postsMap[r.targetId] || null)
+        };
+      });
+    }
+
     res.render('admin/escalated', { title: 'Escalated Reports', reports, escalatedCount: reports.length });
   } catch (err) { next(err); }
 };

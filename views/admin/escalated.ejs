@@ -124,15 +124,13 @@
     window.ADMIN_ESCALATED = <%- JSON.stringify(reports.map(function(r) {
       return {
         id: r.id,
-        type: r.targetType,
+        type: r.type,
         targetId: r.targetId,
-        title: r.targetType === 'post' ? ('Post #' + r.targetId) : (r.reporter ? r.reporter.name : 'Unknown User'),
-        reportedUser: r.reporter ? r.reporter.name : 'Unknown',
-        reportedUserEmail: r.reporter ? r.reporter.email : '',
-        escalatedBy: r.reporter ? r.reporter.name : 'Moderator',
-        originalReason: r.reason || '',
-        moderatorNotes: r.notes || 'No additional notes.',
-        contentPreview: '',
+        title: r.targetName || (r.type === 'post' ? 'Post #' + r.targetId : 'Unknown User'),
+        reporterName: r.reporterName,
+        escalatedBy: r.escalatedBy,
+        originalReason: r.originalReason,
+        moderatorNotes: r.moderatorNotes,
         status: r.status === 'escalated' ? 'open' : 'resolved',
         createdAt: r.createdAt
       };
