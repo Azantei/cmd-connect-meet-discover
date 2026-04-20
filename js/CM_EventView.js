@@ -9,8 +9,49 @@
    RSVP button toggle functionality
 ========================================== */
 
+var INTERESTED_KEY = 'cmd_interested_events';
+
 // Track RSVP state
 var rsvpActive = false;
+
+// This event's data for localStorage persistence
+var EVENT_DATA = {
+    title: 'Morning Trail Hike',
+    desc: 'Join us for a scenic morning hike through the local trails. All skill levels welcome.',
+    date: 'Sat Mar 7',
+    going: 12,
+    maxAttendees: 20,
+    color: '#2e3a4e',
+    tags: ['Outdoors']
+};
+
+function toggleInterested() {
+    var btn = document.getElementById('interestedBtn');
+    var stored = JSON.parse(localStorage.getItem(INTERESTED_KEY) || '[]');
+    var alreadyStored = stored.some(function(e) { return e.title === EVENT_DATA.title; });
+
+    if (alreadyStored) {
+        stored = stored.filter(function(e) { return e.title !== EVENT_DATA.title; });
+        btn.classList.remove('active');
+        btn.textContent = '★ Interested';
+    } else {
+        stored.push(EVENT_DATA);
+        btn.classList.add('active');
+        btn.textContent = '★ Interested ✓';
+    }
+    localStorage.setItem(INTERESTED_KEY, JSON.stringify(stored));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var stored = JSON.parse(localStorage.getItem(INTERESTED_KEY) || '[]');
+    if (stored.some(function(e) { return e.title === EVENT_DATA.title; })) {
+        var btn = document.getElementById('interestedBtn');
+        if (btn) {
+            btn.classList.add('active');
+            btn.textContent = '★ Interested ✓';
+        }
+    }
+});
 
 /**
  * Toggle RSVP status for the event

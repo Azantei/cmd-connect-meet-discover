@@ -122,16 +122,16 @@ function renderCards() {
             if (currentTab === 'my-posts') {
                 var attendeeText = card.maxAttendees ? (card.going + '/' + card.maxAttendees + ' going') : (card.going + ' going');
                 statusBadge = '<span class="status-badge" style="background-color: #5a7a9e;">👥 ' + attendeeText + '</span>';
-                footer = '<span>📅 ' + card.date + '</span><span style="color: #d32f2f; font-weight: 600; cursor: pointer;" onclick="removeEvent(\'' + currentTab + '\', ' + index + ')">✕ Remove</span>';
+                footer = '<span>📅 ' + card.date + '</span><span style="color: #d32f2f; font-weight: 600; cursor: pointer;" onclick="event.preventDefault();event.stopPropagation();removeEvent(\'' + currentTab + '\', ' + index + ')">✕ Remove</span>';
             } else if (currentTab === 'upcoming') {
                 var rsvpColor = card.rsvp === 'Going' ? '#2e7d32' : '#f57c00';
                 var attendeeText = card.maxAttendees ? (card.going + '/' + card.maxAttendees + ' going') : (card.going + ' going');
                 statusBadge = '<span class="status-badge" style="background-color:' + rsvpColor + ';">✓ ' + card.rsvp + '</span><span class="status-badge" style="background-color: #5a7a9e; margin-left: 8px;">👥 ' + attendeeText + '</span>';
-                footer = '<span>📅 ' + card.date + '</span><span style="color: #d32f2f; font-weight: 600; cursor: pointer;" onclick="removeEvent(\'' + currentTab + '\', ' + index + ')">✕ Remove</span>';
+                footer = '<span>📅 ' + card.date + '</span>';
             } else if (currentTab === 'interested') {
                 var attendeeText = card.maxAttendees ? (card.going + '/' + card.maxAttendees + ' going') : (card.going + ' going');
                 statusBadge = '<span class="status-badge" style="background-color: #f57c00;">⭐ Interested</span><span class="status-badge" style="background-color: #5a7a9e; margin-left: 8px;">👥 ' + attendeeText + '</span>';
-                footer = '<span>📅 ' + card.date + '</span><span style="color: #d32f2f; font-weight: 600; cursor: pointer;" onclick="removeEvent(\'' + currentTab + '\', ' + index + ')">✕ Remove</span>';
+                footer = '<span>📅 ' + card.date + '</span><span style="color: #d32f2f; font-weight: 600; cursor: pointer;" onclick="event.preventDefault();event.stopPropagation();removeEvent(\'' + currentTab + '\', ' + index + ')">✕ Remove</span>';
             } else if (currentTab === 'previous') {
                 // Previous Events - show if created or attended
                 if (card.type === 'created') {
@@ -142,10 +142,11 @@ function renderCards() {
                 footer = '<span>📅 ' + card.date + '</span><span>👥 ' + card.going + ' attended</span>';
             } else if (currentTab === 'drafts') {
                 statusBadge = '<span class="status-badge" style="background-color: #888;">Not published</span>';
-                footer = '<span style="color: #888;">📝 Draft</span><span style="color: #d32f2f; font-weight: 600; cursor: pointer;" onclick="removeEvent(\'' + currentTab + '\', ' + index + ')">✕ Remove</span>';
+                footer = '<span style="color: #888;">📝 Draft</span><span style="color: #d32f2f; font-weight: 600; cursor: pointer;" onclick="event.preventDefault();event.stopPropagation();removeEvent(\'' + currentTab + '\', ' + index + ')">✕ Remove</span>';
             }
             
-            var cardLink = card.id ? (card.status === 'Draft' ? '/posts/' + card.id + '/edit' : '/posts/' + card.id) : '#';
+            var eventId = card.id || card.postId;
+            var cardLink = eventId ? (card.status === 'Draft' ? '/posts/' + eventId + '/edit' : '/posts/' + eventId) : '#';
             var imgHtml = card.imageUrl
                 ? '<div class="card-img" style="background-color:' + card.color + '"><img src="' + card.imageUrl + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
                 : '<div class="card-img" style="background-color:' + card.color + '"><div class="card-img-icon"></div></div>';

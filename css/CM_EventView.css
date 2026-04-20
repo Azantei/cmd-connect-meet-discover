@@ -196,7 +196,7 @@ body {
 /* Action Row */
 .action-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     border: 1px solid #ccc;
     border-radius: 4px;
     overflow: hidden;
@@ -215,6 +215,24 @@ body {
 }
 .btn-rsvp:hover { background-color: #a8451f; }
 .btn-rsvp.active { background-color: #a8451f; }
+.btn-interested {
+    padding: 14px;
+    background-color: #faf8f2;
+    color: #555;
+    border: none;
+    border-left: 1px solid #ccc;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background-color 0.2s, color 0.2s;
+}
+.btn-interested:hover { background-color: #fff8e1; }
+.btn-interested.active {
+    background-color: #fff8e1;
+    color: #f57c00;
+    font-weight: 700;
+}
 .btn-report {
     padding: 14px;
     background-color: #faf8f2;

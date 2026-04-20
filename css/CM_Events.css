@@ -436,6 +436,17 @@ body {
     font-size: 0.75rem;
     color: #555;
 }
+.card-tags-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.rsvp-count {
+    font-size: 0.75rem;
+    color: #666;
+    white-space: nowrap;
+}
 .star-btn {
     background: none;
     border: none;

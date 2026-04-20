@@ -203,18 +203,42 @@ function handleSearchKeypress(event) {
     }
 }
 
+var INTERESTED_KEY = 'cmd_interested_events';
+
 /**
  * Toggle interested/starred status for an event
- * Adds/removes visual indicator that user is interested
+ * Persists state to localStorage so Profile Interested tab reflects it
  * @param {HTMLElement} button - The star button element
  */
 function toggleStar(button) {
-    // Toggle the interested class
     button.classList.toggle('interested');
+
+    var card = button.closest('.card');
+    var postId   = card.dataset.postId;
+    var title    = card.dataset.postTitle;
+    var desc     = card.dataset.postDesc;
+    var date     = card.dataset.postDate;
+    var going    = parseInt(card.dataset.postGoing) || 0;
+    var maxA     = card.dataset.postMax ? parseInt(card.dataset.postMax) : null;
+    var color    = card.dataset.postColor;
+    var imageUrl = card.dataset.postImage || null;
+    var tags;
+    try { tags = JSON.parse(card.dataset.postTags || '[]'); } catch(e) { tags = []; }
+
+    var stored = JSON.parse(localStorage.getItem(INTERESTED_KEY) || '[]');
+    if (button.classList.contains('interested')) {
+        if (!stored.some(function(e) { return String(e.postId) === String(postId); })) {
+            stored.push({ postId: postId, title: title, desc: desc, date: date,
+                          going: going, maxAttendees: maxA, color: color, imageUrl: imageUrl, tags: tags });
+        }
+    } else {
+        stored = stored.filter(function(e) { return String(e.postId) !== String(postId); });
+    }
+    localStorage.setItem(INTERESTED_KEY, JSON.stringify(stored));
 }
 
 /**
- * Handle date filter change to show/hide custom date range
+ * Handle date filter change and restore star states from localStorage on load
  */
 document.addEventListener('DOMContentLoaded', function() {
     const dateFilter = document.getElementById('dateFilter');
@@ -228,4 +252,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Restore star states from localStorage
+    var stored = JSON.parse(localStorage.getItem(INTERESTED_KEY) || '[]');
+    var starredIds = stored.map(function(e) { return String(e.postId); });
+    document.querySelectorAll('.card[data-post-id]').forEach(function(card) {
+        if (starredIds.indexOf(String(card.dataset.postId)) !== -1) {
+            var btn = card.querySelector('.star-btn');
+            if (btn) btn.classList.add('interested');
+        }
+    });
 });

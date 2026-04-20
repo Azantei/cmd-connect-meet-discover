@@ -97,6 +97,16 @@
 
                 <div class="action-row">
                     <% if (currentUser && currentUser !== post.userId) { %>
+                        <button class="btn-interested" id="interestedBtn"
+                                data-post-id="<%= post.id %>"
+                                data-post-title="<%= post.title.replace(/"/g, '&quot;') %>"
+                                data-post-desc="<%= post.description ? post.description.substring(0,100).replace(/"/g,'&quot;') : '' %>"
+                                data-post-date="<%= post.date ? new Date(post.date).toDateString() : 'Date TBD' %>"
+                                data-post-going="<%= rsvpCount %>"
+                                data-post-max="<%= post.maxAttendees || '' %>"
+                                data-post-tags="<%= JSON.stringify(Array.isArray(post.category) ? post.category : []) %>"
+                                data-post-image="<%= post.imageUrl || '' %>"
+                                onclick="toggleInterested()">&#9733; Interested</button>
                         <button class="btn-report" id="reportBtn" onclick="document.getElementById('reportModal').style.display='flex'">&#9889; Report Post</button>
                     <% } %>
                     <% if (currentUser === post.userId || currentRole === 'admin' || currentRole === 'moderator') { %>

@@ -41,7 +41,7 @@
 .tab-button {
     padding: 0.75rem 2rem;
     border: 1px solid var(--border-color);
-    background: white;
+    background: hsl(0, 0%, 90%);
     font-family: inherit;
     font-size: 0.95rem;
     font-weight: 500;
@@ -51,11 +51,11 @@
 }
 
 .tab-button:hover {
-    background: hsl(0, 0%, 95%);
+    background: hsl(0, 0%, 85%);
 }
 
 .tab-button.active {
-    background: hsl(0, 0%, 90%);
+    background: white;
     font-weight: 600;
 }
 

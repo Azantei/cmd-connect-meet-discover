@@ -9,8 +9,52 @@
    RSVP button toggle functionality
 ========================================== */
 
+var INTERESTED_KEY = 'cmd_interested_events';
+
 // Track RSVP state
 var rsvpActive = false;
+
+function toggleInterested() {
+    var btn = document.getElementById('interestedBtn');
+    if (!btn) return;
+    var postId = btn.dataset.postId;
+    var stored = JSON.parse(localStorage.getItem(INTERESTED_KEY) || '[]');
+    var idx = stored.findIndex(function(e) { return String(e.postId) === String(postId); });
+
+    if (idx !== -1) {
+        stored.splice(idx, 1);
+        btn.classList.remove('active');
+        btn.textContent = '\u2605 Interested';
+    } else {
+        var tags;
+        try { tags = JSON.parse(btn.dataset.postTags || '[]'); } catch(e) { tags = []; }
+        stored.push({
+            postId:      postId,
+            title:       btn.dataset.postTitle || '',
+            desc:        btn.dataset.postDesc  || '',
+            date:        btn.dataset.postDate  || '',
+            going:       parseInt(btn.dataset.postGoing) || 0,
+            maxAttendees: btn.dataset.postMax ? parseInt(btn.dataset.postMax) : null,
+            color:       '#2e3a4e',
+            imageUrl:    btn.dataset.postImage || null,
+            tags:        tags
+        });
+        btn.classList.add('active');
+        btn.textContent = '\u2605 Interested \u2713';
+    }
+    localStorage.setItem(INTERESTED_KEY, JSON.stringify(stored));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var btn = document.getElementById('interestedBtn');
+    if (btn) {
+        var stored = JSON.parse(localStorage.getItem(INTERESTED_KEY) || '[]');
+        if (stored.some(function(e) { return String(e.postId) === String(btn.dataset.postId); })) {
+            btn.classList.add('active');
+            btn.textContent = '\u2605 Interested \u2713';
+        }
+    }
+});
 
 /**
  * Toggle RSVP status for the event

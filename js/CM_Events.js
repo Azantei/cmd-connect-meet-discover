@@ -199,18 +199,45 @@ function handleSearchKeypress(event) {
     }
 }
 
+var INTERESTED_KEY = 'cmd_interested_events';
+
 /**
  * Toggle interested/starred status for an event
- * Adds/removes visual indicator that user is interested
+ * Persists state to localStorage so Profile page can read it
  * @param {HTMLElement} button - The star button element
  */
 function toggleStar(button) {
-    // Toggle the interested class
     button.classList.toggle('interested');
+
+    var card = button.closest('.card');
+    var title = card.querySelector('.card-title').textContent.trim();
+    var desc = card.querySelector('.card-desc').textContent.trim();
+    var footerSpans = card.querySelectorAll('.card-footer span');
+    var dateText = footerSpans[0] ? footerSpans[0].textContent.replace(/^[^\w]*/, '').trim() : '';
+    var goingText = footerSpans[1] ? footerSpans[1].textContent : '';
+    var tags = Array.from(card.querySelectorAll('.tags-left .tag'))
+        .map(function(t) { return t.textContent.trim(); })
+        .filter(function(t) { return !t.includes('mi'); });
+    var styleAttr = card.querySelector('.card-img').getAttribute('style') || '';
+    var colorMatch = styleAttr.match(/background-color:\s*([^;]+)/);
+    var color = colorMatch ? colorMatch[1].trim() : '#2e3a4e';
+    var goingMatch = goingText.match(/(\d+)\/(\d+)/) || goingText.match(/(\d+)/);
+    var going = goingMatch ? parseInt(goingMatch[1]) : 0;
+    var maxAttendees = (goingMatch && goingMatch[2]) ? parseInt(goingMatch[2]) : null;
+
+    var stored = JSON.parse(localStorage.getItem(INTERESTED_KEY) || '[]');
+    if (button.classList.contains('interested')) {
+        if (!stored.some(function(e) { return e.title === title; })) {
+            stored.push({ title: title, desc: desc, date: dateText, going: going, maxAttendees: maxAttendees, color: color, tags: tags });
+        }
+    } else {
+        stored = stored.filter(function(e) { return e.title !== title; });
+    }
+    localStorage.setItem(INTERESTED_KEY, JSON.stringify(stored));
 }
 
 /**
- * Handle date filter change to show/hide custom date range
+ * Handle date filter change and restore star states from localStorage
  */
 document.addEventListener('DOMContentLoaded', function() {
     const dateFilter = document.getElementById('dateFilter');
@@ -224,4 +251,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // Restore star states from localStorage
+    var stored = JSON.parse(localStorage.getItem(INTERESTED_KEY) || '[]');
+    var starredTitles = stored.map(function(e) { return e.title; });
+    document.querySelectorAll('.card').forEach(function(card) {
+        var titleEl = card.querySelector('.card-title');
+        if (titleEl && starredTitles.indexOf(titleEl.textContent.trim()) !== -1) {
+            var starBtn = card.querySelector('.star-btn');
+            if (starBtn) starBtn.classList.add('interested');
+        }
+    });
 });

@@ -149,7 +149,7 @@
         };
       })) %>;
       PREVIOUS_EVENTS  = [];
-      INTERESTED_EVENTS = [];
+      INTERESTED_EVENTS = JSON.parse(localStorage.getItem('cmd_interested_events') || '[]');
       DRAFTS = <%- JSON.stringify(drafts.map(function(p) {
         return {
           title: p.title || '',

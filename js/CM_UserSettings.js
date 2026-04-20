@@ -95,3 +95,38 @@ function showToast() {
     toast.style.display = 'block';
     setTimeout(function() { toast.style.display = 'none'; }, 2500);
 }
+
+/**
+ * Discard changes in the currently active section and restore original values
+ */
+function discardChanges() {
+    var activeSection = null;
+    document.querySelectorAll('.section').forEach(function(s) {
+        if (s.style.display !== 'none') activeSection = s.id;
+    });
+
+    if (activeSection === 'section-profile') {
+        var inputs = document.querySelectorAll('#section-profile .field-input');
+        inputs[0].value = 'Alex Johnson';
+        inputs[1].value = '';
+    } else if (activeSection === 'section-account') {
+        var inputs = document.querySelectorAll('#section-account .field-input');
+        inputs[0].value = 'alexj@email.com';
+        inputs[1].value = 'alexj';
+        inputs[2].value = '';
+        inputs[3].value = '';
+    } else if (activeSection === 'section-interests') {
+        var originalActive = ['Outdoors', 'Running', 'Coffee', 'Music'];
+        document.querySelectorAll('.pill').forEach(function(pill) {
+            if (originalActive.indexOf(pill.textContent) !== -1) {
+                pill.classList.add('active');
+            } else {
+                pill.classList.remove('active');
+            }
+        });
+    } else if (activeSection === 'section-location') {
+        var inputs = document.querySelectorAll('#section-location .field-input');
+        inputs[0].value = 'Seattle';
+        inputs[1].value = 'Capitol Hill';
+    }
+}
