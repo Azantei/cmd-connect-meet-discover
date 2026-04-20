@@ -62,9 +62,6 @@
         </div>
 
         <div class="form-container">
-            <% if (error && error.length) { %>
-                <p style="color:#c0392b;font-size:0.85rem;text-align:center;margin-bottom:0.75rem;"><%= error %></p>
-            <% } %>
             <% if (success && success.length) { %>
                 <p style="color:#2e7d32;font-size:0.85rem;text-align:center;margin-bottom:0.75rem;"><%= success %></p>
             <% } %>
@@ -97,6 +94,9 @@
 
             <!-- Sign Up Form -->
             <div id="signup" class="tab-content">
+                <% if (error && error.length) { %>
+                    <p style="color:#c0392b;font-size:0.85rem;text-align:center;margin-bottom:0.75rem;"><%= error %></p>
+                <% } %>
                 <form action="/register" method="POST" id="signupForm" autocomplete="off">
                     <div class="form-group">
                         <label>Full Name</label>
@@ -134,5 +134,8 @@
     </div>
 
     <script src="/js/CM_Login.js"></script>
+    <% if (error && error.length) { %>
+    <script>switchTab('signup');</script>
+    <% } %>
 </body>
 </html>

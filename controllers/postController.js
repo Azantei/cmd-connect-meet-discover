@@ -1,6 +1,13 @@
 const { Post, User, RSVP, Report, Category } = require('../models');
 const { normalizeCategoryArray, parseCombinedDate } = require('../utils/helpers');
 
+/* ========================================
+   FEED
+   GET /posts
+   Searches published posts by optional
+   ?q (text) and ?category query params,
+   loads all categories for the filter bar
+   ======================================== */
 exports.getFeed = async (req, res, next) => {
   try {
     const { q, category } = req.query;
@@ -18,6 +25,13 @@ exports.getFeed = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   SINGLE POST VIEW
+   GET /posts/:id
+   Fetches one post by PK with its author,
+   plus the RSVP count and whether the
+   current session user has already RSVP'd
+   ======================================== */
 exports.getPost = async (req, res, next) => {
   try {
     const post = await Post.findByPk(req.params.id, {
@@ -44,6 +58,12 @@ exports.getPost = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   CREATE POST FORM
+   GET /posts/new  (also /posts/create)
+   Fetches all categories to populate the
+   tag-picker in the form
+   ======================================== */
 exports.getCreatePost = async (req, res, next) => {
   try {
     const categories = await Category.findAll({ order: [['name', 'ASC']] });
@@ -51,6 +71,13 @@ exports.getCreatePost = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   CREATE POST
+   POST /posts
+   Inserts a new post row; handles optional
+   image upload, date+time combination,
+   RSVP settings, and draft vs published status
+   ======================================== */
 exports.createPost = async (req, res, next) => {
   try {
     const { title, description, category, location, date, time, rsvpEnabled, maxAttendees } = req.body;
@@ -82,6 +109,13 @@ exports.createPost = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   EDIT POST FORM
+   GET /posts/:id/edit
+   Renders the edit form pre-populated with
+   the existing post (attached to req.post
+   by the canModifyPost middleware)
+   ======================================== */
 exports.getEditPost = async (req, res, next) => {
   try {
     const categories = await Category.findAll({ order: [['name', 'ASC']] });
@@ -89,6 +123,13 @@ exports.getEditPost = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   UPDATE POST
+   POST /posts/:id/edit
+   Updates the post row with new field values;
+   replaces the image only if a new file was
+   uploaded, otherwise keeps the existing one
+   ======================================== */
 exports.updatePost = async (req, res, next) => {
   try {
     const post = req.post;
@@ -118,6 +159,13 @@ exports.updatePost = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   CREATE RSVP
+   POST /posts/:id/rsvp
+   Adds the current user's RSVP; enforces
+   event-not-past and max-attendees checks
+   before inserting via findOrCreate
+   ======================================== */
 exports.createRsvp = async (req, res, next) => {
   try {
     const post = await Post.findByPk(req.params.id);
@@ -144,6 +192,11 @@ exports.createRsvp = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   DELETE RSVP
+   DELETE /posts/:id/rsvp
+   Removes the current user's RSVP row
+   ======================================== */
 exports.deleteRsvp = async (req, res, next) => {
   try {
     await RSVP.destroy({ where: { postId: req.params.id, userId: req.session.userId } });
@@ -152,6 +205,12 @@ exports.deleteRsvp = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   DELETE POST
+   DELETE /posts/:id
+   Destroys the post and auto-resolves any
+   pending reports that referenced it
+   ======================================== */
 exports.deletePost = async (req, res, next) => {
   try {
     const post = req.post;
@@ -165,6 +224,13 @@ exports.deletePost = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   REPORT POST
+   POST /posts/:id/report
+   Creates a new Report row; combines the
+   selected reason dropdown value and optional
+   free-text comment into a single reason string
+   ======================================== */
 exports.reportPost = async (req, res, next) => {
   try {
     const { reason, comment } = req.body;

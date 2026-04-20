@@ -1,5 +1,12 @@
 const { Post, User, RSVP } = require('../models');
 
+/* ========================================
+   GET ALL EVENTS
+   GET /events
+   Fetches all published, non-hidden posts
+   with their author info and RSVP count,
+   ordered newest first
+   ======================================== */
 exports.getAllEvents = async (req, res, next) => {
   try {
     const posts = await Post.findAll({

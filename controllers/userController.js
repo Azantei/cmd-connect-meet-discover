@@ -1,5 +1,14 @@
 const { User, Post, RSVP, Report, sequelize } = require('../models');
 
+/* ========================================
+   OWN PROFILE
+   GET /users/profile
+   Fetches the logged-in user's info, their
+   published posts, draft posts, and RSVPs.
+   RSVPs are split into upcoming vs past,
+   and RSVP counts for all relevant posts
+   are loaded in a single grouped query
+   ======================================== */
 exports.getOwnProfile = async (req, res, next) => {
   try {
     const [user, posts, rsvps, drafts] = await Promise.all([
@@ -47,6 +56,12 @@ exports.getOwnProfile = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   OTHER USER'S PROFILE
+   GET /users/profile/:id  and  GET /users/:id
+   Fetches a user's public info and their
+   published posts for the public profile view
+   ======================================== */
 exports.getUserById = async (req, res, next) => {
   try {
     const user = await User.findByPk(req.params.id, {
@@ -65,6 +80,12 @@ exports.getUserById = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   SETTINGS FORM
+   GET /users/settings
+   Fetches the current user's editable fields
+   to pre-populate the settings form
+   ======================================== */
 exports.getSettings = async (req, res, next) => {
   try {
     const user = await User.findByPk(req.session.userId, {
@@ -74,6 +95,14 @@ exports.getSettings = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   UPDATE SETTINGS
+   POST /users/settings
+   Updates the user row: name, location,
+   interests array, privacy toggles,
+   optional new password (re-hashed via hook),
+   and optional new profile picture upload
+   ======================================== */
 exports.updateSettings = async (req, res, next) => {
   try {
     const { location, interests, newPassword, confirmPassword, showLocation, showInterests } = req.body;
@@ -117,6 +146,11 @@ exports.updateSettings = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   REPORT USER
+   POST /users/:id/report
+   Creates a Report row targeting a user
+   ======================================== */
 exports.reportUser = async (req, res, next) => {
   try {
     const { reason } = req.body;

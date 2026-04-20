@@ -20,7 +20,10 @@
 </head>
 <body>
 
-    <!-- Navbar -->
+    <!-- ========================================
+         NAVIGATION BAR
+         Fixed header with logo, links, and user info
+    ======================================== -->
     <nav class="navbar">
         <a href="index.html" class="brand"><span class="brand-light">C.M.</span><span class="brand-accent">D.</span></a>
         <div class="nav-links">
@@ -35,13 +38,20 @@
         </div>
     </nav>
 
-    <!-- Search + Create -->
+    <!-- ========================================
+         SEARCH BAR
+         Full-width text search for activities and events
+    ======================================== -->
     <div class="search-bar">
         <input type="text" id="search-input" placeholder="🔍  Search activities, events, or people..." oninput="performSearch()" onkeypress="handleSearchKeypress(event)" />
         <button class="btn-create" onclick="performSearch()">Search</button>
     </div>
 
-    <!-- Filters Button -->
+    <!-- ========================================
+         FILTERS BUTTON & PANEL
+         Toggleable panel with category, distance,
+         and date range filters
+    ======================================== -->
     <div class="filters-section">
         <button class="btn-filters" onclick="toggleFilterPanel()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -125,7 +135,11 @@
     <!-- Overlay for filter panel -->
     <div class="filter-overlay" id="filterOverlay" onclick="toggleFilterPanel()"></div>
 
-    <!-- Main Content -->
+    <!-- ========================================
+         MAIN CONTENT
+         Two-column layout: event cards (left)
+         and map view (right)
+    ======================================== -->
     <div class="main-content">
 
         <!-- Left: Event Cards -->

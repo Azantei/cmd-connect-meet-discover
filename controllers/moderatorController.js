@@ -2,7 +2,13 @@ const { Op } = require('sequelize');
 const { Report, Post, ModerationLog, User } = require('../models');
 const { resolveTargets } = require('../utils/helpers');
 
-// GET /moderator/dashboard
+/* ========================================
+   MODERATION DASHBOARD
+   GET /moderator/dashboard
+   Loads pending reports (with optional
+   ?type=post|user filter) and the current
+   moderator's recent action history
+   ======================================== */
 exports.getDashboard = async (req, res, next) => {
   try {
     const where = { status: 'pending' };
@@ -75,7 +81,12 @@ exports.getDashboard = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-// GET /moderator/reports/:id
+/* ========================================
+   REPORT DETAIL
+   GET /moderator/reports/:id
+   Loads a single report and resolves its
+   target (post or user) for display
+   ======================================== */
 exports.getReport = async (req, res, next) => {
   try {
     const report = await Report.findByPk(req.params.id, {
@@ -95,7 +106,12 @@ exports.getReport = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-// POST /moderator/reports/:id/warn
+/* ========================================
+   WARN — REPORT ACTION
+   POST /moderator/reports/:id/warn
+   Creates a ModerationLog entry with
+   action='warn' and marks the report reviewed
+   ======================================== */
 exports.warnReport = async (req, res, next) => {
   try {
     const report = await Report.findByPk(req.params.id);
@@ -120,7 +136,12 @@ exports.warnReport = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-// POST /moderator/reports/:id/dismiss
+/* ========================================
+   DISMISS — REPORT ACTION
+   POST /moderator/reports/:id/dismiss
+   Creates a ModerationLog entry with
+   action='dismiss' and marks the report resolved
+   ======================================== */
 exports.dismissReport = async (req, res, next) => {
   try {
     const report = await Report.findByPk(req.params.id);
@@ -145,7 +166,14 @@ exports.dismissReport = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-// POST /moderator/reports/:id/escalate
+/* ========================================
+   ESCALATE — REPORT ACTION
+   POST /moderator/reports/:id/escalate
+   Creates a ModerationLog entry with
+   action='escalate', marks the report escalated,
+   and hides the post (isHidden=true) if the
+   target is a post
+   ======================================== */
 exports.escalateReport = async (req, res, next) => {
   try {
     const report = await Report.findByPk(req.params.id);
@@ -185,7 +213,12 @@ exports.escalateReport = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-// GET /moderator/history
+/* ========================================
+   MODERATION HISTORY
+   GET /moderator/history
+   Loads all ModerationLog entries for the
+   current moderator, ordered newest first
+   ======================================== */
 exports.getHistory = async (req, res, next) => {
   try {
     const logs = await ModerationLog.findAll({

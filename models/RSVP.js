@@ -1,4 +1,10 @@
 module.exports = (sequelize, DataTypes) => {
+  /* ========================================
+     RSVP SCHEMA
+     Join table linking a user to a post they
+     have RSVP'd to. The composite unique index
+     on (userId, postId) prevents duplicate RSVPs.
+     ======================================== */
   const RSVP = sequelize.define('RSVP', {
     id: {
       type: DataTypes.INTEGER,

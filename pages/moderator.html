@@ -54,7 +54,11 @@
         </div>
     </nav>
 
-    <!-- Main layout: sidebar + content -->
+    <!-- ========================================
+         MAIN LAYOUT
+         Two-column: sidebar (Reports Queue /
+         Moderation History) and main content area
+    ======================================== -->
     <div class="mod-layout">
         <aside class="mod-sidebar">
             <button class="mod-nav-item active" data-view="reports">
@@ -90,7 +94,11 @@
         </main>
     </div>
 
-    <!-- Warn User modal -->
+    <!-- ========================================
+         WARN USER MODAL
+         Overlay form to issue a warning with
+         a reason dropdown and optional message
+    ======================================== -->
     <div class="mod-modal" id="warnModal">
         <div class="mod-modal-backdrop"></div>
         <div class="mod-modal-content">
@@ -119,7 +127,12 @@
         </div>
     </div>
 
-    <!-- Escalate modal -->
+    <!-- ========================================
+         ESCALATE MODAL
+         Overlay form to escalate a report to
+         admin with a reason and optional notes;
+         also hides the post immediately
+    ======================================== -->
     <div class="mod-modal" id="escalateModal">
         <div class="mod-modal-backdrop"></div>
         <div class="mod-modal-content">

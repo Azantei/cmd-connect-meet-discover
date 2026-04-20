@@ -1,6 +1,11 @@
 require('dotenv').config();
 const { Sequelize } = require('sequelize');
 
+/* ========================================
+   DATABASE CONNECTION
+   Connects to MySQL using credentials from
+   .env; logging is disabled in all environments
+   ======================================== */
 const sequelize = new Sequelize(
   process.env.DB_NAME,
   process.env.DB_USER,
@@ -17,7 +22,12 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-// Load models
+/* ========================================
+   MODEL REGISTRATION
+   Each model file exports a factory function
+   that receives the sequelize instance and
+   DataTypes, then returns the defined Model
+   ======================================== */
 db.User           = require('./User')(sequelize, Sequelize.DataTypes);
 db.Post           = require('./Post')(sequelize, Sequelize.DataTypes);
 db.RSVP           = require('./RSVP')(sequelize, Sequelize.DataTypes);
@@ -25,6 +35,13 @@ db.Report         = require('./Report')(sequelize, Sequelize.DataTypes);
 db.Category       = require('./Category')(sequelize, Sequelize.DataTypes);
 db.ModerationLog      = require('./ModerationLog')(sequelize, Sequelize.DataTypes);
 db.PlatformSetting    = require('./PlatformSetting')(sequelize, Sequelize.DataTypes);
+
+/* ========================================
+   MODEL ASSOCIATIONS
+   Defines foreign-key relationships between
+   models so Sequelize can JOIN them with
+   include: [...] in queries
+   ======================================== */
 
 // ── User ↔ Post ─────────────────────────────────────────────
 db.User.hasMany(db.Post, { foreignKey: 'userId', onDelete: 'CASCADE' });

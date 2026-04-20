@@ -1,4 +1,11 @@
 module.exports = (sequelize, DataTypes) => {
+  /* ========================================
+     POST SCHEMA
+     Stores community activity and event posts.
+     category is a JSON array of tag strings.
+     status controls draft vs published visibility.
+     isHidden is set by moderators during escalation.
+     ======================================== */
   const Post = sequelize.define('Post', {
     id: {
       type: DataTypes.INTEGER,
@@ -27,6 +34,11 @@ module.exports = (sequelize, DataTypes) => {
     date: {
       type: DataTypes.DATE
     },
+    /* ========================================
+       CATEGORY
+       JSON array of tag strings chosen by the
+       author (e.g. ["Outdoors","Music"])
+       ======================================== */
     category: {
       type: DataTypes.JSON,
       defaultValue: []
@@ -34,6 +46,11 @@ module.exports = (sequelize, DataTypes) => {
     imageUrl: {
       type: DataTypes.STRING(255)
     },
+    /* ========================================
+       RSVP SETTINGS
+       rsvpEnabled toggles the RSVP feature.
+       maxAttendees caps the RSVP count (null = unlimited).
+       ======================================== */
     maxAttendees: {
       type: DataTypes.INTEGER,
       defaultValue: null
@@ -55,6 +72,14 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: true
   });
 
+  /* ========================================
+     POST.SEARCH STATIC METHOD
+     Queries published, visible posts with
+     optional full-text keyword search (?q)
+     and category filter (?category).
+     Category filter uses a JSON LIKE match
+     against the stored array string.
+     ======================================== */
   Post.search = async function(q, category) {
     const { Op } = require('sequelize');
     const where = { isHidden: false, status: 'published' };

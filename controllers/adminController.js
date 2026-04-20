@@ -1,6 +1,13 @@
 const { User, Post, Report, Category, RSVP, PlatformSetting, ModerationLog } = require('../models');
 const { Op } = require('sequelize');
 
+/* ========================================
+   USER MANAGEMENT
+   GET /admin/users
+   Fetches all users ordered by sign-up date,
+   plus sidebar counts for active posts,
+   pending reports, and escalated reports
+   ======================================== */
 exports.getUsers = async (req, res, next) => {
   try {
     const [users, activePosts, reportCount, escalatedCount] = await Promise.all([
@@ -16,6 +23,11 @@ exports.getUsers = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   BAN USER
+   POST /admin/users/:id/ban
+   Sets isBanned = true for the target user
+   ======================================== */
 exports.banUser = async (req, res, next) => {
   try {
     const user = await User.findByPk(req.params.id);
@@ -27,6 +39,11 @@ exports.banUser = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   UNBAN USER
+   POST /admin/users/:id/unban
+   Sets isBanned = false for the target user
+   ======================================== */
 exports.unbanUser = async (req, res, next) => {
   try {
     const user = await User.findByPk(req.params.id);
@@ -38,6 +55,11 @@ exports.unbanUser = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   PROMOTE USER
+   POST /admin/users/:id/promote
+   Elevates a community_member to moderator
+   ======================================== */
 exports.promoteUser = async (req, res, next) => {
   try {
     const user = await User.findByPk(req.params.id);
@@ -49,6 +71,11 @@ exports.promoteUser = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   DEMOTE USER
+   POST /admin/users/:id/demote
+   Reverts a moderator back to community_member
+   ======================================== */
 exports.demoteUser = async (req, res, next) => {
   try {
     const user = await User.findByPk(req.params.id);
@@ -60,6 +87,13 @@ exports.demoteUser = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   ESCALATED REPORTS LIST
+   GET /admin/escalated
+   Loads all escalated reports, enriches each
+   with the moderator who escalated it, their
+   notes, and the target name (user or post)
+   ======================================== */
 exports.getEscalated = async (req, res, next) => {
   try {
     const rawReports = await Report.findAll({
@@ -127,6 +161,12 @@ exports.getEscalated = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   REMOVE ESCALATED CONTENT
+   POST /admin/escalated/:id/remove
+   Deletes the reported post from the DB and
+   marks the report resolved
+   ======================================== */
 exports.removeEscalated = async (req, res, next) => {
   try {
     const report = await Report.findByPk(req.params.id);
@@ -140,6 +180,11 @@ exports.removeEscalated = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   DISMISS ESCALATED REPORT
+   POST /admin/escalated/:id/dismiss
+   Closes the report without taking action
+   ======================================== */
 exports.dismissEscalated = async (req, res, next) => {
   try {
     const report = await Report.findByPk(req.params.id);
@@ -150,6 +195,13 @@ exports.dismissEscalated = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   BAN USER VIA ESCALATED REPORT
+   POST /admin/escalated/:id/ban
+   Bans the user associated with the report
+   (resolves the report target to a userId
+   whether the target was a user or a post)
+   ======================================== */
 exports.banEscalated = async (req, res, next) => {
   try {
     const report = await Report.findByPk(req.params.id);
@@ -173,6 +225,13 @@ exports.banEscalated = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   ANALYTICS
+   GET /admin/analytics
+   Returns platform-wide counts. Supports
+   optional ?startDate and ?endDate filters
+   to scope counts to a date range
+   ======================================== */
 exports.getAnalytics = async (req, res, next) => {
   try {
     const { startDate, endDate } = req.query;
@@ -200,6 +259,12 @@ exports.getAnalytics = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   PLATFORM SETTINGS
+   GET /admin/settings
+   Loads all categories and key/value
+   platform settings from the DB
+   ======================================== */
 exports.getSettings = async (req, res, next) => {
   try {
     const [categories, settingRows, escalatedCount] = await Promise.all([
@@ -212,6 +277,12 @@ exports.getSettings = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   SAVE PLATFORM SETTINGS
+   POST /admin/settings
+   Upserts platformName and distanceRadius
+   into the platform_settings table
+   ======================================== */
 exports.saveSettings = async (req, res, next) => {
   try {
     const allowed = ['platformName', 'distanceRadius'];
@@ -225,6 +296,12 @@ exports.saveSettings = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   ADD CATEGORY
+   POST /admin/settings/categories
+   Inserts a new category into the DB;
+   rejects duplicates via unique constraint
+   ======================================== */
 exports.addCategory = async (req, res, next) => {
   try {
     const { name } = req.body;
@@ -241,6 +318,11 @@ exports.addCategory = async (req, res, next) => {
   }
 };
 
+/* ========================================
+   DELETE CATEGORY
+   DELETE /admin/settings/categories/:id
+   Removes a category row from the DB by ID
+   ======================================== */
 exports.deleteCategory = async (req, res, next) => {
   try {
     await Category.destroy({ where: { id: req.params.id } });

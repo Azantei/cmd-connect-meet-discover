@@ -1,6 +1,12 @@
 const { Op } = require('sequelize');
 const { Post, User } = require('../models');
 
+/* ========================================
+   RELATIVE TIME
+   Converts a date to a human-readable
+   relative string (e.g. "5 min ago",
+   "2 hrs ago", "3 days ago")
+   ======================================== */
 function relativeTime(date) {
   const diff = Date.now() - new Date(date).getTime();
   const mins = Math.floor(diff / 60000);
@@ -11,6 +17,15 @@ function relativeTime(date) {
   return days + (days > 1 ? ' days ago' : ' day ago');
 }
 
+/* ========================================
+   RESOLVE TARGETS
+   Given an array of Report objects, fetches
+   the actual Post or User each report points
+   to in two parallel DB queries, then maps
+   the enriched data back onto each report.
+   Used by both the moderator and admin
+   controllers to avoid N+1 queries.
+   ======================================== */
 async function resolveTargets(reports) {
   const postIds = reports.filter(r => r.targetType === 'post').map(r => r.targetId);
   const userIds = reports.filter(r => r.targetType === 'user').map(r => r.targetId);
@@ -53,10 +68,22 @@ async function resolveTargets(reports) {
   });
 }
 
+/* ========================================
+   NORMALIZE CATEGORY ARRAY
+   Ensures category always comes back as an
+   array regardless of whether the form
+   submitted a single string or an array
+   ======================================== */
 function normalizeCategoryArray(category) {
   return Array.isArray(category) ? category : (category ? [category] : []);
 }
 
+/* ========================================
+   PARSE COMBINED DATE
+   Combines separate date and time strings
+   from form inputs into a single Date object;
+   defaults time to 00:00 if not provided
+   ======================================== */
 function parseCombinedDate(date, time) {
   return date ? new Date(`${date}T${time || '00:00'}`) : null;
 }
