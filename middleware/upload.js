@@ -7,8 +7,12 @@ const path = require('path');
    non-image uploads are silently rejected
    ======================================== */
 const fileFilter = (req, file, cb) => {
-  const allowed = ['.jpg', '.jpeg', '.png', '.webp', '.gif'];
-  cb(null, allowed.includes(path.extname(file.originalname).toLowerCase()));
+  const allowed = ['.jpg', '.jpeg', '.png', '.gif'];
+  if (allowed.includes(path.extname(file.originalname).toLowerCase())) {
+    cb(null, true);
+  } else {
+    cb(new Error('Image must be under 5MB and in JPG, PNG, or GIF format.'), false);
+  }
 };
 
 /* ========================================

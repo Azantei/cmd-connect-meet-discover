@@ -61,6 +61,7 @@
                     <div class="info-value"><%= post.location %></div>
                 </div>
                 <% } %>
+                <% if (post.type === 'event') { %>
                 <div class="info-box">
                     <div class="info-label">👥 RSVPs</div>
                     <div class="info-value">
@@ -77,6 +78,7 @@
                             <button type="submit" class="btn-rsvp">RSVP</button>
                         </form>
                     <% } %>
+                <% } %>
                 <% } %>
             </div>
 
@@ -171,6 +173,18 @@
             <p>Connect. Meet. Discover. &copy; 2026</p>
         </div>
     </footer>
+
+    <% if (reportSuccess && reportSuccess.length) { %>
+    <div class="modal-overlay" id="reportSuccessModal" style="display:flex;">
+        <div class="modal">
+            <div class="modal-title">Report Submitted</div>
+            <div class="modal-desc"><%= reportSuccess %></div>
+            <div class="modal-actions" style="justify-content:center;">
+                <button type="button" class="btn-submit" onclick="document.getElementById('reportSuccessModal').style.display='none'">OK</button>
+            </div>
+        </div>
+    </div>
+    <% } %>
 
     <script src="/js/CM_EventView.js"></script>
 </body>

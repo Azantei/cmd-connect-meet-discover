@@ -64,7 +64,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: false
     },
     status: {
-      type: DataTypes.ENUM('published', 'draft'),
+      type: DataTypes.ENUM('published', 'draft', 'pending'),
       defaultValue: 'published'
     }
   }, {
@@ -82,20 +82,36 @@ module.exports = (sequelize, DataTypes) => {
      ======================================== */
   Post.search = async function(q, category) {
     const { Op } = require('sequelize');
-    const where = { isHidden: false, status: 'published' };
+    const now = new Date();
+
+    const conditions = [
+      { isHidden: false, status: 'published' },
+      // Hide events whose date has already passed; activities and undated posts always show
+      {
+        [Op.or]: [
+          { type: 'activity' },
+          { date: null },
+          { date: { [Op.gte]: now } }
+        ]
+      }
+    ];
+
     if (q && q.trim()) {
-      where[Op.or] = [
-        { title:       { [Op.like]: `%${q.trim()}%` } },
-        { description: { [Op.like]: `%${q.trim()}%` } }
-      ];
+      conditions.push({
+        [Op.or]: [
+          { title:       { [Op.like]: `%${q.trim()}%` } },
+          { description: { [Op.like]: `%${q.trim()}%` } }
+        ]
+      });
     }
     if (category && category.trim()) {
       const safe = category.trim().replace(/["%_\\]/g, '\\$&');
-      where.category = { [Op.like]: `%"${safe}"%` };
+      conditions.push({ category: { [Op.like]: `%"${safe}"%` } });
     }
+
     const User = Post.sequelize.models.User;
     return Post.findAll({
-      where,
+      where: { [Op.and]: conditions },
       include: [{ model: User, as: 'author', attributes: ['id', 'name'] }],
       order: [['createdAt', 'DESC']]
     });

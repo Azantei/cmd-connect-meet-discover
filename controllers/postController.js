@@ -1,6 +1,8 @@
 const { Post, User, RSVP, Report, Category } = require('../models');
 const { normalizeCategoryArray, parseCombinedDate } = require('../utils/helpers');
 
+const PROFANITY_RE = /\b(fuck|shit|ass)\b/i;
+
 /* ========================================
    FEED
    GET /posts
@@ -85,9 +87,28 @@ exports.createPost = async (req, res, next) => {
       req.flash('error', 'Title is required.');
       return res.redirect('/posts/new');
     }
-    const categoryArray = normalizeCategoryArray(category);
+
     const combinedDate = parseCombinedDate(date, time);
-    const status = req.body.status === 'draft' ? 'draft' : 'published';
+    if (combinedDate && combinedDate < new Date()) {
+      req.flash('error', 'Event date must be in the future.');
+      return res.redirect('/posts/new');
+    }
+
+    const hasProfanity = PROFANITY_RE.test(title.trim()) ||
+                         (description && PROFANITY_RE.test(description));
+
+    const categoryArray = normalizeCategoryArray(category);
+    const isEvent = rsvpEnabled === 'on';
+
+    let status;
+    if (req.body.status === 'draft') {
+      status = 'draft';
+    } else if (hasProfanity) {
+      status = 'pending';
+    } else {
+      status = 'published';
+    }
+
     const post = await Post.create({
       title:        title.trim(),
       description:  description || null,
@@ -96,13 +117,19 @@ exports.createPost = async (req, res, next) => {
       date:         combinedDate,
       imageUrl:     req.file ? `/uploads/${req.file.filename}` : null,
       userId:       req.session.userId,
+      type:         isEvent ? 'event' : 'activity',
       status,
-      rsvpEnabled:  rsvpEnabled === 'on',
-      maxAttendees: (rsvpEnabled === 'on' && maxAttendees) ? parseInt(maxAttendees) : null
+      rsvpEnabled:  isEvent,
+      maxAttendees: (isEvent && maxAttendees) ? parseInt(maxAttendees) : null
     });
+
     if (status === 'draft') {
       req.flash('success', 'Draft saved!');
       return res.redirect('/users/profile');
+    }
+    if (status === 'pending') {
+      req.flash('success', 'Your post is under review and will be published once approved.');
+      return res.redirect('/posts');
     }
     req.flash('success', 'Post created!');
     res.redirect(`/posts/${post.id}`);
@@ -138,6 +165,7 @@ exports.updatePost = async (req, res, next) => {
     const status = req.body.status === 'draft' ? 'draft' : 'published';
     const combinedDate = parseCombinedDate(date, time);
 
+    const isEvent = rsvpEnabled === 'on';
     await post.update({
       title:        title && title.trim() ? title.trim() : post.title,
       description:  description || null,
@@ -145,9 +173,10 @@ exports.updatePost = async (req, res, next) => {
       location:     location || null,
       date:         combinedDate,
       imageUrl:     req.file ? `/uploads/${req.file.filename}` : post.imageUrl,
+      type:         isEvent ? 'event' : 'activity',
       status,
-      rsvpEnabled:  rsvpEnabled === 'on',
-      maxAttendees: (rsvpEnabled === 'on' && maxAttendees) ? parseInt(maxAttendees) : null
+      rsvpEnabled:  isEvent,
+      maxAttendees: (isEvent && maxAttendees) ? parseInt(maxAttendees) : null
     });
 
     if (status === 'draft') {
@@ -250,7 +279,7 @@ exports.reportPost = async (req, res, next) => {
       targetId:   req.params.id,
       reason:     fullReason
     });
-    req.flash('success', 'Report submitted. Thank you.');
+    req.flash('reportSuccess', 'Thank you for your report. Our moderators will review it.');
     res.redirect(`/posts/${req.params.id}`);
   } catch (err) { next(err); }
 };

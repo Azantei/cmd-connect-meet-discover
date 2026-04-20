@@ -1,4 +1,5 @@
 const { User, Post, RSVP, Report, sequelize } = require('../models');
+const { Op } = require('sequelize');
 
 /* ========================================
    OWN PROFILE
@@ -11,7 +12,8 @@ const { User, Post, RSVP, Report, sequelize } = require('../models');
    ======================================== */
 exports.getOwnProfile = async (req, res, next) => {
   try {
-    const [user, posts, rsvps, drafts] = await Promise.all([
+    const now = new Date();
+    const [user, posts, rsvps, drafts, pastCreated] = await Promise.all([
       User.findByPk(req.session.userId, {
         attributes: ['id', 'name', 'email', 'location', 'interests', 'role', 'profilePic']
       }),
@@ -27,18 +29,38 @@ exports.getOwnProfile = async (req, res, next) => {
       Post.findAll({
         where: { userId: req.session.userId, status: 'draft' },
         order: [['createdAt', 'DESC']]
+      }),
+      // Events this user created that have already passed (regardless of RSVP)
+      Post.findAll({
+        where: {
+          userId:   req.session.userId,
+          type:     'event',
+          status:   'published',
+          isHidden: false,
+          date:     { [Op.lt]: now }
+        },
+        order: [['date', 'DESC']]
       })
     ]);
 
-    // Split RSVPs into upcoming (future/no date) and past (date already passed)
-    const now = new Date();
+    // Upcoming RSVPs: events the user RSVP'd to that haven't happened yet
     const upcomingRsvps = rsvps.filter(r => !r.Post.date || new Date(r.Post.date) > now);
-    const pastRsvps     = rsvps.filter(r => r.Post.date && new Date(r.Post.date) <= now);
+
+    // Past events: merge RSVP'd past events + created past events, deduplicated by post id
+    const pastRsvpPosts = rsvps
+      .filter(r => r.Post.date && new Date(r.Post.date) <= now)
+      .map(r => r.Post);
+    const pastRsvpIds = new Set(pastRsvpPosts.map(p => p.id));
+    const pastEvents = [
+      ...pastRsvpPosts,
+      ...pastCreated.filter(p => !pastRsvpIds.has(p.id))
+    ];
 
     // Fetch RSVP counts for all relevant posts in one query
     const allPostIds = [
       ...posts.map(p => p.id),
-      ...rsvps.map(r => r.Post.id)
+      ...rsvps.map(r => r.Post.id),
+      ...pastCreated.map(p => p.id)
     ].filter((id, i, arr) => arr.indexOf(id) === i);
 
     const rsvpCounts = {};
@@ -52,7 +74,7 @@ exports.getOwnProfile = async (req, res, next) => {
       counts.forEach(row => { rsvpCounts[row.postId] = parseInt(row.count, 10); });
     }
 
-    res.render('users/profile', { title: 'My Profile', profileUser: user, posts, upcomingRsvps, pastRsvps, drafts, rsvpCounts });
+    res.render('users/profile', { title: 'My Profile', profileUser: user, posts, upcomingRsvps, pastEvents, drafts, rsvpCounts });
   } catch (err) { next(err); }
 };
 
@@ -164,7 +186,7 @@ exports.reportUser = async (req, res, next) => {
       targetId:   req.params.id,
       reason:     reason.trim()
     });
-    req.flash('success', 'Report submitted. Thank you.');
+    req.flash('reportSuccess', 'Thank you for your report. Our moderators will review it.');
     res.redirect(`/users/${req.params.id}`);
   } catch (err) { next(err); }
 };

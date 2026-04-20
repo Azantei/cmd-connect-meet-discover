@@ -4,23 +4,37 @@ const postController = require('../controllers/postController');
 const { requireAuth, canModifyPost } = require('../middleware/authMiddleware');
 const { postUpload } = require('../middleware/upload');
 
-/* ========================================
-   FEED & POST VIEW ROUTES
-   GET /posts      - render public feed with optional search/category filters
-   GET /posts/:id  - view a single post and its RSVP count
-   ======================================== */
-router.get('/',        postController.getFeed);
-router.get('/:id',     postController.getPost);
+function uploadImage(field) {
+  const upload = postUpload.single(field);
+  return (req, res, next) => {
+    upload(req, res, (err) => {
+      if (err) {
+        req.flash('error', 'Image must be under 5MB and in JPG, PNG, or GIF format.');
+        return res.redirect('back');
+      }
+      next();
+    });
+  };
+}
 
 /* ========================================
-   CREATE POST ROUTES
+   FEED & CREATE POST ROUTES
+   GET  /posts        - render public feed
    GET  /posts/new    - render create post form
    GET  /posts/create - alias for /posts/new
-   POST /posts        - save new post to DB (with optional image upload)
+   POST /posts        - save new post to DB
    ======================================== */
+router.get('/',        postController.getFeed);
 router.get('/new',     requireAuth, postController.getCreatePost);
 router.get('/create',  requireAuth, postController.getCreatePost);
-router.post('/',       requireAuth, postUpload.single('imageUrl'), postController.createPost);
+router.post('/',       requireAuth, uploadImage('imageUrl'), postController.createPost);
+
+/* ========================================
+   SINGLE POST VIEW
+   GET /posts/:id  - view a single post and its RSVP count
+   Must be after /new and /create to avoid wildcard conflict
+   ======================================== */
+router.get('/:id',     postController.getPost);
 
 /* ========================================
    EDIT & DELETE POST ROUTES
@@ -29,7 +43,7 @@ router.post('/',       requireAuth, postUpload.single('imageUrl'), postControlle
    DELETE /posts/:id      - permanently remove post from DB
    ======================================== */
 router.get('/:id/edit',  requireAuth, canModifyPost, postController.getEditPost);
-router.post('/:id/edit', requireAuth, canModifyPost, postUpload.single('imageUrl'), postController.updatePost);
+router.post('/:id/edit', requireAuth, canModifyPost, uploadImage('imageUrl'), postController.updatePost);
 router.delete('/:id',  requireAuth, canModifyPost, postController.deletePost);
 
 /* ========================================

@@ -50,7 +50,7 @@
                 <div class="profile-handle"><%= profileUser.location || 'C.M.D. Community' %></div>
                 <div class="profile-stats">
                     <div><span class="stat-num"><%= posts.length %></span><span class="stat-label">Posts</span></div>
-                    <div><span class="stat-num"><%= upcomingRsvps.length + pastRsvps.length %></span><span class="stat-label">RSVPs</span></div>
+                    <div><span class="stat-num"><%= upcomingRsvps.length + pastEvents.length %></span><span class="stat-label">Events</span></div>
                 </div>
             </div>
         </div>
@@ -149,8 +149,7 @@
           imageUrl: p.imageUrl || null
         };
       })) %>;
-      PREVIOUS_EVENTS = <%- JSON.stringify(pastRsvps.map(function(r) {
-        var p = r.Post || {};
+      PREVIOUS_EVENTS = <%- JSON.stringify(pastEvents.map(function(p) {
         return {
           title: p.title || '',
           desc:  p.description || '',

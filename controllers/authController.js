@@ -41,19 +41,22 @@ exports.postLogin = async (req, res, next) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      req.flash('error', 'Email and password are required.');
+      req.flash('loginError', 'Email and password are required.');
+      req.flash('loginEmail', email || '');
       return res.redirect('/login');
     }
 
     const user = await User.findOne({ where: { email } });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      req.flash('error', 'Invalid email or password.');
+      req.flash('loginError', 'Invalid email or password.');
+      req.flash('loginEmail', email);
       return res.redirect('/login');
     }
 
     if (user.isBanned) {
-      req.flash('error', 'Your account has been banned.');
+      req.flash('loginError', 'Your account has been banned.');
+      req.flash('loginEmail', email);
       return res.redirect('/login');
     }
 

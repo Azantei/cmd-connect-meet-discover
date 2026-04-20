@@ -31,7 +31,9 @@
         </div>
     </nav>
 
-    <% if (error && error.length) { %><div class="flash error"><%= error %></div><% } %>
+    <% if (error && error.length) { %>
+        <div style="background:#fdecea;color:#c0392b;padding:0.75rem 1.5rem;font-size:0.88rem;text-align:center;border-bottom:1px solid #f5c6cb;"><%= error %></div>
+    <% } %>
 
     <div class="content">
         <h1 class="page-title">Create a Post</h1>
@@ -39,54 +41,56 @@
         <form action="/posts" method="POST" id="createPostForm" enctype="multipart/form-data">
             <input type="hidden" name="status" id="postStatus" value="published">
 
+            <!-- Title & Description -->
             <div class="form-box">
                 <div class="section-label">TITLE &amp; DESCRIPTION <span class="req">*</span></div>
                 <div class="form-row border-bottom">
-                    <label for="postTitle">Title</label>
-                    <input type="text" id="postTitle" name="title" placeholder="Enter a title..." required />
+                    <label for="eventTitle">Title</label>
+                    <input type="text" id="eventTitle" name="title" placeholder="Enter a title..." />
                 </div>
                 <span class="error-message" id="title-error"></span>
                 <div class="form-row textarea-row">
-                    <label for="postDesc">Description</label>
-                    <textarea rows="3" id="postDesc" name="description" placeholder="Describe your activity or gathering..."></textarea>
+                    <label for="eventDesc">Description</label>
+                    <textarea rows="3" id="eventDesc" name="description" placeholder="Describe your activity or gathering..."></textarea>
                 </div>
                 <span class="error-message" id="desc-error"></span>
             </div>
 
+            <!-- Date, Time & Location -->
             <div class="form-box">
                 <div class="section-label">DATE &amp; LOCATION <span class="optional">(optional)</span></div>
                 <div class="form-row border-bottom">
-                    <label for="postDate">Date</label>
-                    <input type="date" id="postDate" name="date" />
+                    <label for="eventDate">Date</label>
+                    <input type="date" id="eventDate" name="date" />
                 </div>
                 <span class="error-message" id="date-error"></span>
                 <div class="form-row border-bottom">
-                    <label for="postTime">Start Time</label>
-                    <input type="time" id="postTime" name="time" />
+                    <label for="eventTime">Start Time</label>
+                    <input type="time" id="eventTime" name="time" />
                 </div>
                 <span class="error-message" id="time-error"></span>
                 <div class="form-row">
-                    <label for="postLocation">Location</label>
-                    <input type="text" id="postLocation" name="location" placeholder="Enter a location..." />
+                    <label for="eventLocation">Location</label>
+                    <input type="text" id="eventLocation" name="location" placeholder="Enter a location..." />
                 </div>
                 <span class="error-message" id="location-error"></span>
             </div>
 
+            <!-- Categories -->
             <div class="form-box">
                 <div class="categories-label">CATEGORIES <span class="optional">(optional)</span></div>
                 <div class="pills" id="categoryPills">
                     <% categories.forEach(cat => { %>
-                        <label class="pill">
-                            <input type="checkbox" name="category" value="<%= cat.name %>"
-                                   style="display:none"
-                                   onchange="this.closest('.pill').classList.toggle('active', this.checked)">
-                            <%= cat.name %>
-                        </label>
+                        <button type="button" class="pill"
+                                data-name="<%= cat.name %>"
+                                onclick="toggleCat(this)"><%= cat.name %></button>
                     <% }) %>
                 </div>
                 <span class="error-message" id="categories-error"></span>
+                <div id="categoryInputs"></div>
             </div>
 
+            <!-- RSVP Options -->
             <div class="form-box">
                 <div class="section-label">RSVP OPTIONS <span class="optional">(optional)</span></div>
                 <div class="form-row">
@@ -102,6 +106,7 @@
                 </div>
             </div>
 
+            <!-- Banner Photo Upload -->
             <div class="form-box">
                 <div class="section-label">EVENT BANNER <span class="optional">(optional)</span></div>
                 <div class="form-row">
@@ -111,6 +116,7 @@
                 </div>
             </div>
 
+            <!-- Preview -->
             <div class="preview-section">
                 <h2 class="preview-title">Post Preview</h2>
                 <div class="preview-card" id="previewCard">
@@ -131,11 +137,12 @@
                 </div>
             </div>
 
+            <!-- Actions -->
             <div class="actions">
                 <a href="/posts" class="btn-cancel">Cancel</a>
                 <div class="actions-right">
                     <button type="button" class="btn-draft" onclick="handleSaveDraft()">Save as Draft</button>
-                    <button type="submit" class="btn-post">Post</button>
+                    <button type="button" class="btn-post" onclick="handlePost()">Post</button>
                 </div>
             </div>
 

@@ -10,13 +10,28 @@
 ========================================== */
 
 /**
- * Toggle category pill selection
- * Allows multiple categories to be selected
+ * Toggle category pill selection and sync hidden form inputs
  * @param {HTMLElement} el - The clicked category pill element
  */
 function toggleCat(el) {
     el.classList.toggle('active');
     updatePreviewCategories();
+
+    // Keep hidden <input name="category"> elements in sync for form submission
+    var container = document.getElementById('categoryInputs');
+    if (!container) return;
+    var name = el.dataset.name || el.textContent.trim();
+    if (el.classList.contains('active')) {
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'category';
+        input.value = name;
+        input.dataset.cat = name;
+        container.appendChild(input);
+    } else {
+        var existing = container.querySelector('[data-cat="' + name + '"]');
+        if (existing) existing.remove();
+    }
 }
 
 /**
@@ -335,10 +350,10 @@ function handlePost() {
     );
     
     if (confirmed) {
-        console.log('Posting event...');
-        // In a real implementation, this would send data to the backend
-        alert('Event posted successfully!');
-        window.location.href = '/events';
+        var form = document.getElementById('createPostForm');
+        if (form) {
+            form.submit();
+        }
     }
 }
 

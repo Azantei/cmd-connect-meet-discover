@@ -134,6 +134,18 @@
         </div>
     </footer>
 
+    <% if (reportSuccess && reportSuccess.length) { %>
+    <div class="modal-overlay" id="reportSuccessModal" style="display:flex;">
+        <div class="modal">
+            <div class="modal-title">Report Submitted</div>
+            <div class="modal-desc"><%= reportSuccess %></div>
+            <div class="modal-actions" style="justify-content:center;">
+                <button type="button" class="btn-submit" onclick="document.getElementById('reportSuccessModal').style.display='none'">OK</button>
+            </div>
+        </div>
+    </div>
+    <% } %>
+
     <script src="/js/CM_OtherUserProfile.js"></script>
     <script>
       ATTENDED_EVENTS = <%- JSON.stringify(posts.map(function(p, i) {

@@ -1,41 +1,206 @@
-<%- include('../partials/header', { pageCSS: 'CM_Events' }) %>
-<main>
-  <h1>Community Feed</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Feed | C.M.D.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/CM_Events.css">
+</head>
+<body>
 
-  <form action="/posts" method="GET" style="margin-bottom:1rem;">
-    <input type="text" name="q" value="<%= q %>" placeholder="Search posts..." />
-    <select name="category">
-      <option value="">All categories</option>
-      <% categories.forEach(cat => { %>
-        <option value="<%= cat.name %>" <%= selectedCategory === cat.name ? 'selected' : '' %>>
-          <%= cat.name %>
-        </option>
-      <% }) %>
-    </select>
-    <button type="submit">Search</button>
-    <% if (q || selectedCategory) { %>
-      <a href="/posts">Clear</a>
-    <% } %>
-  </form>
+    <nav class="navbar">
+        <a href="/" class="brand"><span class="brand-light">C.M.</span><span class="brand-accent">D.</span></a>
+        <div class="nav-links">
+            <a href="/posts">Explore</a>
+            <a href="/posts/create">Create</a>
+            <a href="/users/profile">Profile</a>
+            <a href="/about">About Us</a>
+        </div>
+        <div class="nav-right">
+            <% if (currentUser) { %>
+                <span><%= currentUsername %></span>
+                <form action="/logout" method="POST" style="display:inline">
+                    <button type="submit" style="margin-left:1rem;color:hsl(20,90%,55%);background:none;border:none;cursor:pointer;font:inherit;">Log Out</button>
+                </form>
+            <% } else { %>
+                <a href="/login" style="color:hsl(20,90%,55%);text-decoration:none;">Sign In</a>
+            <% } %>
+        </div>
+    </nav>
 
-  <% if (currentUser) { %><a href="/posts/new">+ New Post</a><% } %>
+    <% if (success && success.length) { %><div class="flash success"><%= success %></div><% } %>
+    <% if (error && error.length) { %><div class="flash error"><%= error %></div><% } %>
 
-  <% if (posts.length === 0) { %>
-    <p>No posts found.</p>
-  <% } else { %>
-    <% posts.forEach(post => { %>
-      <div>
-        <h2><a href="/posts/<%= post.id %>"><%= post.title %></a></h2>
-        <% if (post.author) { %>
-          <p>by <a href="/users/<%= post.author.id %>"><%= post.author.name %></a></p>
-        <% } %>
-        <% if (post.category) { %><span><%= post.category %></span><% } %>
-        <% if (post.description) { %>
-          <p><%= post.description.substring(0, 150) %><%= post.description.length > 150 ? '...' : '' %></p>
-        <% } %>
-        <small><%= new Date(post.createdAt).toLocaleDateString() %></small>
-      </div>
-    <% }) %>
-  <% } %>
-</main>
-<%- include('../partials/footer') %>
+    <div class="search-bar">
+        <form action="/posts" method="GET" style="display:contents">
+            <input type="text" id="search-input" name="q" value="<%= q %>"
+                   placeholder="🔍  Search activities, events, or people..."
+                   oninput="performSearch()" onkeypress="handleSearchKeypress(event)" />
+            <button type="submit" class="btn-create">Search</button>
+        </form>
+    </div>
+
+    <div class="filters-section">
+        <button class="btn-filters" onclick="toggleFilterPanel()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="4" y1="6" x2="20" y2="6"></line>
+                <line x1="4" y1="12" x2="20" y2="12"></line>
+                <line x1="4" y1="18" x2="20" y2="18"></line>
+                <circle cx="8" cy="6" r="2" fill="currentColor"></circle>
+                <circle cx="16" cy="12" r="2" fill="currentColor"></circle>
+                <circle cx="12" cy="18" r="2" fill="currentColor"></circle>
+            </svg>
+            Filters
+            <span class="filter-count" id="filterCount" style="display:none;">0</span>
+        </button>
+        <button class="btn-clear-filters" id="clearFiltersBtn" onclick="clearAllFilters()" style="display:none;">Clear All</button>
+    </div>
+
+    <div class="filter-panel" id="filterPanel" style="display:none;">
+        <div class="filter-panel-header">
+            <h3>Filters</h3>
+            <button class="btn-close" onclick="toggleFilterPanel()">✕</button>
+        </div>
+        <div class="filter-panel-content">
+            <div class="filter-group">
+                <label class="filter-label">Categories</label>
+                <div class="filter-pills" id="categoryFilters">
+                    <% categories.forEach(cat => { %>
+                        <button class="filter-pill" data-category="<%= cat.name %>"
+                                onclick="toggleFilterPill(this)"><%= cat.name %></button>
+                    <% }) %>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Distance</label>
+                <div class="filter-distance">
+                    <select id="distanceFilter" onchange="applyFilters()">
+                        <option value="all">All distances</option>
+                        <option value="1">Within 1 mile</option>
+                        <option value="2">Within 2 miles</option>
+                        <option value="5">Within 5 miles</option>
+                        <option value="10">Within 10 miles</option>
+                        <option value="25">Within 25 miles</option>
+                    </select>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Date</label>
+                <div class="filter-date">
+                    <select id="dateFilter" onchange="applyFilters()">
+                        <option value="all">Any time</option>
+                        <option value="today">Today</option>
+                        <option value="tomorrow">Tomorrow</option>
+                        <option value="thisweek">This week</option>
+                        <option value="thismonth">This month</option>
+                        <option value="custom">Custom range...</option>
+                    </select>
+                    <div id="customDateRange" style="display:none;margin-top:12px;">
+                        <input type="date" id="startDate" onchange="applyFilters()">
+                        <span style="margin:0 8px;">to</span>
+                        <input type="date" id="endDate" onchange="applyFilters()">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="filter-panel-footer">
+            <button class="btn-apply-filters" onclick="toggleFilterPanel()">Apply Filters</button>
+        </div>
+    </div>
+
+    <div class="filter-overlay" id="filterOverlay" onclick="toggleFilterPanel()"></div>
+
+    <div class="main-content">
+        <div class="cards-panel">
+            <div class="cards-grid">
+                <%
+                  var CARD_COLORS = ['#2e3a4e','#3b4a2e','#3b2e4a','#4a3b2e','#2e4a3b'];
+                %>
+                <% if (posts.length === 0) { %>
+                    <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#666;">
+                        <div style="font-size:3rem;margin-bottom:16px;">🔍</div>
+                        <h3 style="font-size:1.3rem;margin-bottom:8px;color:#333;">No posts found</h3>
+                        <p>Try adjusting your search or check back later.</p>
+                    </div>
+                <% } %>
+                <% posts.forEach(function(post, i) { %>
+                    <%
+                      var cardColor = CARD_COLORS[i % CARD_COLORS.length];
+                      var postTags  = Array.isArray(post.category) ? post.category : [];
+                      var postDate  = post.date ? new Date(post.date).toDateString() : 'Date TBD';
+                    %>
+                    <div class="card"
+                         data-post-id="<%= post.id %>"
+                         data-post-title="<%= post.title.replace(/"/g,'&quot;') %>"
+                         data-post-desc="<%= post.description ? post.description.substring(0,100).replace(/"/g,'&quot;') : '' %>"
+                         data-post-date="<%= postDate %>"
+                         data-post-going="0"
+                         data-post-max=""
+                         data-post-color="<%= cardColor %>"
+                         data-post-tags="<%- JSON.stringify(postTags) %>"
+                         data-post-image="<%= post.imageUrl || '' %>"
+                         onclick="window.location.href='/posts/<%= post.id %>'"
+                         style="cursor:pointer;">
+
+                        <div class="card-img" style="<%= post.imageUrl ? 'background-image:url(' + post.imageUrl + ');background-size:cover;background-position:center;' : 'background-color:' + cardColor + ';' %>">
+                            <% if (!post.imageUrl) { %><div class="img-placeholder"></div><% } %>
+                        </div>
+
+                        <div class="card-tags">
+                            <div class="tags-left">
+                                <% postTags.forEach(function(tag) { %>
+                                    <span class="tag"><%= tag %></span>
+                                <% }) %>
+                            </div>
+                            <div class="card-tags-right">
+                                <% if (currentUser && currentUser !== post.userId) { %>
+                                <button class="star-btn" onclick="event.stopPropagation(); toggleStar(this)" aria-label="Mark as interested">
+                                    <svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
+                                    <span class="interested-label">Interested</span>
+                                </button>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="card-title"><%= post.title %></div>
+                            <% if (post.description) { %>
+                                <div class="card-desc"><%= post.description.substring(0, 120) %><%= post.description.length > 120 ? '...' : '' %></div>
+                            <% } %>
+                        </div>
+
+                        <div class="card-footer">
+                            <% if (post.date) { %>
+                                <span>📅 <%= new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %></span>
+                            <% } %>
+                            <% if (post.author) { %>
+                                <span class="card-location">by <%= post.author.name %></span>
+                            <% } %>
+                        </div>
+
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+
+        <div class="map-panel">
+            <svg width="100%" height="100%" viewBox="0 0 800 900" preserveAspectRatio="none"></svg>
+            <div class="map-label">Map View</div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <span class="logo">C.M.D.</span>
+            <p>Connect. Meet. Discover. &copy; 2026</p>
+        </div>
+    </footer>
+
+    <script src="/js/CM_Events.js"></script>
+</body>
+</html>
