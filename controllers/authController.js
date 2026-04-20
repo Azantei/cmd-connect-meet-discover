@@ -16,7 +16,6 @@ exports.getAbout = (req, res) => {
 };
 
 exports.getLogin = (req, res) => {
-  if (req.session.userId) return res.redirect(ROLE_REDIRECTS[req.session.role] || '/posts');
   res.render('auth/login', { title: 'Login' });
 };
 
@@ -52,7 +51,6 @@ exports.postLogin = async (req, res, next) => {
 };
 
 exports.getRegister = (req, res) => {
-  if (req.session.userId) return res.redirect(ROLE_REDIRECTS[req.session.role] || '/posts');
   res.render('auth/register', { title: 'Register' });
 };
 
@@ -91,7 +89,6 @@ exports.postRegister = async (req, res, next) => {
 };
 
 exports.getSetup = async (req, res, next) => {
-  if (!req.session.userId) return res.redirect('/login');
   try {
     const categories = await Category.findAll({ order: [['name', 'ASC']] });
     res.render('auth/setup', { title: 'Set Up Your Profile', categories });
@@ -99,7 +96,6 @@ exports.getSetup = async (req, res, next) => {
 };
 
 exports.postSetup = async (req, res, next) => {
-  if (!req.session.userId) return res.redirect('/login');
   try {
     let interests = [];
     if (req.body.interests) {

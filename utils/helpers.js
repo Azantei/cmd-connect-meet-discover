@@ -53,4 +53,12 @@ async function resolveTargets(reports) {
   });
 }
 
-module.exports = { relativeTime, resolveTargets };
+function normalizeCategoryArray(category) {
+  return Array.isArray(category) ? category : (category ? [category] : []);
+}
+
+function parseCombinedDate(date, time) {
+  return date ? new Date(`${date}T${time || '00:00'}`) : null;
+}
+
+module.exports = { relativeTime, resolveTargets, normalizeCategoryArray, parseCombinedDate };

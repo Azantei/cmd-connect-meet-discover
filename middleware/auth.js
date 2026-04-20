@@ -1,3 +1,14 @@
+const ROLE_REDIRECTS = {
+  community_member: '/users/profile',
+  moderator: '/moderator/dashboard',
+  admin: '/admin/users'
+};
+
+exports.redirectIfLoggedIn = (req, res, next) => {
+  if (req.session.userId) return res.redirect(ROLE_REDIRECTS[req.session.role] || '/posts');
+  next();
+};
+
 exports.requireAuth = (req, res, next) => {
   if (!req.session.userId) {
     req.flash('error', 'Please log in to continue.');

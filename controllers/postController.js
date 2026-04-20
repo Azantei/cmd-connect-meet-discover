@@ -1,4 +1,5 @@
 const { Post, User, RSVP, Report, Category } = require('../models');
+const { normalizeCategoryArray, parseCombinedDate } = require('../utils/helpers');
 
 exports.getFeed = async (req, res, next) => {
   try {
@@ -57,11 +58,8 @@ exports.createPost = async (req, res, next) => {
       req.flash('error', 'Title is required.');
       return res.redirect('/posts/new');
     }
-    const categoryArray = Array.isArray(category)
-      ? category
-      : (category ? [category] : []);
-
-    const combinedDate = date ? new Date(`${date}T${time || '00:00'}`) : null;
+    const categoryArray = normalizeCategoryArray(category);
+    const combinedDate = parseCombinedDate(date, time);
     const status = req.body.status === 'draft' ? 'draft' : 'published';
     const post = await Post.create({
       title:        title.trim(),
@@ -95,9 +93,9 @@ exports.updatePost = async (req, res, next) => {
   try {
     const post = req.post;
     const { title, description, category, location, date, time, rsvpEnabled, maxAttendees } = req.body;
-    const categoryArray = Array.isArray(category) ? category : (category ? [category] : []);
+    const categoryArray = normalizeCategoryArray(category);
     const status = req.body.status === 'draft' ? 'draft' : 'published';
-    const combinedDate = date ? new Date(`${date}T${time || '00:00'}`) : null;
+    const combinedDate = parseCombinedDate(date, time);
 
     await post.update({
       title:        title && title.trim() ? title.trim() : post.title,

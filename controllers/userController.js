@@ -53,21 +53,10 @@ exports.getSettings = async (req, res, next) => {
 
 exports.updateSettings = async (req, res, next) => {
   try {
-    const bcrypt = require('bcrypt');
     const { name, location, interests, newPassword, confirmPassword } = req.body;
     const interestsArray = Array.isArray(interests)
       ? interests
       : (interests ? interests.split(',').map(s => s.trim()).filter(Boolean) : []);
-
-    const updates = {
-      name:      name && name.trim() ? name.trim() : undefined,
-      location:  location || null,
-      interests: interestsArray
-    };
-
-    if (req.file) {
-      updates.profilePic = `/uploads/${req.file.filename}`;
-    }
 
     if (newPassword && newPassword.trim()) {
       if (newPassword !== confirmPassword) {
@@ -78,10 +67,15 @@ exports.updateSettings = async (req, res, next) => {
         req.flash('error', 'Password must be at least 8 characters.');
         return res.redirect('/users/settings');
       }
-      updates.password = await bcrypt.hash(newPassword, 12);
     }
 
-    await User.update(updates, { where: { id: req.session.userId } });
+    const user = await User.findByPk(req.session.userId);
+    if (name && name.trim()) user.name = name.trim();
+    user.location  = location || null;
+    user.interests = interestsArray;
+    if (req.file) user.profilePic = `/uploads/${req.file.filename}`;
+    if (newPassword && newPassword.trim()) user.password = newPassword;
+    await user.save();
 
     if (name && name.trim()) req.session.username = name.trim();
     req.flash('success', 'Settings updated.');
