@@ -53,7 +53,9 @@ exports.getSettings = async (req, res, next) => {
 
 exports.updateSettings = async (req, res, next) => {
   try {
-    const { name, location, interests, newPassword, confirmPassword } = req.body;
+    const { location, interests, newPassword, confirmPassword } = req.body;
+    // name may arrive as an array when multiple same-named inputs exist in the form
+    const rawName = Array.isArray(req.body.name) ? req.body.name[0] : req.body.name;
     const interestsArray = Array.isArray(interests)
       ? interests
       : (interests ? interests.split(',').map(s => s.trim()).filter(Boolean) : []);
@@ -70,14 +72,14 @@ exports.updateSettings = async (req, res, next) => {
     }
 
     const user = await User.findByPk(req.session.userId);
-    if (name && name.trim()) user.name = name.trim();
+    if (rawName && rawName.trim()) user.name = rawName.trim();
     user.location  = location || null;
     user.interests = interestsArray;
     if (req.file) user.profilePic = `/uploads/${req.file.filename}`;
     if (newPassword && newPassword.trim()) user.password = newPassword;
     await user.save();
 
-    if (name && name.trim()) req.session.username = name.trim();
+    if (rawName && rawName.trim()) req.session.username = rawName.trim();
     req.flash('success', 'Settings updated.');
     res.redirect('/users/profile');
   } catch (err) { next(err); }
