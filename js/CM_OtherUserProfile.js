@@ -9,13 +9,10 @@
    View another user's previously attended events
 ========================================== */
 
-// Mock event data for other user's previously attended events
+// Mock posts data for Dylan Parker
 var ATTENDED_EVENTS = [
-    { title: "Morning Trail Hike", desc: "Join us for a scenic morning hike through the local trails. All skill levels welcome.", date: "Sat Mar 7", going: 12, color: "#2e3a4e", tags: ["Outdoors"] },
-    { title: "Acoustic Jam Session", desc: "Bring your instrument or just your ears. Casual outdoor music gathering.", date: "Sun Mar 8", going: 8, color: "#3b4a2e", tags: ["Music"] },
-    { title: "Community Picnic", desc: "A relaxed afternoon picnic in the park. Food, games, and good company.", date: "Sat Feb 28", going: 20, color: "#3b2e4a", tags: ["Food"] },
-    { title: "Sunset Yoga", desc: "Wind down with a group yoga session as the sun sets over the park.", date: "Fri Feb 20", going: 15, color: "#2e3a4e", tags: ["Fitness"] },
-    { title: "5K Fun Run", desc: "A casual community run through Capitol Hill. All paces welcome!", date: "Sat Feb 14", going: 30, color: "#3b4a2e", tags: ["Sports", "Outdoors"] },
+    { title: "Pickup Basketball at Cal Anderson", desc: "Casual pickup basketball at the Cal Anderson Park courts. All skill levels welcome — just bring your sneakers!", date: "Sun Mar 9", going: 10, maxAttendees: 12, color: "#2e4a3b", tags: ["Sports"] },
+    { title: "Live Music Listening Party", desc: "Gathering at my place to listen to new releases and share favorite tracks. Bring headphones or just your ears.", date: "Fri Mar 21", going: 6, maxAttendees: null, color: "#3b4a2e", tags: ["Music"] },
 ];
 
 // Active filter categories
@@ -43,13 +40,14 @@ function renderCards() {
         grid.style.display = 'grid';
         noResults.style.display = 'none';
         grid.innerHTML = filtered.map(function(card) {
-            var statusBadge = '<span class="status-badge" style="background-color: #2e7d32;">✓ Attended</span>';
-            
+            var statusBadge = '<span class="status-badge" style="background-color: #5a7a9e;">👤 Created</span>';
+            var attendeeText = card.maxAttendees ? (card.going + '/' + card.maxAttendees + ' going') : (card.going + ' going');
+
             return '<div class="card">' +
                 '<div class="card-img" style="background-color:' + card.color + '"><div class="card-img-icon"></div></div>' +
-                '<div class="card-tags">' + card.tags.map(function(t) { return '<span class="card-tag">' + t + '</span>'; }).join('') + '<span class="card-tag">1.2 mi</span>' + statusBadge + '</div>' +
+                '<div class="card-tags">' + card.tags.map(function(t) { return '<span class="card-tag">' + t + '</span>'; }).join('') + statusBadge + '</div>' +
                 '<div class="card-body"><div class="card-title">' + card.title + '</div><div class="card-desc">' + card.desc + '</div></div>' +
-                '<div class="card-footer"><span>📅 ' + card.date + '</span><span>👥 ' + card.going + ' attended</span></div>' +
+                '<div class="card-footer"><span>📅 ' + card.date + '</span><span>👥 ' + attendeeText + '</span></div>' +
                 '</div>';
         }).join('');
     }

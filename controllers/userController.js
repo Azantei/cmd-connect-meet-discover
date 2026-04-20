@@ -27,7 +27,7 @@ exports.getOwnProfile = async (req, res, next) => {
 exports.getUserById = async (req, res, next) => {
   try {
     const user = await User.findByPk(req.params.id, {
-      attributes: ['id', 'name', 'location', 'interests', 'profilePic']
+      attributes: ['id', 'name', 'location', 'interests', 'profilePic', 'showLocation', 'showInterests']
     });
     if (!user) { req.flash('error', 'User not found.'); return res.redirect('/posts'); }
     const posts = await Post.findAll({
@@ -45,7 +45,7 @@ exports.getUserById = async (req, res, next) => {
 exports.getSettings = async (req, res, next) => {
   try {
     const user = await User.findByPk(req.session.userId, {
-      attributes: ['id', 'name', 'email', 'location', 'interests', 'profilePic']
+      attributes: ['id', 'name', 'email', 'location', 'interests', 'profilePic', 'showLocation', 'showInterests']
     });
     res.render('users/settings', { title: 'Settings', user });
   } catch (err) { next(err); }
@@ -53,12 +53,9 @@ exports.getSettings = async (req, res, next) => {
 
 exports.updateSettings = async (req, res, next) => {
   try {
-    const { location, interests, newPassword, confirmPassword } = req.body;
+    const { location, interests, newPassword, confirmPassword, showLocation, showInterests } = req.body;
     // name may arrive as an array when multiple same-named inputs exist in the form
     const rawName = Array.isArray(req.body.name) ? req.body.name[0] : req.body.name;
-    const interestsArray = Array.isArray(interests)
-      ? interests
-      : (interests ? interests.split(',').map(s => s.trim()).filter(Boolean) : []);
 
     if (newPassword && newPassword.trim()) {
       if (newPassword !== confirmPassword) {
@@ -73,8 +70,20 @@ exports.updateSettings = async (req, res, next) => {
 
     const user = await User.findByPk(req.session.userId);
     if (rawName && rawName.trim()) user.name = rawName.trim();
-    user.location  = location || null;
-    user.interests = interestsArray;
+    if (location !== undefined) user.location = location || null;
+
+    // Only update interests when the field was intentionally submitted (non-empty)
+    if (interests !== undefined && interests !== '') {
+      const interestsArray = Array.isArray(interests)
+        ? interests
+        : interests.split(',').map(s => s.trim()).filter(Boolean);
+      user.interests = interestsArray;
+    }
+
+    // Save privacy flags when submitted from the Privacy section
+    if (showLocation !== undefined) user.showLocation = showLocation === '1';
+    if (showInterests !== undefined) user.showInterests = showInterests === '1';
+
     if (req.file) user.profilePic = `/uploads/${req.file.filename}`;
     if (newPassword && newPassword.trim()) user.password = newPassword;
     await user.save();

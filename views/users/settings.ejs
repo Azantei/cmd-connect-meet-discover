@@ -133,19 +133,17 @@
                 <h2 class="section-title">Privacy</h2>
                 <div class="toggle-row">
                     <div class="toggle-info"><div class="toggle-label">Show Location</div><div class="toggle-desc">Display your neighborhood on your profile.</div></div>
-                    <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
+                    <div class="toggle <%= user.showLocation !== false ? 'on' : '' %>" id="toggleShowLocation" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
+                    <input type="hidden" name="showLocation" id="showLocationInput" value="<%= user.showLocation !== false ? '1' : '0' %>">
                 </div>
                 <div class="toggle-row">
-                    <div class="toggle-info"><div class="toggle-label">Show Stats</div><div class="toggle-desc">Display your post count and RSVP count on your profile.</div></div>
-                    <div class="toggle on" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
-                </div>
-                <div class="toggle-row">
-                    <div class="toggle-info"><div class="toggle-label">Show Previous RSVPs</div><div class="toggle-desc">Let others see events you've previously attended.</div></div>
-                    <div class="toggle" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
+                    <div class="toggle-info"><div class="toggle-label">Show Interests</div><div class="toggle-desc">Display your interests on your profile.</div></div>
+                    <div class="toggle <%= user.showInterests !== false ? 'on' : '' %>" id="toggleShowInterests" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
+                    <input type="hidden" name="showInterests" id="showInterestsInput" value="<%= user.showInterests !== false ? '1' : '0' %>">
                 </div>
                 <div class="save-bar" style="margin-top:20px;">
-                    <button type="button" class="btn-save" onclick="showToast()">Save Changes</button>
-                    <button type="button" class="btn-discard">Discard Changes</button>
+                    <button type="submit" class="btn-save" onclick="serializePrivacy()">Save Changes</button>
+                    <a href="/users/profile" class="btn-discard">Discard Changes</a>
                 </div>
             </div>
 
@@ -219,6 +217,13 @@
           selected.push(btn.textContent.trim());
         });
         document.getElementById('interestsHidden').value = selected.join(',');
+      }
+
+      function serializePrivacy() {
+        var locToggle = document.getElementById('toggleShowLocation');
+        var intToggle = document.getElementById('toggleShowInterests');
+        document.getElementById('showLocationInput').value = locToggle && locToggle.classList.contains('on') ? '1' : '0';
+        document.getElementById('showInterestsInput').value = intToggle && intToggle.classList.contains('on') ? '1' : '0';
       }
     </script>
 </body>

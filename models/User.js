@@ -39,6 +39,14 @@ module.exports = (sequelize, DataTypes) => {
     profilePic: {
       type: DataTypes.STRING(255),
       defaultValue: null
+    },
+    showLocation: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    },
+    showInterests: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
     }
   }, {
     tableName: 'users',

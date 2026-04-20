@@ -44,7 +44,7 @@
             <% } %>
             <div class="profile-info">
                 <div class="profile-name"><%= profileUser.name %></div>
-                <% if (profileUser.location) { %>
+                <% if (profileUser.location && profileUser.showLocation !== false) { %>
                     <div class="profile-meta">
                         <span class="meta-link"><%= profileUser.location %></span>
                     </div>
@@ -61,7 +61,7 @@
 
     <div class="main-layout">
         <div class="sidebar">
-            <% if (profileUser.interests && profileUser.interests.length) { %>
+            <% if (profileUser.interests && profileUser.interests.length && profileUser.showInterests !== false) { %>
                 <div class="sidebar-section-title">INTERESTS</div>
                 <div class="interests-box">
                     <% profileUser.interests.forEach(interest => { %>
@@ -134,8 +134,8 @@
         </div>
     </footer>
 
+    <script src="/js/CM_OtherUserProfile.js"></script>
     <script>
-      var CARD_COLORS = ['#2e3a4e','#3b4a2e','#3b2e4a','#4a3b2e','#2e4a3b'];
       ATTENDED_EVENTS = <%- JSON.stringify(posts.map(function(p, i) {
         return {
           id: p.id,
@@ -147,7 +147,7 @@
           imageUrl: p.imageUrl || null
         };
       })) %>;
+      renderCards();
     </script>
-    <script src="/js/CM_OtherUserProfile.js"></script>
 </body>
 </html>

@@ -192,9 +192,12 @@ function submitReport() {
 }
 
 // Close modal on overlay click
-document.getElementById('reportModal').addEventListener('click', function(e) {
-    if (e.target === this) closeReportModal();
-});
+var _reportModal = document.getElementById('reportModal');
+if (_reportModal) {
+    _reportModal.addEventListener('click', function(e) {
+        if (e.target === this) closeReportModal();
+    });
+}
 
 // Close dropdowns when clicking outside
 document.addEventListener('click', function(e) {
@@ -206,5 +209,4 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// Initial render
-renderCards();
+// renderCards() is called by the inline script after ATTENDED_EVENTS is populated
