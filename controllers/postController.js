@@ -167,8 +167,14 @@ exports.deletePost = async (req, res, next) => {
 
 exports.reportPost = async (req, res, next) => {
   try {
-    const { reason } = req.body;
-    if (!reason || !reason.trim()) {
+    const { reason, comment } = req.body;
+    const trimmedReason  = reason  && reason.trim()  ? reason.trim()  : '';
+    const trimmedComment = comment && comment.trim() ? comment.trim() : '';
+    const fullReason = trimmedReason && trimmedComment
+      ? `${trimmedReason} — ${trimmedComment}`
+      : trimmedReason || trimmedComment;
+
+    if (!fullReason) {
       req.flash('error', 'A reason is required.');
       return res.redirect(`/posts/${req.params.id}`);
     }
@@ -176,7 +182,7 @@ exports.reportPost = async (req, res, next) => {
       reporterId: req.session.userId,
       targetType: 'post',
       targetId:   req.params.id,
-      reason:     reason.trim()
+      reason:     fullReason
     });
     req.flash('success', 'Report submitted. Thank you.');
     res.redirect(`/posts/${req.params.id}`);

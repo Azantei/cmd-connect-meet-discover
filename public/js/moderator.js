@@ -72,8 +72,8 @@ function renderHiddenPostCard(post) {
     return `
         <div class="report-card report-card--hidden" data-id="${post.id}">
             <h3 class="report-card-title">${typeLabel}: ${displayTitle}</h3>
-            <p class="report-card-meta">Reported by @${post.reporter} · ${post.time} · ${post.reason} · Hidden</p>
-            <div class="report-card-preview">${post.note || "Reporter's note / quoted content preview"}</div>
+            <p class="report-card-meta">Reported by @${post.reporter} · ${post.time} · Hidden</p>
+            <div class="report-card-preview">${post.reason || post.note || "No details provided."}</div>
         </div>
     `;
 }
@@ -92,8 +92,8 @@ function renderReportCard(report) {
     return `
         <div class="report-card" data-id="${report.id}">
             <h3 class="report-card-title">${typeLabel}: ${displayTitle}</h3>
-            <p class="report-card-meta">Reported by @${report.reporter} · ${report.time} · ${report.reason}</p>
-            <div class="report-card-preview">${report.note || "Reporter's note / quoted content preview"}</div>
+            <p class="report-card-meta">Reported by @${report.reporter} · ${report.time}</p>
+            <div class="report-card-preview">${report.reason || report.note || "No details provided."}</div>
             <div class="report-card-actions">
                 <button class="btn-mod btn-warn" data-action="warn" data-id="${report.id}">Warn</button>
                 <button class="btn-mod btn-escalate" data-action="escalate" data-id="${report.id}">Escalate</button>
