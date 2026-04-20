@@ -65,7 +65,7 @@ exports.getDashboard = async (req, res, next) => {
           title: log.targetType === 'post'
             ? (postsMap[log.targetId] || 'Post #' + log.targetId)
             : (usersMap[log.targetId] || 'User #' + log.targetId),
-          reporter: related && related.reporter ? related.reporter.name : 'Unknown',
+          reporter: related ? (related.reporter ? related.reporter.name : 'System') : 'Unknown',
           reason:   related ? (related.reason || '') : '',
           note:     log.notes || ''
         };
@@ -120,7 +120,7 @@ exports.warnReport = async (req, res, next) => {
       return res.redirect('/moderator/dashboard');
     }
 
-    await Promise.all([
+    const warnOps = [
       ModerationLog.create({
         moderatorId: req.session.userId,
         action:      'warn',
@@ -129,7 +129,11 @@ exports.warnReport = async (req, res, next) => {
         notes:       req.body.notes || null
       }),
       report.update({ status: 'reviewed' })
-    ]);
+    ];
+    if (report.targetType === 'post') {
+      warnOps.push(Post.update({ status: 'published' }, { where: { id: report.targetId, status: 'pending' } }));
+    }
+    await Promise.all(warnOps);
 
     req.flash('success', 'Warning issued and report marked as reviewed.');
     res.redirect('/moderator/dashboard');
@@ -150,7 +154,7 @@ exports.dismissReport = async (req, res, next) => {
       return res.redirect('/moderator/dashboard');
     }
 
-    await Promise.all([
+    const dismissOps = [
       ModerationLog.create({
         moderatorId: req.session.userId,
         action:      'dismiss',
@@ -159,7 +163,11 @@ exports.dismissReport = async (req, res, next) => {
         notes:       req.body.notes || null
       }),
       report.update({ status: 'resolved' })
-    ]);
+    ];
+    if (report.targetType === 'post') {
+      dismissOps.push(Post.update({ status: 'published' }, { where: { id: report.targetId, status: 'pending' } }));
+    }
+    await Promise.all(dismissOps);
 
     req.flash('success', 'Report dismissed.');
     res.redirect('/moderator/dashboard');

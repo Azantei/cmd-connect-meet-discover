@@ -31,7 +31,7 @@
         </div>
     </nav>
 
-    <% if (success && success.length) { %><div class="flash success"><%= success %></div><% } %>
+    <% if (success && success.length && success !== 'RSVP cancelled.') { %><div class="flash success"><%= success %></div><% } %>
     <% if (error && error.length) { %><div class="flash error"><%= error %></div><% } %>
 
     <div class="banner">
@@ -70,8 +70,8 @@
                 </div>
                 <% if (currentUser) { %>
                     <% if (hasRsvp) { %>
-                        <form action="/posts/<%= post.id %>/rsvp?_method=DELETE" method="POST" style="margin-top:1rem;">
-                            <button type="submit" class="btn-rsvp rsvp-active" onclick="return confirm('Are you sure you want to cancel your RSVP?')">Cancel RSVP</button>
+                        <form id="cancelRsvpForm" action="/posts/<%= post.id %>/rsvp?_method=DELETE" method="POST" style="margin-top:1rem;">
+                            <button type="button" class="btn-rsvp rsvp-active" onclick="document.getElementById('cancelRsvpModal').style.display='flex'">Cancel RSVP</button>
                         </form>
                     <% } else { %>
                         <form action="/posts/<%= post.id %>/rsvp" method="POST" style="margin-top:1rem;">
@@ -181,6 +181,31 @@
             <div class="modal-desc"><%= reportSuccess %></div>
             <div class="modal-actions" style="justify-content:center;">
                 <button type="button" class="btn-submit" onclick="document.getElementById('reportSuccessModal').style.display='none'">OK</button>
+            </div>
+        </div>
+    </div>
+    <% } %>
+
+    <% if (currentUser) { %>
+    <div class="modal-overlay" id="cancelRsvpModal" style="display:none;">
+        <div class="modal">
+            <div class="modal-title">Cancel RSVP?</div>
+            <div class="modal-desc">Are you sure you want to cancel your RSVP?</div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="document.getElementById('cancelRsvpModal').style.display='none'">No, Keep It</button>
+                <button type="button" class="btn-submit" onclick="document.getElementById('cancelRsvpForm').submit()">Yes, Cancel RSVP</button>
+            </div>
+        </div>
+    </div>
+    <% } %>
+
+    <% if (success && success === 'RSVP cancelled.') { %>
+    <div class="modal-overlay" id="rsvpCancelledModal" style="display:flex;">
+        <div class="modal">
+            <div class="modal-title">RSVP Cancelled</div>
+            <div class="modal-desc">Your RSVP has been cancelled.</div>
+            <div class="modal-actions" style="justify-content:center;">
+                <button type="button" class="btn-submit" onclick="document.getElementById('rsvpCancelledModal').style.display='none'">OK</button>
             </div>
         </div>
     </div>

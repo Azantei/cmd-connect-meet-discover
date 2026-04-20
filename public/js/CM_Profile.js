@@ -271,7 +271,7 @@ function removeEvent(tab, index) {
     // Find the event to remove from the filtered list
     var eventToRemove = filtered[index];
     
-    // Special handling for My Posts - requires confirmation
+    // Special handling for My Posts - requires confirmation and backend DELETE
     if (tab === 'my-posts') {
         var confirmed = confirm(
             'Are you sure you want to delete this event?\n\n' +
@@ -279,23 +279,29 @@ function removeEvent(tab, index) {
             'This will permanently remove the event and it will no longer be visible to anyone. ' +
             'All RSVPs will be cancelled.'
         );
-        
-        if (!confirmed) {
-            return; // User cancelled, don't delete
+
+        if (!confirmed) return;
+
+        var eventId = eventToRemove.id;
+        if (!eventId) {
+            var actualIndex = MY_POSTS.indexOf(eventToRemove);
+            if (actualIndex > -1) MY_POSTS.splice(actualIndex, 1);
+            renderCards();
+            return;
         }
-        
-        // Remove from MY_POSTS
-        var actualIndex = MY_POSTS.indexOf(eventToRemove);
-        if (actualIndex > -1) {
-            MY_POSTS.splice(actualIndex, 1);
-            console.log('Permanently deleted event:', eventToRemove.title);
-            
-            // Also remove from all users' UPCOMING_EVENTS and INTERESTED_EVENTS
-            // (simulating backend removal across all users)
-            UPCOMING_EVENTS = UPCOMING_EVENTS.filter(function(e) { return e.title !== eventToRemove.title; });
-            INTERESTED_EVENTS = INTERESTED_EVENTS.filter(function(e) { return e.title !== eventToRemove.title; });
-            console.log('Removed from all users\' lists');
-        }
+
+        fetch('/posts/' + eventId + '?_method=DELETE', { method: 'POST' })
+            .then(function() {
+                var actualIndex = MY_POSTS.indexOf(eventToRemove);
+                if (actualIndex > -1) MY_POSTS.splice(actualIndex, 1);
+                UPCOMING_EVENTS = UPCOMING_EVENTS.filter(function(e) { return e.id !== eventId; });
+                INTERESTED_EVENTS = INTERESTED_EVENTS.filter(function(e) { return e.id !== eventId; });
+                renderCards();
+            })
+            .catch(function() {
+                alert('Failed to delete the post. Please try again.');
+            });
+        return;
     } else if (tab === 'upcoming') {
         var actualIndex = UPCOMING_EVENTS.indexOf(eventToRemove);
         if (actualIndex > -1) {

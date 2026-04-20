@@ -232,16 +232,12 @@ function handleAction(e) {
         return;
     }
 
-    // Remove from active queue
-    activeReports = activeReports.filter(r => r.id !== id);
-
-    // Log to moderation history
-    logModerationAction(action, report);
-
-    applyFilter(currentFilter);  // Re-apply filter to refresh display
-    updateBadge();
-
-    console.log(`Moderator action: ${action} on report #${id}`);
+    // Submit dismiss to backend
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/moderator/reports/${id}/dismiss`;
+    document.body.appendChild(form);
+    form.submit();
 }
 
 /**
@@ -356,19 +352,18 @@ function completeWarn() {
         return;
     }
 
-    // Remove from active queue
-    activeReports = activeReports.filter(r => r.id !== report.id);
-
-    // Log to moderation history
     const fullNote = message ? `${reason}: ${message}` : reason;
-    logModerationAction('warn', report, fullNote);
 
-    closeWarnModal();
-    applyFilter(currentFilter);
-    updateBadge();
-
-    alert('Warning sent successfully.');
-    console.log(`Warning sent for report #${report.id} - Reason: ${reason}`);
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/moderator/reports/${report.id}/warn`;
+    const notesInput = document.createElement('input');
+    notesInput.type = 'hidden';
+    notesInput.name = 'notes';
+    notesInput.value = fullNote;
+    form.appendChild(notesInput);
+    document.body.appendChild(form);
+    form.submit();
 }
 
 

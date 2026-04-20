@@ -128,6 +128,12 @@ exports.createPost = async (req, res, next) => {
       return res.redirect('/users/profile');
     }
     if (status === 'pending') {
+      await Report.create({
+        reporterId: req.session.userId,
+        targetType: 'post',
+        targetId:   post.id,
+        reason:     'Auto-flagged by content filter: potential profanity detected.'
+      });
       req.flash('success', 'Your post is under review and will be published once approved.');
       return res.redirect('/posts');
     }
@@ -249,7 +255,7 @@ exports.deletePost = async (req, res, next) => {
       { where: { targetType: 'post', targetId: post.id, status: 'pending' } }
     );
     req.flash('success', 'Post deleted.');
-    res.redirect('/posts');
+    res.redirect('/users/profile');
   } catch (err) { next(err); }
 };
 

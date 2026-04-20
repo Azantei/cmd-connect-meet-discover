@@ -161,5 +161,42 @@
       })) %>;
       renderCards();
     </script>
+    <% if (attendedEvents && attendedEvents.length > 0) { %>
+    <div class="main-layout" style="margin-top:0;">
+        <div class="sidebar"></div>
+        <div class="posts-area">
+            <div class="section-header">
+                <div class="section-title">Previously Attended Events</div>
+                <div class="section-subtitle"><%= attendedEvents.length %> event<%= attendedEvents.length !== 1 ? 's' : '' %></div>
+            </div>
+            <div class="scrollable-content">
+                <div class="cards-grid">
+                    <% attendedEvents.forEach(function(p, i) { %>
+                        <a href="/posts/<%= p.id %>" style="text-decoration:none;color:inherit;display:block;">
+                            <div class="card">
+                                <% if (p.imageUrl) { %>
+                                    <div class="card-img" style="background-color:<%= ['#2e3a4e','#3b4a2e','#3b2e4a','#4a3b2e','#2e4a3b'][i % 5] %>"><img src="<%= p.imageUrl %>" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"></div>
+                                <% } else { %>
+                                    <div class="card-img" style="background-color:<%= ['#2e3a4e','#3b4a2e','#3b2e4a','#4a3b2e','#2e4a3b'][i % 5] %>"><div class="card-img-icon"></div></div>
+                                <% } %>
+                                <div class="card-tags">
+                                    <% (Array.isArray(p.category) ? p.category : []).forEach(function(t) { %><span class="card-tag"><%= t %></span><% }) %>
+                                    <span class="status-badge" style="background-color:#2e7d32;">✓ Attended</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="card-title"><%= p.title %></div>
+                                    <div class="card-desc"><%= p.description || '' %></div>
+                                </div>
+                                <div class="card-footer">
+                                    <span>📅 <%= p.date ? new Date(p.date).toDateString() : 'Date TBD' %></span>
+                                </div>
+                            </div>
+                        </a>
+                    <% }) %>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% } %>
 </body>
 </html>

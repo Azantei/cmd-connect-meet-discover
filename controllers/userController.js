@@ -86,18 +86,32 @@ exports.getOwnProfile = async (req, res, next) => {
    ======================================== */
 exports.getUserById = async (req, res, next) => {
   try {
+    const now = new Date();
     const user = await User.findByPk(req.params.id, {
       attributes: ['id', 'name', 'location', 'interests', 'profilePic', 'showLocation', 'showInterests']
     });
     if (!user) { req.flash('error', 'User not found.'); return res.redirect('/posts'); }
-    const posts = await Post.findAll({
-      where: { userId: user.id, isHidden: false, status: 'published' },
-      order: [['createdAt', 'DESC']]
-    });
+    const [posts, attendedRsvps] = await Promise.all([
+      Post.findAll({
+        where: { userId: user.id, isHidden: false, status: 'published' },
+        order: [['createdAt', 'DESC']]
+      }),
+      RSVP.findAll({
+        where: { userId: user.id },
+        include: [{
+          model: Post,
+          where: { isHidden: false, status: 'published', date: { [Op.lt]: now } },
+          required: true
+        }],
+        order: [[Post, 'date', 'DESC']]
+      })
+    ]);
+    const attendedEvents = attendedRsvps.map(r => r.Post);
     res.render('users/otherProfile', {
       title: `${user.name}'s Profile`,
       profileUser: user,
-      posts
+      posts,
+      attendedEvents
     });
   } catch (err) { next(err); }
 };

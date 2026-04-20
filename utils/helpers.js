@@ -55,7 +55,7 @@ async function resolveTargets(reports) {
       title: r.targetType === 'post'
         ? (tp ? tp.title : 'Deleted Post')
         : (tu ? tu.name : 'Deleted User'),
-      reporter: r.reporter ? r.reporter.name : 'Unknown',
+      reporter: r.reporter ? r.reporter.name : 'System',
       author: r.targetType === 'post'
         ? (tp && tp.author ? tp.author.name : 'Unknown')
         : (tu ? tu.name : 'Unknown'),
