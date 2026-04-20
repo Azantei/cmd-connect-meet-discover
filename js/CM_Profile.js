@@ -68,8 +68,7 @@ function getCurrentData() {
         case 'upcoming':
             return UPCOMING_EVENTS;
         case 'interested':
-            var stored = JSON.parse(localStorage.getItem('cmd_interested_events') || '[]');
-            return stored.length > 0 ? stored : INTERESTED_EVENTS;
+            return INTERESTED_EVENTS;
         case 'previous':
             return PREVIOUS_EVENTS;
         case 'drafts':
@@ -304,18 +303,8 @@ function removeEvent(tab, index) {
             console.log('Removed from Upcoming Events:', eventToRemove.title);
         }
     } else if (tab === 'interested') {
-        var storedInterested = JSON.parse(localStorage.getItem('cmd_interested_events') || '[]');
-        if (storedInterested.length > 0) {
-            var updatedStored = storedInterested.filter(function(e) { return e.title !== eventToRemove.title; });
-            localStorage.setItem('cmd_interested_events', JSON.stringify(updatedStored));
-            console.log('Removed from Interested (localStorage):', eventToRemove.title);
-        } else {
-            var actualIndex = INTERESTED_EVENTS.indexOf(eventToRemove);
-            if (actualIndex > -1) {
-                INTERESTED_EVENTS.splice(actualIndex, 1);
-                console.log('Removed from Interested:', eventToRemove.title);
-            }
-        }
+        INTERESTED_EVENTS = INTERESTED_EVENTS.filter(function(e) { return e.title !== eventToRemove.title; });
+        localStorage.setItem('cmd_interested_events', JSON.stringify(INTERESTED_EVENTS));
     } else if (tab === 'drafts') {
         var actualIndex = DRAFTS.indexOf(eventToRemove);
         if (actualIndex > -1) {

@@ -50,7 +50,7 @@
                 <div class="profile-handle"><%= profileUser.location || 'C.M.D. Community' %></div>
                 <div class="profile-stats">
                     <div><span class="stat-num"><%= posts.length %></span><span class="stat-label">Posts</span></div>
-                    <div><span class="stat-num"><%= rsvps.length %></span><span class="stat-label">RSVPs</span></div>
+                    <div><span class="stat-num"><%= upcomingRsvps.length + pastRsvps.length %></span><span class="stat-label">RSVPs</span></div>
                 </div>
             </div>
         </div>
@@ -119,12 +119,13 @@
     <script src="/js/CM_Profile.js"></script>
     <script>
       // Seed JS data arrays with real server data then re-render
+      var _rsvpCounts = <%- JSON.stringify(rsvpCounts) %>;
       MY_POSTS = <%- JSON.stringify(posts.map(function(p) {
         return {
           title: p.title || '',
           desc:  p.description || '',
           date:  p.date ? new Date(p.date).toDateString() : 'Date TBD',
-          going: 0,
+          going: rsvpCounts[p.id] || 0,
           maxAttendees: null,
           color: '#2e3a4e',
           tags:  Array.isArray(p.category) ? p.category : [],
@@ -133,14 +134,14 @@
           imageUrl: p.imageUrl || null
         };
       })) %>;
-      UPCOMING_EVENTS = <%- JSON.stringify(rsvps.map(function(r) {
+      UPCOMING_EVENTS = <%- JSON.stringify(upcomingRsvps.map(function(r) {
         var p = r.Post || {};
         return {
           title: p.title || '',
           desc:  p.description || '',
           date:  p.date ? new Date(p.date).toDateString() : 'Date TBD',
-          going: 0,
-          maxAttendees: null,
+          going: rsvpCounts[p.id] || 0,
+          maxAttendees: p.maxAttendees || null,
           color: '#3b4a2e',
           tags:  Array.isArray(p.category) ? p.category : [],
           rsvp:  'Going',
@@ -148,7 +149,21 @@
           imageUrl: p.imageUrl || null
         };
       })) %>;
-      PREVIOUS_EVENTS  = [];
+      PREVIOUS_EVENTS = <%- JSON.stringify(pastRsvps.map(function(r) {
+        var p = r.Post || {};
+        return {
+          title: p.title || '',
+          desc:  p.description || '',
+          date:  p.date ? new Date(p.date).toDateString() : 'Date TBD',
+          going: rsvpCounts[p.id] || 0,
+          maxAttendees: p.maxAttendees || null,
+          color: '#2e3a4e',
+          tags:  Array.isArray(p.category) ? p.category : [],
+          type:  'attended',
+          id:    p.id,
+          imageUrl: p.imageUrl || null
+        };
+      })) %>;
       INTERESTED_EVENTS = JSON.parse(localStorage.getItem('cmd_interested_events') || '[]');
       DRAFTS = <%- JSON.stringify(drafts.map(function(p) {
         return {

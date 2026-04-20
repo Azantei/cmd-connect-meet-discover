@@ -210,49 +210,39 @@ function closeConfirmation() {
 // ACTION HANDLERS
 // ==========================================
 
+function _submitPost(action) {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = action;
+    document.body.appendChild(form);
+    form.submit();
+}
+
 function handleBanUser() {
     const report = reports.find(r => r.id === currentReportId);
     if (!report) return;
-    
-    const message = `Are you sure you want to ban user ${report.reportedUser}? This will permanently remove their access to the platform and delete all their content.`;
-    
+    const message = `Are you sure you want to ban this user? This will permanently remove their access to the platform.`;
     showConfirmation(message, () => {
-        console.log('Banning user:', report.reportedUser);
-        report.status = 'resolved';
-        closeReportDetail();
-        applyFilter();
-        // In a real implementation, this would make an API call
+        _submitPost(`/admin/escalated/${report.id}/ban`);
     });
 }
 
 function handleRemoveContent() {
     const report = reports.find(r => r.id === currentReportId);
     if (!report) return;
-    
     const contentType = report.type === 'post' ? 'post' : 'content';
     const message = `Are you sure you want to remove this ${contentType}? It will be permanently deleted and no longer visible to users.`;
-    
     showConfirmation(message, () => {
-        console.log('Removing content for report:', currentReportId);
-        report.status = 'resolved';
-        closeReportDetail();
-        applyFilter();
-        // In a real implementation, this would make an API call
+        _submitPost(`/admin/escalated/${report.id}/remove`);
     });
 }
 
 function handleDismissReport() {
     const report = reports.find(r => r.id === currentReportId);
     if (!report) return;
-    
-    const message = 'Are you sure you want to dismiss this report? The report will be marked as resolved without taking any action against the user or content.';
-    
+    const message = 'Are you sure you want to dismiss this report? It will be marked as resolved without further action.';
     showConfirmation(message, () => {
-        console.log('Dismissing report:', currentReportId);
-        report.status = 'resolved';
-        closeReportDetail();
-        applyFilter();
-        // In a real implementation, this would make an API call
+        _submitPost(`/admin/escalated/${report.id}/dismiss`);
     });
 }
 

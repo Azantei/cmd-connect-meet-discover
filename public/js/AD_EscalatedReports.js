@@ -221,14 +221,10 @@ function handleBanUser() {
     const report = reports.find(r => r.id === currentReportId);
     if (!report) return;
 
-    const message = `Are you sure you want to ban user ${report.title}? This will permanently remove their access to the platform.`;
+    const message = `Are you sure you want to ban this user? This will permanently remove their access to the platform.`;
 
     showConfirmation(message, () => {
-        if (report.type === 'user') {
-            _submitPost(`/admin/users/${report.targetId}/ban`);
-        } else {
-            closeReportDetail();
-        }
+        _submitPost(`/admin/escalated/${report.id}/ban`);
     });
 }
 

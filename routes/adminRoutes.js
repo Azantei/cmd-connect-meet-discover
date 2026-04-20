@@ -14,6 +14,7 @@ router.post('/users/:id/demote', adminController.demoteUser);
 router.get('/escalated', adminController.getEscalated);
 router.post('/escalated/:id/remove', adminController.removeEscalated);
 router.post('/escalated/:id/dismiss', adminController.dismissEscalated);
+router.post('/escalated/:id/ban', adminController.banEscalated);
 
 router.get('/analytics', adminController.getAnalytics);
 

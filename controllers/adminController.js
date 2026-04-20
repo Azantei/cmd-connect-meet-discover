@@ -150,6 +150,29 @@ exports.dismissEscalated = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+exports.banEscalated = async (req, res, next) => {
+  try {
+    const report = await Report.findByPk(req.params.id);
+    if (!report) { req.flash('error', 'Report not found.'); return res.redirect('/admin/escalated'); }
+
+    let userId = null;
+    if (report.targetType === 'user') {
+      userId = report.targetId;
+    } else if (report.targetType === 'post') {
+      const post = await Post.findByPk(report.targetId, { attributes: ['userId'] });
+      if (post) userId = post.userId;
+    }
+
+    if (userId) {
+      await User.update({ isBanned: true }, { where: { id: userId } });
+    }
+
+    await report.update({ status: 'resolved', notes: 'User banned by admin.' });
+    req.flash('success', 'User banned and report resolved.');
+    res.redirect('/admin/escalated');
+  } catch (err) { next(err); }
+};
+
 exports.getAnalytics = async (req, res, next) => {
   try {
     const { startDate, endDate } = req.query;

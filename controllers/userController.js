@@ -1,4 +1,4 @@
-const { User, Post, RSVP, Report } = require('../models');
+const { User, Post, RSVP, Report, sequelize } = require('../models');
 
 exports.getOwnProfile = async (req, res, next) => {
   try {
@@ -20,7 +20,30 @@ exports.getOwnProfile = async (req, res, next) => {
         order: [['createdAt', 'DESC']]
       })
     ]);
-    res.render('users/profile', { title: 'My Profile', profileUser: user, posts, rsvps, drafts });
+
+    // Split RSVPs into upcoming (future/no date) and past (date already passed)
+    const now = new Date();
+    const upcomingRsvps = rsvps.filter(r => !r.Post.date || new Date(r.Post.date) > now);
+    const pastRsvps     = rsvps.filter(r => r.Post.date && new Date(r.Post.date) <= now);
+
+    // Fetch RSVP counts for all relevant posts in one query
+    const allPostIds = [
+      ...posts.map(p => p.id),
+      ...rsvps.map(r => r.Post.id)
+    ].filter((id, i, arr) => arr.indexOf(id) === i);
+
+    const rsvpCounts = {};
+    if (allPostIds.length > 0) {
+      const counts = await RSVP.findAll({
+        where: { postId: allPostIds },
+        attributes: ['postId', [sequelize.fn('COUNT', sequelize.col('id')), 'count']],
+        group: ['postId'],
+        raw: true
+      });
+      counts.forEach(row => { rsvpCounts[row.postId] = parseInt(row.count, 10); });
+    }
+
+    res.render('users/profile', { title: 'My Profile', profileUser: user, posts, upcomingRsvps, pastRsvps, drafts, rsvpCounts });
   } catch (err) { next(err); }
 };
 
