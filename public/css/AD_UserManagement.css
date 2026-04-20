@@ -190,6 +190,15 @@ body {
     font-weight: 600;
 }
 
+.escalated-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background-color: hsl(25, 90%, 55%);
+    flex-shrink: 0;
+}
+
 .sidebar-nav .nav-item:hover {
     background-color: white;
 }

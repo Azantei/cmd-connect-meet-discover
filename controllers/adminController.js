@@ -3,15 +3,16 @@ const { Op } = require('sequelize');
 
 exports.getUsers = async (req, res, next) => {
   try {
-    const [users, activePosts, reportCount] = await Promise.all([
+    const [users, activePosts, reportCount, escalatedCount] = await Promise.all([
       User.findAll({
         attributes: ['id', 'name', 'email', 'role', 'isBanned', 'createdAt'],
         order: [['createdAt', 'DESC']]
       }),
       Post.count(),
-      Report.count({ where: { status: 'pending' } })
+      Report.count({ where: { status: 'pending' } }),
+      Report.count({ where: { status: 'escalated' } })
     ]);
-    res.render('admin/users', { title: 'User Management', users, activePosts, reportCount });
+    res.render('admin/users', { title: 'User Management', users, activePosts, reportCount, escalatedCount });
   } catch (err) { next(err); }
 };
 
@@ -66,7 +67,7 @@ exports.getEscalated = async (req, res, next) => {
       include: [{ model: User, as: 'reporter', attributes: ['id', 'name', 'email'] }],
       order: [['createdAt', 'DESC']]
     });
-    res.render('admin/escalated', { title: 'Escalated Reports', reports });
+    res.render('admin/escalated', { title: 'Escalated Reports', reports, escalatedCount: reports.length });
   } catch (err) { next(err); }
 };
 
@@ -106,14 +107,15 @@ exports.getAnalytics = async (req, res, next) => {
         dateWhere.createdAt[Op.lte] = end;
       }
     }
-    const [userCount, postCount, pendingReportCount, rsvpCount] = await Promise.all([
+    const [userCount, postCount, pendingReportCount, rsvpCount, escalatedCount] = await Promise.all([
       User.count({ where: dateWhere }),
       Post.count({ where: dateWhere }),
       Report.count({ where: { status: 'pending', ...dateWhere } }),
-      RSVP.count({ where: dateWhere })
+      RSVP.count({ where: dateWhere }),
+      Report.count({ where: { status: 'escalated' } })
     ]);
     res.render('admin/analytics', {
-      title: 'Analytics', userCount, postCount, pendingReportCount, rsvpCount,
+      title: 'Analytics', userCount, postCount, pendingReportCount, rsvpCount, escalatedCount,
       startDate: startDate || '', endDate: endDate || ''
     });
   } catch (err) { next(err); }
@@ -121,12 +123,13 @@ exports.getAnalytics = async (req, res, next) => {
 
 exports.getSettings = async (req, res, next) => {
   try {
-    const [categories, settingRows] = await Promise.all([
+    const [categories, settingRows, escalatedCount] = await Promise.all([
       Category.findAll({ order: [['name', 'ASC']] }),
-      PlatformSetting.findAll()
+      PlatformSetting.findAll(),
+      Report.count({ where: { status: 'escalated' } })
     ]);
     const platformSettings = Object.fromEntries(settingRows.map(s => [s.key, s.value]));
-    res.render('admin/settings', { title: 'Platform Settings', categories, platformSettings });
+    res.render('admin/settings', { title: 'Platform Settings', categories, platformSettings, escalatedCount });
   } catch (err) { next(err); }
 };
 
