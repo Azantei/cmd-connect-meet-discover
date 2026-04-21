@@ -9,7 +9,7 @@ const { User, Post, RSVP, Category, UserWarning } = require('../models');
 async function getOtherProfileData(userId) {
   const now = new Date();
   const user = await User.findByPk(userId, {
-    attributes: ['id', 'name', 'location', 'interests', 'profilePic', 'showLocation', 'showInterests']
+    attributes: ['id', 'name', 'location', 'interests', 'profilePic', 'showLocation', 'showInterests', 'isBanned']
   });
   if (!user) return null;
 

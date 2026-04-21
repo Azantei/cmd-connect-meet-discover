@@ -92,7 +92,7 @@ app.use((err, req, res, next) => {
    ======================================== */
 const PORT = process.env.PORT || 3000;
 
-db.sequelize.sync({ alter: true }).then(() => {
+db.sequelize.sync().then(() => {
   console.log('Database synced.');
   app.listen(PORT, () => console.log(`C.M.D. running on http://localhost:${PORT}`));
 }).catch(err => console.error('DB sync failed:', err));
