@@ -23,6 +23,7 @@
         <div class="nav-right">
             <% if (currentUser) { %>
                 <span><%= currentUsername %></span>
+                <%- include('../partials/warning-indicator') %>
                 <form action="/logout" method="POST" style="display:inline">
                     <button type="submit" style="margin-left:1rem;color:hsl(20,90%,55%);background:none;border:none;cursor:pointer;font:inherit;">Log Out</button>
                 </form>

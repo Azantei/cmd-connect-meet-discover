@@ -98,16 +98,28 @@
           <% categories.forEach(cat => { %>
             <div class="tag-chip">
               <%= cat.name %>
-              <form action="/admin/settings/categories/<%= cat.id %>?_method=DELETE" method="POST" style="display:inline"
-                    onsubmit="return confirm('Are you sure you want to remove this category?')">
-                <button type="submit" class="remove-tag" data-tag="<%= cat.name %>" aria-label="Remove <%= cat.name %>">X</button>
-              </form>
+              <button type="button" class="remove-tag"
+                      onclick="openRemoveModal(<%= cat.id %>, '<%= cat.name.replace(/'/g, "\\'") %>')"
+                      aria-label="Remove <%= cat.name %>">X</button>
             </div>
           <% }) %>
         <% } %>
       </div>
     </section>
   </main>
+
+  <div id="removeModal" style="display:none;position:fixed;inset:0;z-index:10001;align-items:center;justify-content:center;">
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,0.45);" onclick="closeRemoveModal()"></div>
+    <div style="position:relative;background:#fff;border-radius:12px;padding:2rem;max-width:400px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,0.18);">
+      <h2 style="margin:0 0 0.5rem;font-size:1.1rem;">Remove Category</h2>
+      <p id="removeModalMsg" style="margin:0 0 1.5rem;color:#555;font-size:0.95rem;"></p>
+      <div style="display:flex;gap:0.75rem;justify-content:flex-end;">
+        <button onclick="closeRemoveModal()" style="padding:0.5rem 1.1rem;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;font:inherit;">Cancel</button>
+        <button id="removeConfirmBtn" style="padding:0.5rem 1.1rem;border:none;border-radius:6px;background:#c53030;color:#fff;font:inherit;font-weight:600;cursor:pointer;">Remove</button>
+      </div>
+    </div>
+  </div>
+  <form id="removeForm" method="POST" style="display:none;"></form>
 
   <footer>
     <div class="container">

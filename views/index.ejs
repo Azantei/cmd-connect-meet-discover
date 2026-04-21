@@ -24,6 +24,7 @@
             <div style="display:flex;align-items:center;gap:0.75rem;">
                 <% if (currentUser) { %>
                     <span style="color:rgba(250,245,240,0.7);font-size:0.875rem;"><%= currentUsername %></span>
+                    <%- include('partials/warning-indicator') %>
                     <form action="/logout" method="POST" style="display:inline">
                         <button type="submit" class="btn">Log Out</button>
                     </form>

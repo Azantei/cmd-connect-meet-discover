@@ -157,13 +157,13 @@ function applyFilter() {
 function openReportDetail(reportId) {
     const report = reports.find(r => r.id === reportId);
     if (!report || report.status !== 'open') return;
-    
+
     currentReportId = reportId;
-    
+
     // Populate modal content
     const titlePrefix = report.type === 'post' ? 'Post: ' : 'User: ';
     document.getElementById('modalReportTitle').textContent = `${titlePrefix}"${report.title}"`;
-    
+
     const subjectLabel = report.type === 'post' ? 'Reported Post' : 'Reported User';
     document.getElementById('modalReportMeta').innerHTML = `
         <span><strong>${subjectLabel}:</strong> ${report.title}</span>
@@ -172,10 +172,30 @@ function openReportDetail(reportId) {
         <span><strong>Time:</strong> ${report.timeAgo}</span>
         <span><strong>Original Reason:</strong> ${report.originalReason}</span>
     `;
-    
+
     document.getElementById('modalModeratorNotes').textContent = report.moderatorNotes;
     document.getElementById('modalContentPreview').textContent = report.contentPreview;
-    
+
+    // Disable Ban User button if the target user is already banned
+    const banBtn = document.getElementById('btnBanUser');
+    if (report.isBanned) {
+        banBtn.disabled = true;
+        banBtn.title = 'This user is already banned.';
+        banBtn.textContent = 'Already Banned';
+    } else {
+        banBtn.disabled = false;
+        banBtn.title = '';
+        banBtn.textContent = 'Ban User';
+    }
+
+    // Remove Post only applies to post-type reports
+    const removeBtn = document.getElementById('btnRemoveContent');
+    if (report.type === 'post') {
+        removeBtn.style.display = '';
+    } else {
+        removeBtn.style.display = 'none';
+    }
+
     // Show modal
     document.getElementById('reportDetailModal').classList.add('active');
 }
@@ -220,6 +240,11 @@ function _submitPost(action) {
 function handleBanUser() {
     const report = reports.find(r => r.id === currentReportId);
     if (!report) return;
+
+    if (report.isBanned) {
+        alert('This user is already banned.');
+        return;
+    }
 
     const message = `Are you sure you want to ban this user? This will permanently remove their access to the platform.`;
 

@@ -42,7 +42,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // Auto-dismiss inline category message
     const catMsg = document.getElementById('catInlineMsg');
     if (catMsg) setTimeout(function() { catMsg.style.display = 'none'; }, 4000);
+
+    // Remove confirmation modal
+    document.getElementById('removeConfirmBtn').addEventListener('click', () => {
+        const form = document.getElementById('removeForm');
+        if (form.action) { closeRemoveModal(); form.submit(); }
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeRemoveModal();
+    });
 });
+
+function openRemoveModal(catId, catName) {
+    document.getElementById('removeModalMsg').textContent =
+        `Are you sure you want to remove "${catName}"? This cannot be undone.`;
+    const form = document.getElementById('removeForm');
+    form.action = `/admin/settings/categories/${catId}?_method=DELETE`;
+    const modal = document.getElementById('removeModal');
+    modal.style.display = 'flex';
+    document.getElementById('removeConfirmBtn').focus();
+}
+
+function closeRemoveModal() {
+    document.getElementById('removeModal').style.display = 'none';
+    document.getElementById('removeForm').action = '';
+}
 
 // ==========================================
 // EVENT LISTENERS

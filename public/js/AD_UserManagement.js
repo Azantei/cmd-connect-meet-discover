@@ -114,6 +114,20 @@ document.addEventListener('DOMContentLoaded', () => {
     updateStatistics();
     renderUsers();
     setupEventListeners();
+
+    document.getElementById('promoteConfirmBtn').addEventListener('click', () => {
+        if (!pendingPromoteUserId) return;
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/users/${pendingPromoteUserId}/promote`;
+        document.body.appendChild(form);
+        closePromoteModal();
+        form.submit();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closePromoteModal();
+    });
 });
 
 // ==========================================
@@ -157,17 +171,19 @@ function renderUsers() {
             </div>
         `;
         
-        const makeForm = (action, label, cls, confirmMsg) =>
-            `<form action="/admin/users/${user.id}/${action}" method="POST" style="display:inline"` +
-            (confirmMsg ? ` onsubmit="return confirm('${confirmMsg}')"` : '') + `>` +
+        const makeForm = (action, label, cls) =>
+            `<form action="/admin/users/${user.id}/${action}" method="POST" style="display:inline">` +
             `<button type="submit" class="action-btn${cls ? ' ' + cls : ''}">${label}</button></form>`;
+
+        const makePromoteBtn = (userId, userName) =>
+            `<button type="button" class="action-btn" onclick="openPromoteModal(${userId}, '${userName.replace(/'/g, "\\'")}')">Promote to Moderator</button>`;
 
         let actionButtons = '';
         if (user.status === 'banned') {
             actionButtons = makeForm('unban', 'Unban', '');
         } else if (user.role === 'Member' || user.role === 'Mod' || user.status === 'flagged') {
-            if (user.role === 'Member') actionButtons += makeForm('promote', 'Promote', '', 'Are you sure you want to promote this user to Moderator?');
-            if (user.role === 'Mod')    actionButtons += makeForm('demote',  'Demote',  '');
+            if (user.role === 'Member') actionButtons += makePromoteBtn(user.id, user.firstName);
+            if (user.role === 'Mod')    actionButtons += makeForm('demote', 'Demote', '');
             actionButtons += makeForm('ban', 'Ban', 'danger');
         } else if (user.role === 'Admin') {
             actionButtons = makeForm('demote', 'Demote', '');
@@ -231,3 +247,24 @@ function setupEventListeners() {
 function capitalizeFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+// ==========================================
+// PROMOTE CONFIRMATION MODAL
+// ==========================================
+
+let pendingPromoteUserId = null;
+
+function openPromoteModal(userId, userName) {
+    pendingPromoteUserId = userId;
+    document.getElementById('promoteModalMsg').textContent =
+        `Are you sure you want to promote ${userName} to Moderator? They will gain access to the moderation dashboard and report queue.`;
+    const modal = document.getElementById('promoteModal');
+    modal.style.display = 'flex';
+    document.getElementById('promoteConfirmBtn').focus();
+}
+
+function closePromoteModal() {
+    document.getElementById('promoteModal').style.display = 'none';
+    pendingPromoteUserId = null;
+}
+

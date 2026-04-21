@@ -40,7 +40,8 @@ function formatEscalatedRow(r) {
     moderatorNotes: r.moderatorNotes,
     status: r.status === 'escalated' ? 'open' : 'resolved',
     createdAt: r.createdAt,
-    timeAgo: relativeTime(r.createdAt)
+    timeAgo: relativeTime(r.createdAt),
+    isBanned: r.targetIsBanned || false
   };
 }
 

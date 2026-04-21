@@ -30,9 +30,11 @@ async function unbanUser(id) {
 async function promoteUser(id) {
   const user = await User.findByPk(id);
   if (!user) return { error: 'User not found.' };
+  if (user.role === 'admin') return { error: 'Administrators cannot be assigned the moderator role.' };
   if (user.role === 'moderator') return { error: 'This user is already a moderator.' };
+  if (user.isBanned) return { error: 'Banned users cannot be promoted.' };
   await user.update({ role: 'moderator' });
-  return { success: 'User promoted to moderator.' };
+  return { success: `${user.name} has been promoted to Moderator.` };
 }
 
 async function demoteUser(id) {
@@ -79,8 +81,12 @@ async function getEscalatedData() {
         include: [{ model: User, as: 'moderator', attributes: ['id', 'name'] }],
         order: [['createdAt', 'DESC']]
       }),
-      userTargetIds.length ? User.findAll({ where: { id: { [Op.in]: userTargetIds } }, attributes: ['id', 'name'] }) : Promise.resolve([]),
-      postTargetIds.length ? Post.findAll({ where: { id: { [Op.in]: postTargetIds } }, attributes: ['id', 'title'] }) : Promise.resolve([])
+      userTargetIds.length ? User.findAll({ where: { id: { [Op.in]: userTargetIds } }, attributes: ['id', 'name', 'isBanned'] }) : Promise.resolve([]),
+      postTargetIds.length ? Post.findAll({
+        where: { id: { [Op.in]: postTargetIds } },
+        attributes: ['id', 'title', 'userId'],
+        include: [{ model: User, as: 'author', attributes: ['id', 'isBanned'] }]
+      }) : Promise.resolve([])
     ]);
 
     const logMap = {};
@@ -88,18 +94,23 @@ async function getEscalatedData() {
       const key = `${log.targetType}:${log.targetId}`;
       if (!logMap[key]) logMap[key] = log;
     }
-    const usersMap = Object.fromEntries(targetUsers.map(u => [u.id, u.name]));
-    const postsMap = Object.fromEntries(targetPosts.map(p => [p.id, p.title]));
+    const usersMap = Object.fromEntries(targetUsers.map(u => [u.id, u]));
+    const postsMap = Object.fromEntries(targetPosts.map(p => [p.id, p]));
 
     reports = reports.map(r => {
       const log = logMap[`${r.type}:${r.targetId}`];
+      const targetUser = r.type === 'user' ? usersMap[r.targetId] : null;
+      const targetPost = r.type === 'post' ? postsMap[r.targetId] : null;
       return {
         ...r,
         escalatedBy: log && log.moderator ? log.moderator.name : 'Moderator',
         moderatorNotes: log ? (log.notes || '') : '',
         targetName: r.type === 'user'
-          ? (usersMap[r.targetId] || 'Unknown User')
-          : (postsMap[r.targetId] || null)
+          ? (targetUser ? targetUser.name : 'Unknown User')
+          : (targetPost ? targetPost.title : null),
+        targetIsBanned: r.type === 'user'
+          ? (targetUser ? targetUser.isBanned : false)
+          : (targetPost && targetPost.author ? targetPost.author.isBanned : false)
       };
     });
   }
@@ -110,7 +121,10 @@ async function getEscalatedData() {
 async function removeEscalatedReport(id) {
   const report = await Report.findByPk(id);
   if (!report) return { error: 'Report not found.' };
-  if (report.targetType === 'post') await Post.destroy({ where: { id: report.targetId } });
+  if (report.targetType !== 'post') return { error: 'Remove Post is only available for post reports.' };
+  const post = await Post.findByPk(report.targetId);
+  if (!post) return { error: 'This post no longer exists.' };
+  await post.destroy();
   await report.update({ status: 'resolved', notes: 'Content removed by admin.' });
   return { success: 'Post removed successfully!' };
 }
@@ -132,7 +146,11 @@ async function banEscalatedUser(id) {
     const post = await Post.findByPk(report.targetId, { attributes: ['userId'] });
     if (post) userId = post.userId;
   }
-  if (userId) await User.update({ isBanned: true }, { where: { id: userId } });
+  if (!userId) return { error: 'This user account is no longer active.' };
+  const targetUser = await User.findByPk(userId, { attributes: ['id', 'isBanned'] });
+  if (!targetUser) return { error: 'This user account is no longer active.' };
+  if (targetUser.isBanned) return { error: 'This user is already banned.' };
+  await targetUser.update({ isBanned: true });
   await report.update({ status: 'resolved', notes: 'User banned by admin.' });
   return { success: 'User banned and report resolved.' };
 }
