@@ -1,9 +1,11 @@
 const adminService = require('../services/adminService');
+const adminPresenter = require('../presenters/adminPresenter');
 
 exports.getUsers = async (req, res, next) => {
   try {
     const data = await adminService.getUsersData();
-    res.render('admin/users', { title: 'User Management', ...data });
+    const adminUsers = data.users.map((u, i) => adminPresenter.formatUserRow(u, i));
+    res.render('admin/users', { title: 'User Management', ...data, adminUsers });
   } catch (err) { next(err); }
 };
 
@@ -46,7 +48,8 @@ exports.demoteUser = async (req, res, next) => {
 exports.getEscalated = async (req, res, next) => {
   try {
     const data = await adminService.getEscalatedData();
-    res.render('admin/escalated', { title: 'Escalated Reports', ...data });
+    const escalatedRows = data.reports.map(r => adminPresenter.formatEscalatedRow(r));
+    res.render('admin/escalated', { title: 'Escalated Reports', ...data, escalatedRows });
   } catch (err) { next(err); }
 };
 

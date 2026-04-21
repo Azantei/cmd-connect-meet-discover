@@ -1,11 +1,12 @@
-const { buildOwnProfileViewData } = require('../services/profileService');
+const { buildOwnProfileData } = require('../services/profileService');
+const { getInitials, buildProfileClientData, buildOtherProfilePostCards } = require('../presenters/profilePresenter');
 const userService = require('../services/userService');
 const { createUserReport } = require('../services/reportService');
 const { addInterest, removeInterest } = require('../services/postService');
 
 exports.getOwnProfile = async (req, res, next) => {
   try {
-    const data = await buildOwnProfileViewData(req.session.userId);
+    const data = await buildOwnProfileData(req.session.userId);
     res.render('users/profile', {
       title: 'My Profile',
       profileUser: data.profileUser,
@@ -14,8 +15,8 @@ exports.getOwnProfile = async (req, res, next) => {
       pastEvents: data.pastEvents,
       drafts: data.drafts,
       rsvpCounts: data.rsvpCounts,
-      profileInitials: data.profileInitials,
-      profileClientData: data.profileClientData
+      profileInitials: getInitials(data.profileUser && data.profileUser.name),
+      profileClientData: buildProfileClientData(data)
     });
   } catch (err) { next(err); }
 };
@@ -24,7 +25,11 @@ exports.getUserById = async (req, res, next) => {
   try {
     const data = await userService.getOtherProfileData(req.params.id);
     if (!data) { req.flash('error', 'User not found.'); return res.redirect('/posts'); }
-    res.render('users/otherProfile', { title: `${data.profileUser.name}'s Profile`, ...data });
+    res.render('users/otherProfile', {
+      title: `${data.profileUser.name}'s Profile`,
+      ...data,
+      profilePostsCards: buildOtherProfilePostCards(data.posts)
+    });
   } catch (err) { next(err); }
 };
 

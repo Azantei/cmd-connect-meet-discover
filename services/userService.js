@@ -1,6 +1,5 @@
 const { Op } = require('sequelize');
 const { User, Post, RSVP, Category, UserWarning } = require('../models');
-const { buildOtherProfilePostCards } = require('./profileService');
 
 /* ========================================
    GET OTHER USER PROFILE DATA
@@ -28,8 +27,7 @@ async function getOtherProfileData(userId) {
     profileUser: user,
     posts,
     attendedEvents: attendedRsvps.map(r => r.Post),
-    categories,
-    profilePostsCards: buildOtherProfilePostCards(posts)
+    categories
   };
 }
 
