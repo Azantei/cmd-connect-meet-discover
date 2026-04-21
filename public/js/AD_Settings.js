@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Remove confirmation modal
     document.getElementById('removeConfirmBtn').addEventListener('click', () => {
         const form = document.getElementById('removeForm');
-        if (form.action) { closeRemoveModal(); form.submit(); }
+        if (form.getAttribute('action')) { form.submit(); closeRemoveModal(); }
     });
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') closeRemoveModal();
