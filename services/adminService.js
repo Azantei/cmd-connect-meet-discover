@@ -132,7 +132,13 @@ async function removeEscalatedReport(id) {
 async function dismissEscalatedReport(id) {
   const report = await Report.findByPk(id);
   if (!report) return { error: 'Report not found.' };
-  await report.update({ status: 'resolved', notes: 'Dismissed by admin.' });
+  const ops = [report.update({ status: 'resolved', notes: 'Dismissed by admin.' })];
+  if (report.targetType === 'post') {
+    ops.push(Post.update({ isHidden: false }, { where: { id: report.targetId } }));
+  } else if (report.targetType === 'user') {
+    ops.push(Post.update({ isHidden: false }, { where: { userId: report.targetId } }));
+  }
+  await Promise.all(ops);
   return { success: 'Report dismissed.' };
 }
 
