@@ -67,7 +67,7 @@ async function getDashboardData(moderatorId, typeFilter) {
     });
   }
 
-  return { reportsData, historyData };
+  return { reportsData, historyData, pendingReportCount: reportsData.length };
 }
 
 async function getReportData(reportId) {

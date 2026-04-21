@@ -5,7 +5,7 @@ async function getUsersData() {
   const [users, activePosts, reportCount, escalatedCount] = await Promise.all([
     User.findAll({ attributes: ['id', 'name', 'email', 'role', 'isBanned', 'createdAt'], order: [['createdAt', 'DESC']] }),
     Post.count(),
-    Report.count({ where: { status: 'pending' } }),
+    Report.count(),
     Report.count({ where: { status: 'escalated' } })
   ]);
   return { users, totalUsers: users.length, activePosts, reportCount, escalatedCount };
@@ -151,7 +151,7 @@ async function getAnalyticsData({ startDate, endDate }) {
   const [userCount, postCount, pendingReportCount, rsvpCount, escalatedCount] = await Promise.all([
     User.count({ where: dateWhere }),
     Post.count({ where: dateWhere }),
-    Report.count({ where: { status: 'pending', ...dateWhere } }),
+    Report.count({ where: dateWhere }),
     RSVP.count({ where: dateWhere }),
     Report.count({ where: { status: 'escalated' } })
   ]);

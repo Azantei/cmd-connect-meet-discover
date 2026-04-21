@@ -6,6 +6,7 @@ exports.getDashboard = async (req, res, next) => {
     res.render('moderator/dashboard', {
       title: 'Moderator Dashboard',
       reportsData: data.reportsData,
+      pendingReportCount: data.pendingReportCount,
       historyData: data.historyData,
       typeFilter: req.query.type || 'all'
     });

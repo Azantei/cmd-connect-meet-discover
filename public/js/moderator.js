@@ -374,7 +374,7 @@ function completeWarn() {
 // Update badge count
 function updateBadge() {
     const badge = document.getElementById('reportCount');
-    if (badge) badge.textContent = filteredReports.length;
+    if (badge) badge.textContent = activeReports.length;
 }
 
 /**
