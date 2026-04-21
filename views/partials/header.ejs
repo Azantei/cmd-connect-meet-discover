@@ -82,15 +82,13 @@
   </style>
 </head>
 <body>
+<%- include('mod-topbar') %>
 <nav>
   <a href="/">C.M.D.</a>
   <a href="/posts">Posts</a>
   <a href="/events">Events</a>
   <% if (currentUser) { %>
     <a href="/users/profile">My Profile</a>
-    <% if (currentRole === 'moderator' || currentRole === 'admin') { %>
-      <a href="/moderator/dashboard" class="mod-dash-btn">Moderator</a>
-    <% } %>
     <% if (currentRole === 'admin') { %>
       <a href="/admin/users" class="mod-dash-btn" style="background:hsl(220,70%,50%)">Admin</a>
     <% } %>
