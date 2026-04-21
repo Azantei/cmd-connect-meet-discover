@@ -32,9 +32,16 @@ let tags = ['Outdoors', 'Music', 'Sports', 'Food & Drink', 'Arts', 'Tech', 'Fitn
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    // URL param from category add/remove redirect takes priority
+    const urlTab = new URLSearchParams(window.location.search).get('tab');
     const savedTab = sessionStorage.getItem('settingsTab');
-    if (savedTab) switchTab(savedTab);
+    if (urlTab) switchTab(urlTab);
+    else if (savedTab) switchTab(savedTab);
     setupEventListeners();
+
+    // Auto-dismiss inline category message
+    const catMsg = document.getElementById('catInlineMsg');
+    if (catMsg) setTimeout(function() { catMsg.style.display = 'none'; }, 4000);
 });
 
 // ==========================================

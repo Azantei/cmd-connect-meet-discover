@@ -175,7 +175,7 @@ exports.removeEscalated = async (req, res, next) => {
       await Post.destroy({ where: { id: report.targetId } });
     }
     await report.update({ status: 'resolved', notes: 'Content removed by admin.' });
-    req.flash('success', 'Post removed and report resolved.');
+    req.flash('success', 'Post removed successfully!');
     res.redirect('/admin/escalated');
   } catch (err) { next(err); }
 };
@@ -305,14 +305,14 @@ exports.saveSettings = async (req, res, next) => {
 exports.addCategory = async (req, res, next) => {
   try {
     const { name } = req.body;
-    if (!name || !name.trim()) { req.flash('error', 'Category name is required.'); return res.redirect('/admin/settings'); }
+    if (!name || !name.trim()) { req.flash('error', 'Category name is required.'); return res.redirect('/admin/settings?tab=categories'); }
     await Category.create({ name: name.trim() });
-    req.flash('success', `Category "${name.trim()}" added.`);
-    res.redirect('/admin/settings');
+    req.flash('catSuccess', 'Successfully added!');
+    res.redirect('/admin/settings?tab=categories');
   } catch (err) {
     if (err.name === 'SequelizeUniqueConstraintError') {
       req.flash('error', 'That category already exists.');
-      return res.redirect('/admin/settings');
+      return res.redirect('/admin/settings?tab=categories');
     }
     next(err);
   }
@@ -326,7 +326,7 @@ exports.addCategory = async (req, res, next) => {
 exports.deleteCategory = async (req, res, next) => {
   try {
     await Category.destroy({ where: { id: req.params.id } });
-    req.flash('success', 'Category removed.');
-    res.redirect('/admin/settings');
+    req.flash('catSuccess', 'Successfully removed!');
+    res.redirect('/admin/settings?tab=categories');
   } catch (err) { next(err); }
 };

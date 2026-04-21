@@ -65,6 +65,7 @@ app.use(async (req, res, next) => {
   res.locals.reportSuccess = req.flash('reportSuccess');
   res.locals.loginError    = req.flash('loginError');
   res.locals.loginEmail    = req.flash('loginEmail')[0] || '';
+  res.locals.catSuccess    = req.flash('catSuccess');
   res.locals.userWarnings  = [];
   if (req.session.userId) {
     try {

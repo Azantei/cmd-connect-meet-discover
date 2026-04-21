@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/AD_Settings.css">
+  <style>
+    .cat-inline-msg { background:#276749; color:#fff; padding:.55rem 1rem; border-radius:6px; font-size:.9rem; font-weight:600; margin-bottom:.75rem; display:inline-block; }
+  </style>
 </head>
 <body>
   <header class="admin-topbar">
@@ -84,6 +87,10 @@
         <button type="submit" class="btn-add-tag" id="addTagBtn">+ Add</button>
       </form>
 
+      <% if (catSuccess && catSuccess.length) { %>
+        <div class="cat-inline-msg" id="catInlineMsg"><%= catSuccess %></div>
+      <% } %>
+
       <div class="tags-container" id="tagsList">
         <% if (categories.length === 0) { %>
           <p class="empty-state">No categories yet.</p>
@@ -91,7 +98,8 @@
           <% categories.forEach(cat => { %>
             <div class="tag-chip">
               <%= cat.name %>
-              <form action="/admin/settings/categories/<%= cat.id %>?_method=DELETE" method="POST" style="display:inline">
+              <form action="/admin/settings/categories/<%= cat.id %>?_method=DELETE" method="POST" style="display:inline"
+                    onsubmit="return confirm('Are you sure you want to remove this category?')">
                 <button type="submit" class="remove-tag" data-tag="<%= cat.name %>" aria-label="Remove <%= cat.name %>">X</button>
               </form>
             </div>

@@ -157,15 +157,16 @@ function renderUsers() {
             </div>
         `;
         
-        const makeForm = (action, label, cls) =>
-            `<form action="/admin/users/${user.id}/${action}" method="POST" style="display:inline">` +
+        const makeForm = (action, label, cls, confirmMsg) =>
+            `<form action="/admin/users/${user.id}/${action}" method="POST" style="display:inline"` +
+            (confirmMsg ? ` onsubmit="return confirm('${confirmMsg}')"` : '') + `>` +
             `<button type="submit" class="action-btn${cls ? ' ' + cls : ''}">${label}</button></form>`;
 
         let actionButtons = '';
         if (user.status === 'banned') {
             actionButtons = makeForm('unban', 'Unban', '');
         } else if (user.role === 'Member' || user.role === 'Mod' || user.status === 'flagged') {
-            if (user.role === 'Member') actionButtons += makeForm('promote', 'Promote', '');
+            if (user.role === 'Member') actionButtons += makeForm('promote', 'Promote', '', 'Are you sure you want to promote this user to Moderator?');
             if (user.role === 'Mod')    actionButtons += makeForm('demote',  'Demote',  '');
             actionButtons += makeForm('ban', 'Ban', 'danger');
         } else if (user.role === 'Admin') {

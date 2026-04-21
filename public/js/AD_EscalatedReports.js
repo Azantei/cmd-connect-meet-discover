@@ -232,8 +232,7 @@ function handleRemoveContent() {
     const report = reports.find(r => r.id === currentReportId);
     if (!report) return;
 
-    const contentType = report.type === 'post' ? 'post' : 'content';
-    const message = `Are you sure you want to remove this ${contentType}? It will be permanently deleted.`;
+    const message = 'Are you sure you wish to remove?';
 
     showConfirmation(message, () => {
         _submitPost(`/admin/escalated/${report.id}/remove`);
