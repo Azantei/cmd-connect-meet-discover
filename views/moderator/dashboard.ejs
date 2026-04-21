@@ -3,17 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moderation Dashboard - C.M.D.</title>
+    <title>Moderator Dashboard - C.M.D.</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/home.css">
     <link rel="stylesheet" href="/css/moderator.css">
+    <style>
+        .warning-indicator { position:relative; display:inline-block; vertical-align:middle; margin-left:0.75rem; }
+        .warning-dot { display:inline-block; width:12px; height:12px; background:#e53e3e; border-radius:50%; cursor:pointer; animation:pulse 1.5s infinite; vertical-align:middle; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        .warning-popup { position:absolute; top:1.8rem; right:0; background:#fff; border:1px solid #e53e3e; border-radius:8px; padding:1rem; min-width:280px; max-width:360px; box-shadow:0 4px 20px rgba(0,0,0,.15); z-index:9999; }
+        .warning-popup h4 { margin:0 0 .5rem; color:#e53e3e; font-size:.95rem; }
+        .warning-item { border-bottom:1px solid #f0f0f0; padding:.5rem 0; font-size:.85rem; color:#333; }
+        .warning-item:last-of-type { border-bottom:none; }
+        .warning-item small { color:#888; display:block; margin-top:.2rem; }
+        .warning-dismiss-btn { margin-top:.75rem; background:#e53e3e; color:#fff; border:none; border-radius:5px; padding:.35rem .8rem; font-size:.8rem; cursor:pointer; width:100%; }
+        .warning-dismiss-btn:hover { background:#c53030; }
+        .mod-success-popup { position:fixed; top:1.5rem; left:50%; transform:translateX(-50%); background:#276749; color:#fff; padding:.75rem 1.5rem; border-radius:8px; font-size:.95rem; font-weight:600; box-shadow:0 4px 16px rgba(0,0,0,.2); z-index:10000; animation:fadeInDown .3s ease; }
+        .mod-error-popup { position:fixed; top:1.5rem; left:50%; transform:translateX(-50%); background:#c53030; color:#fff; padding:.75rem 1.5rem; border-radius:8px; font-size:.95rem; font-weight:600; box-shadow:0 4px 16px rgba(0,0,0,.2); z-index:10000; animation:fadeInDown .3s ease; }
+        @keyframes fadeInDown { from{opacity:0;transform:translateX(-50%) translateY(-12px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+    </style>
 </head>
 <body class="mod-body">
 
+    <% if (success && success.length) { %>
+    <div class="mod-success-popup" id="modSuccessPopup"><%= success %></div>
+    <script>setTimeout(function(){ var el=document.getElementById('modSuccessPopup'); if(el) el.remove(); }, 4000);</script>
+    <% } %>
+    <% if (error && error.length) { %>
+    <div class="mod-error-popup" id="modErrorPopup"><%= error %></div>
+    <script>setTimeout(function(){ var el=document.getElementById('modErrorPopup'); if(el) el.remove(); }, 5000);</script>
+    <% } %>
+
     <header class="mod-topbar">
-        <span>Moderation Dashboard</span>
+        <span>Moderator Dashboard</span>
         <span class="mod-role">Moderator</span>
     </header>
 
@@ -26,7 +50,33 @@
                 <a href="/users/profile">Profile</a>
                 <a href="/about">About Us</a>
             </div>
-            <span class="mod-user">Moderator: <%= currentUsername %>
+            <span class="mod-user">
+                Moderator: <%= currentUsername %>
+                <% if (userWarnings && userWarnings.length > 0) { %>
+                <div class="warning-indicator" id="warningIndicator" style="margin-left:0.5rem">
+                    <span class="warning-dot" id="warningDot" title="You have a moderator warning"></span>
+                    <div class="warning-popup" id="warningPopup" style="display:none;">
+                        <h4>&#9888; Moderator Warning</h4>
+                        <% userWarnings.forEach(function(w) { %>
+                        <div class="warning-item">
+                            <p style="margin:0"><%= w.message %></p>
+                            <small><%= new Date(w.createdAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) %></small>
+                        </div>
+                        <% }); %>
+                        <form action="/users/warnings/dismiss" method="POST">
+                            <button type="submit" class="warning-dismiss-btn">Dismiss</button>
+                        </form>
+                    </div>
+                </div>
+                <script>
+                    (function(){
+                        var dot=document.getElementById('warningDot');
+                        var popup=document.getElementById('warningPopup');
+                        dot.addEventListener('click',function(e){e.stopPropagation();popup.style.display=popup.style.display==='none'?'block':'none';});
+                        document.addEventListener('click',function(){popup.style.display='none';});
+                    })();
+                </script>
+                <% } %>
                 <form action="/logout" method="POST" style="display:inline">
                     <button type="submit" style="margin-left:1rem;color:hsl(20,90%,55%);text-decoration:none;background:none;border:none;cursor:pointer;font:inherit;">Log Out</button>
                 </form>
@@ -54,7 +104,9 @@
                         <option value="user">Users</option>
                         <option value="spam">Spam</option>
                         <option value="harassment">Harassment</option>
-                        <option value="inappropriate">Inappropriate</option>
+                        <option value="inappropriate">Inappropriate Content</option>
+                        <option value="misinformation">Misinformation</option>
+                        <option value="other">Other</option>
                     </select>
                 </div>
             </div>
@@ -81,11 +133,21 @@
                 <option value="Spam">Spam</option>
                 <option value="Harassment">Harassment</option>
                 <option value="Inappropriate Content">Inappropriate Content</option>
+                <option value="Misinformation">Misinformation</option>
                 <option value="Community Guidelines Violation">Community Guidelines Violation</option>
                 <option value="Other">Other</option>
             </select>
-            <label for="warnMessage" class="note-label">Additional Message (optional):</label>
-            <textarea id="warnMessage" placeholder="Add any additional context for the user..." rows="3"></textarea>
+            <label for="warnPreset" class="note-label" style="margin-top:.75rem">Preset Warning Message:</label>
+            <select id="warnPreset" class="mod-modal-select" style="margin-bottom:.5rem">
+                <option value="">Select a preset message...</option>
+                <option value="Your content has been flagged as spam. Please review our community guidelines before posting again.">Spam: generic warning</option>
+                <option value="Your post or behavior has been reported for harassment. Continued violations may result in account suspension.">Harassment: formal warning</option>
+                <option value="Your content was found to be inappropriate or offensive. Please ensure future posts comply with our standards.">Inappropriate content warning</option>
+                <option value="Your post contains or promotes misinformation. Please verify information before sharing with the community.">Misinformation warning</option>
+                <option value="This is a formal warning for violating our community guidelines. Please read them carefully to avoid further action.">General guidelines violation</option>
+            </select>
+            <label for="warnMessage" class="note-label">Message to User:</label>
+            <textarea id="warnMessage" placeholder="Add a message for the user..." rows="3"></textarea>
             <div class="mod-modal-actions">
                 <button class="btn-mod btn-cancel" id="warnCancel">Cancel</button>
                 <button class="btn-mod btn-warn-submit" id="warnSubmit">Send Warning</button>
@@ -99,7 +161,7 @@
             <h3>Escalate to System Admin</h3>
             <p class="mod-modal-desc">Select a reason for escalation and add any additional notes for the system administrator.</p>
             <div class="mod-modal-warning">
-                <strong>⚠ Notice:</strong> Escalating this report will immediately hide the post from public view while the system administrator reviews it.
+                <strong>&#9888; Notice:</strong> Escalating this report will immediately hide the reported content from public view while the system administrator reviews it.
             </div>
             <div class="mod-modal-reasons">
                 <label class="reason-label"><input type="radio" name="escalateReason" value="Serious Policy Violation" required> Serious Policy Violation</label>

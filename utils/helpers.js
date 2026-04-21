@@ -34,11 +34,11 @@ async function resolveTargets(reports) {
     postIds.length
       ? Post.findAll({
           where: { id: { [Op.in]: postIds } },
-          include: [{ model: User, as: 'author', attributes: ['id', 'name'] }]
+          include: [{ model: User, as: 'author', attributes: ['id', 'name', 'isBanned'] }]
         })
       : [],
     userIds.length
-      ? User.findAll({ where: { id: { [Op.in]: userIds } }, attributes: ['id', 'name'] })
+      ? User.findAll({ where: { id: { [Op.in]: userIds } }, attributes: ['id', 'name', 'isBanned'] })
       : []
   ]);
 
@@ -63,7 +63,9 @@ async function resolveTargets(reports) {
       reason: r.reason,
       note: r.notes || '',
       submittedAt: new Date(r.createdAt).getTime(),
-      userActive: tu !== null || r.targetType === 'post'
+      userActive: r.targetType === 'post'
+        ? (tp && tp.author ? !tp.author.isBanned : true)
+        : (tu !== null && !tu.isBanned)
     };
   });
 }

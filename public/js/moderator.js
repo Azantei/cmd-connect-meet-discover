@@ -391,7 +391,13 @@ function applyFilter(value) {
     } else if (value === 'post' || value === 'user') {
         filteredReports = activeReports.filter(r => r.type === value);
     } else {
-        filteredReports = activeReports.filter(r => r.reason.toLowerCase() === value.toLowerCase());
+        // Normalize filter value and report reason for comparison
+        // e.g. "inappropriate" matches "Inappropriate Content", "inappropriate content"
+        const filterNorm = value.toLowerCase().replace(/\s+/g, '');
+        filteredReports = activeReports.filter(r => {
+            const reasonNorm = (r.reason || '').toLowerCase().replace(/\s+/g, '');
+            return reasonNorm === filterNorm || reasonNorm.startsWith(filterNorm);
+        });
     }
 
     // Sort by date submitted (newest first)
@@ -457,6 +463,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Warn User modal (UC-M-003)
     document.getElementById('warnCancel').addEventListener('click', closeWarnModal);
     document.getElementById('warnSubmit').addEventListener('click', completeWarn);
+
+    // Preset message populates the message textarea
+    document.getElementById('warnPreset').addEventListener('change', function() {
+        if (this.value) {
+            document.getElementById('warnMessage').value = this.value;
+            this.value = '';
+        }
+    });
 
     // Modal backdrop clicks (close the containing modal)
     document.addEventListener('click', (e) => {

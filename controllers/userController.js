@@ -1,4 +1,4 @@
-const { User, Post, RSVP, Report, sequelize } = require('../models');
+const { User, Post, RSVP, Report, UserWarning, sequelize } = require('../models');
 const { Op } = require('sequelize');
 
 /* ========================================
@@ -202,5 +202,22 @@ exports.reportUser = async (req, res, next) => {
     });
     req.flash('reportSuccess', 'Thank you for your report. Our moderators will review it.');
     res.redirect(`/users/${req.params.id}`);
+  } catch (err) { next(err); }
+};
+
+/* ========================================
+   DISMISS WARNINGS
+   POST /users/warnings/dismiss
+   Marks all unread warnings as read for the
+   current user, hiding the red dot indicator
+   ======================================== */
+exports.dismissWarnings = async (req, res, next) => {
+  try {
+    await UserWarning.update(
+      { isRead: true },
+      { where: { userId: req.session.userId, isRead: false } }
+    );
+    const referer = req.get('Referer') || '/';
+    res.redirect(referer);
   } catch (err) { next(err); }
 };

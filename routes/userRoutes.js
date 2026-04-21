@@ -29,4 +29,11 @@ router.get('/:id',              userController.getUserById);
    ======================================== */
 router.post('/:id/report',      requireAuth, userController.reportUser);
 
+/* ========================================
+   WARNING DISMISS ROUTE
+   POST /users/warnings/dismiss - mark all
+   unread warnings as read for current user
+   ======================================== */
+router.post('/warnings/dismiss', requireAuth, userController.dismissWarnings);
+
 module.exports = router;

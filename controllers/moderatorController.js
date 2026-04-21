@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Report, Post, ModerationLog, User } = require('../models');
+const { Report, Post, ModerationLog, User, UserWarning } = require('../models');
 const { resolveTargets } = require('../utils/helpers');
 
 /* ========================================
@@ -120,6 +120,26 @@ exports.warnReport = async (req, res, next) => {
       return res.redirect('/moderator/dashboard');
     }
 
+    // Resolve the user being warned (post author or the user themselves)
+    let targetUserId;
+    if (report.targetType === 'user') {
+      targetUserId = report.targetId;
+    } else {
+      const post = await Post.findByPk(report.targetId, { attributes: ['id', 'userId'] });
+      targetUserId = post ? post.userId : null;
+    }
+
+    // Exception flow: target user is banned or deleted
+    const targetUser = targetUserId
+      ? await User.findByPk(targetUserId, { attributes: ['id', 'isBanned'] })
+      : null;
+    if (!targetUser || targetUser.isBanned) {
+      req.flash('error', 'This user account is no longer active.');
+      return res.redirect('/moderator/dashboard');
+    }
+
+    const warningMessage = req.body.notes || 'You have received a warning from a moderator for violating community guidelines.';
+
     const warnOps = [
       ModerationLog.create({
         moderatorId: req.session.userId,
@@ -128,7 +148,12 @@ exports.warnReport = async (req, res, next) => {
         targetId:    report.targetId,
         notes:       req.body.notes || null
       }),
-      report.update({ status: 'reviewed' })
+      report.update({ status: 'reviewed' }),
+      UserWarning.create({
+        userId:      targetUserId,
+        moderatorId: req.session.userId,
+        message:     warningMessage
+      })
     ];
     if (report.targetType === 'post') {
       warnOps.push(Post.update({ status: 'published' }, { where: { id: report.targetId, status: 'pending' } }));
@@ -212,11 +237,13 @@ exports.escalateReport = async (req, res, next) => {
 
     if (report.targetType === 'post') {
       ops.push(Post.update({ isHidden: true }, { where: { id: report.targetId } }));
+    } else if (report.targetType === 'user') {
+      ops.push(Post.update({ isHidden: true }, { where: { userId: report.targetId } }));
     }
 
     await Promise.all(ops);
 
-    req.flash('success', 'Report escalated to admin.' + (report.targetType === 'post' ? ' Post has been hidden.' : ''));
+    req.flash('success', 'This report has been sent to a system admin for review.');
     res.redirect('/moderator/dashboard');
   } catch (err) { next(err); }
 };

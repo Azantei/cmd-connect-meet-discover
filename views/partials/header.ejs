@@ -5,6 +5,81 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><%= title %> | C.M.D.</title>
   <link rel="stylesheet" href="/css/<%= typeof pageCSS !== 'undefined' ? pageCSS : 'home' %>.css">
+  <style>
+    .mod-dash-btn {
+      background: hsl(20,90%,55%);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.3rem 0.85rem;
+      font: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .mod-dash-btn:hover { background: hsl(20,90%,45%); color: #fff; }
+    .warning-indicator {
+      position: relative;
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 0.5rem;
+    }
+    .warning-dot {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      background: #e53e3e;
+      border-radius: 50%;
+      cursor: pointer;
+      animation: pulse 1.5s infinite;
+      vertical-align: middle;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .warning-popup {
+      position: absolute;
+      top: 1.8rem;
+      right: 0;
+      background: #fff;
+      border: 1px solid #e53e3e;
+      border-radius: 8px;
+      padding: 1rem;
+      min-width: 280px;
+      max-width: 360px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      z-index: 9999;
+    }
+    .warning-popup h4 {
+      margin: 0 0 0.5rem;
+      color: #e53e3e;
+      font-size: 0.95rem;
+    }
+    .warning-item {
+      border-bottom: 1px solid #f0f0f0;
+      padding: 0.5rem 0;
+      font-size: 0.85rem;
+      color: #333;
+    }
+    .warning-item:last-of-type { border-bottom: none; }
+    .warning-item small { color: #888; display: block; margin-top: 0.2rem; }
+    .warning-dismiss-btn {
+      margin-top: 0.75rem;
+      background: #e53e3e;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 0.35rem 0.8rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      width: 100%;
+    }
+    .warning-dismiss-btn:hover { background: #c53030; }
+  </style>
 </head>
 <body>
 <nav>
@@ -14,10 +89,40 @@
   <% if (currentUser) { %>
     <a href="/users/profile">My Profile</a>
     <% if (currentRole === 'moderator' || currentRole === 'admin') { %>
-      <a href="/moderator/dashboard">Moderator</a>
+      <a href="/moderator/dashboard" class="mod-dash-btn">Moderator</a>
     <% } %>
     <% if (currentRole === 'admin') { %>
       <a href="/admin/dashboard">Admin</a>
+    <% } %>
+    <% if (userWarnings && userWarnings.length > 0) { %>
+      <div class="warning-indicator" id="warningIndicator">
+        <span class="warning-dot" id="warningDot" title="You have a moderator warning"></span>
+        <div class="warning-popup" id="warningPopup" style="display:none;">
+          <h4>&#9888; Moderator Warning</h4>
+          <% userWarnings.forEach(function(w) { %>
+            <div class="warning-item">
+              <p style="margin:0"><%= w.message %></p>
+              <small><%= new Date(w.createdAt).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'}) %></small>
+            </div>
+          <% }); %>
+          <form action="/users/warnings/dismiss" method="POST">
+            <button type="submit" class="warning-dismiss-btn">Dismiss</button>
+          </form>
+        </div>
+      </div>
+      <script>
+        (function() {
+          var dot = document.getElementById('warningDot');
+          var popup = document.getElementById('warningPopup');
+          dot.addEventListener('click', function(e) {
+            e.stopPropagation();
+            popup.style.display = popup.style.display === 'none' ? 'block' : 'none';
+          });
+          document.addEventListener('click', function() {
+            popup.style.display = 'none';
+          });
+        })();
+      </script>
     <% } %>
     <form action="/logout" method="POST" style="display:inline">
       <button type="submit">Logout</button>

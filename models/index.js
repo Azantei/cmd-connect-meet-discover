@@ -35,6 +35,7 @@ db.Report         = require('./Report')(sequelize, Sequelize.DataTypes);
 db.Category       = require('./Category')(sequelize, Sequelize.DataTypes);
 db.ModerationLog      = require('./ModerationLog')(sequelize, Sequelize.DataTypes);
 db.PlatformSetting    = require('./PlatformSetting')(sequelize, Sequelize.DataTypes);
+db.UserWarning        = require('./UserWarning')(sequelize, Sequelize.DataTypes);
 
 /* ========================================
    MODEL ASSOCIATIONS
@@ -62,5 +63,9 @@ db.Report.belongsTo(db.User, { foreignKey: 'reporterId', as: 'reporter' });
 // ── User ↔ ModerationLog (as moderator) ─────────────────────
 db.User.hasMany(db.ModerationLog, { foreignKey: 'moderatorId', onDelete: 'CASCADE' });
 db.ModerationLog.belongsTo(db.User, { foreignKey: 'moderatorId', as: 'moderator' });
+
+// ── User ↔ UserWarning (warned user) ────────────────────────
+db.User.hasMany(db.UserWarning, { foreignKey: 'userId', onDelete: 'CASCADE' });
+db.UserWarning.belongsTo(db.User, { foreignKey: 'userId', as: 'warnedUser' });
 
 module.exports = db;
