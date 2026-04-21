@@ -108,7 +108,7 @@
         <div class="modal">
             <div class="modal-title">Report this user?</div>
             <div class="modal-desc">Please describe why you are reporting this user.</div>
-            <form action="/users/<%= profileUser.id %>/report" method="POST">
+            <form action="/users/<%= profileUser.id %>/report" method="POST" onsubmit="return confirmUserReportSubmission()">
                 <div class="modal-comment-section">
                     <label for="reportReason" class="comment-label">Reason <span style="color:red">*</span></label>
                     <textarea id="reportReason" name="reason" class="report-textarea" rows="3"

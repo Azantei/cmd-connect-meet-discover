@@ -28,4 +28,8 @@ function toggleInterested() {
         });
 }
 
+function confirmReportSubmission() {
+    return window.confirm('This action cannot be undone!');
+}
+
 

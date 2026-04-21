@@ -146,7 +146,7 @@
         <div class="modal">
             <div class="modal-title">Report this post?</div>
             <div class="modal-desc">Please describe the issue. Our moderation team will review your report.</div>
-            <form action="/posts/<%= post.id %>/report" method="POST">
+            <form action="/posts/<%= post.id %>/report" method="POST" onsubmit="return confirmReportSubmission()">
                 <div class="modal-reasons">
                     <label><input type="radio" name="reason" value="Spam or misleading content"> Spam or misleading content</label>
                     <label><input type="radio" name="reason" value="Inappropriate content"> Inappropriate content</label>

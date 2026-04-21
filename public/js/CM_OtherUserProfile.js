@@ -129,6 +129,10 @@ function updateFilterUI() {
     }
 }
 
+function confirmUserReportSubmission() {
+    return window.confirm('This action cannot be undone!');
+}
+
 // Close modal on overlay click
 var _reportModal = document.getElementById('reportModal');
 if (_reportModal) {
