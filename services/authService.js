@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const { User } = require('../models');
+const { User, Category } = require('../models');
 
 async function authenticateByEmailPassword(email, password) {
   const user = await User.findOne({ where: { email } });
@@ -12,6 +12,21 @@ async function authenticateByEmailPassword(email, password) {
   return { ok: true, user };
 }
 
+async function registerUser(name, email, password) {
+  return User.create({ name, email, password });
+}
+
+async function getSetupCategories() {
+  return Category.findAll({ order: [['name', 'ASC']] });
+}
+
+async function saveProfileSetup(userId, interests, location) {
+  await User.update({ interests, location: location || null }, { where: { id: userId } });
+}
+
 module.exports = {
-  authenticateByEmailPassword
+  authenticateByEmailPassword,
+  registerUser,
+  getSetupCategories,
+  saveProfileSetup
 };

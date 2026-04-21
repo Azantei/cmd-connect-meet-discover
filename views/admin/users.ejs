@@ -58,7 +58,7 @@
     <section class="stats-section">
       <div class="stat-card">
         <div class="stat-label">Total Users</div>
-        <div class="stat-value" id="totalUsers"><%= users.length %></div>
+        <div class="stat-value" id="totalUsers"><%= totalUsers %></div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Active Posts</div>
@@ -98,22 +98,7 @@
     </div>
   </footer>
 
-  <script id="admin-users-data" type="application/json"><%- JSON.stringify(users.map(function(u, i) {
-    var nameParts = (u.name || '').trim().split(/\s+/);
-    var initials = nameParts.map(function(p) { return p.charAt(0).toUpperCase(); }).join('').substring(0, 2) || '?';
-    var colors = ['#D2691E','#C85A54','#CD853F','#A0522D','#8B4513','#6B4423','#B87333'];
-    return {
-      id: u.id,
-      firstName: u.name || '',
-      lastName: '',
-      email: u.email || '',
-      role: u.role === 'admin' ? 'Admin' : (u.role === 'moderator' ? 'Mod' : 'Member'),
-      status: u.isBanned ? 'banned' : 'active',
-      joinDate: new Date(u.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit' }).replace(',', ''),
-      initials: initials,
-      avatarColor: colors[i % colors.length]
-    };
-  })) %></script>
+  <script id="admin-users-data" type="application/json"><%- JSON.stringify(adminUsers) %></script>
   <script>
     var adminUsersDataEl = document.getElementById('admin-users-data');
     window.ADMIN_USERS = adminUsersDataEl ? JSON.parse(adminUsersDataEl.textContent || '[]') : [];

@@ -47,5 +47,25 @@ function makeStorage(prefix) {
 const profileUpload = multer({ storage: makeStorage('user'), fileFilter, limits });
 const postUpload    = multer({ storage: makeStorage('post'), fileFilter, limits });
 
+/* ========================================
+   HANDLE IMAGE UPLOAD
+   Wraps a multer single-file upload with
+   user-friendly error handling; on failure
+   flashes an error and redirects back
+   ======================================== */
+function handleImageUpload(field) {
+  const upload = postUpload.single(field);
+  return (req, res, next) => {
+    upload(req, res, err => {
+      if (err) {
+        req.flash('error', 'Image must be under 5MB and in JPG, PNG, or GIF format.');
+        return res.redirect('back');
+      }
+      next();
+    });
+  };
+}
+
 module.exports = profileUpload;
 module.exports.postUpload = postUpload;
+module.exports.handleImageUpload = handleImageUpload;

@@ -1,22 +1,11 @@
-const { User, Category } = require('../models');
-const { authenticateByEmailPassword } = require('../services/authService');
+const { authenticateByEmailPassword, registerUser, getSetupCategories, saveProfileSetup } = require('../services/authService');
 
-/* ========================================
-   ROLE-BASED REDIRECT MAP
-   After login, each role lands on its
-   own home page
-   ======================================== */
 const ROLE_REDIRECTS = {
   community_member: '/users/profile',
   moderator: '/moderator/dashboard',
   admin: '/admin/users'
 };
 
-/* ========================================
-   PUBLIC PAGE HANDLERS
-   GET / and GET /about
-   No DB queries — just render static views
-   ======================================== */
 exports.getHome = (req, res) => {
   res.render('index', { title: 'C.M.D. - Connect, Meet, Discover' });
 };
@@ -25,13 +14,6 @@ exports.getAbout = (req, res) => {
   res.render('about', { title: 'About Us' });
 };
 
-/* ========================================
-   LOGIN
-   GET  /login - render login form
-   POST /login - look up user by email,
-   bcrypt-compare password, check ban status,
-   set session, redirect by role
-   ======================================== */
 exports.getLogin = (req, res) => {
   res.render('auth/login', { title: 'Login' });
 };
@@ -39,13 +21,11 @@ exports.getLogin = (req, res) => {
 exports.postLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-
     if (!email || !password) {
       req.flash('loginError', 'Email and password are required.');
       req.flash('loginEmail', email || '');
       return res.redirect('/login');
     }
-
     const authResult = await authenticateByEmailPassword(email, password);
     if (!authResult.ok && authResult.reason === 'invalid_credentials') {
       req.flash('loginError', 'Invalid email or password.');
@@ -57,26 +37,14 @@ exports.postLogin = async (req, res, next) => {
       req.flash('loginEmail', email);
       return res.redirect('/login');
     }
-
     const user = authResult.user;
-
     req.session.userId = user.id;
     req.session.role = user.role;
     req.session.username = user.name;
-
     res.redirect(ROLE_REDIRECTS[user.role] || '/posts');
-  } catch (err) {
-    next(err);
-  }
+  } catch (err) { next(err); }
 };
 
-/* ========================================
-   REGISTRATION
-   GET  /register - render registration form
-   POST /register - create user row in DB
-   (password hashed via User beforeSave hook),
-   start session, redirect to profile setup
-   ======================================== */
 exports.getRegister = (req, res) => {
   res.render('auth/register', { title: 'Register' });
 };
@@ -84,23 +52,18 @@ exports.getRegister = (req, res) => {
 exports.postRegister = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
-
     if (!name || !email || !password) {
       req.flash('error', 'All fields are required.');
       return res.redirect('/login');
     }
-
     if (password.length < 8) {
       req.flash('error', 'Password must be at least 8 characters.');
       return res.redirect('/login');
     }
-
-    const user = await User.create({ name, email, password });
-
+    const user = await registerUser(name, email, password);
     req.session.userId = user.id;
     req.session.role = user.role;
     req.session.username = user.name;
-
     res.redirect('/register/setup');
   } catch (err) {
     if (err.name === 'SequelizeUniqueConstraintError') {
@@ -115,16 +78,9 @@ exports.postRegister = async (req, res, next) => {
   }
 };
 
-/* ========================================
-   PROFILE SETUP (post-registration)
-   GET  /register/setup - render interests/location form,
-   fetching all categories from DB for pills
-   POST /register/setup - save interests array and
-   location string to the user row
-   ======================================== */
 exports.getSetup = async (req, res, next) => {
   try {
-    const categories = await Category.findAll({ order: [['name', 'ASC']] });
+    const categories = await getSetupCategories();
     res.render('auth/setup', { title: 'Set Up Your Profile', categories });
   } catch (err) { next(err); }
 };
@@ -139,17 +95,11 @@ exports.postSetup = async (req, res, next) => {
       req.flash('error', 'Please select at least one interest.');
       return res.redirect('/register/setup');
     }
-    const location = (req.body.location || '').trim() || null;
-    await User.update({ interests, location }, { where: { id: req.session.userId } });
+    await saveProfileSetup(req.session.userId, interests, (req.body.location || '').trim());
     res.redirect('/users/profile');
   } catch (err) { next(err); }
 };
 
-/* ========================================
-   LOGOUT
-   POST /logout
-   Destroys the session, redirects to login
-   ======================================== */
 exports.logout = (req, res) => {
   req.session.destroy(() => res.redirect('/login'));
 };

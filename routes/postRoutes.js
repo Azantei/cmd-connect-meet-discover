@@ -2,20 +2,7 @@ const express = require('express');
 const router = express.Router();
 const postController = require('../controllers/postController');
 const { requireAuth } = require('../middleware/authMiddleware');
-const { postUpload } = require('../middleware/upload');
-
-function uploadImage(field) {
-  const upload = postUpload.single(field);
-  return (req, res, next) => {
-    upload(req, res, (err) => {
-      if (err) {
-        req.flash('error', 'Image must be under 5MB and in JPG, PNG, or GIF format.');
-        return res.redirect('back');
-      }
-      next();
-    });
-  };
-}
+const { handleImageUpload } = require('../middleware/upload');
 
 /* ========================================
    FEED & CREATE POST ROUTES
@@ -27,7 +14,7 @@ function uploadImage(field) {
 router.get('/',        postController.getFeed);
 router.get('/new',     requireAuth, postController.getCreatePost);
 router.get('/create',  requireAuth, postController.getCreatePost);
-router.post('/',       requireAuth, uploadImage('imageUrl'), postController.createPost);
+router.post('/',       requireAuth, handleImageUpload('imageUrl'), postController.createPost);
 
 /* ========================================
    SINGLE POST VIEW
@@ -43,7 +30,7 @@ router.get('/:id',     postController.getPost);
    DELETE /posts/:id      - permanently remove post from DB
    ======================================== */
 router.get('/:id/edit',  requireAuth, postController.getEditPost);
-router.post('/:id/edit', requireAuth, uploadImage('imageUrl'), postController.updatePost);
+router.post('/:id/edit', requireAuth, handleImageUpload('imageUrl'), postController.updatePost);
 router.delete('/:id',  requireAuth, postController.deletePost);
 
 /* ========================================
