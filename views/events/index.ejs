@@ -32,6 +32,10 @@
         </div>
     </nav>
 
+    <% if (dateRangeError) { %>
+    <div class="flash error" style="max-width:1200px;margin:16px auto 0;"><%= dateRangeError %></div>
+    <% } %>
+
     <form class="search-bar" id="searchForm" action="/events" method="GET">
         <input type="text" name="q" id="search-input" value="<%= q %>" placeholder="🔍  Search activities, events, or people..." />
         <div id="hiddenFilterInputs"></div>

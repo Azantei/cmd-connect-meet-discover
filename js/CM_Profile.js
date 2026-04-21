@@ -283,11 +283,24 @@ function removeEvent(tab, index) {
             });
         return;
     } else if (tab === 'drafts') {
-        var actualIndex = DRAFTS.indexOf(eventToRemove);
-        if (actualIndex > -1) {
-            DRAFTS.splice(actualIndex, 1);
-            console.log('Removed draft:', eventToRemove.title);
+        var draftId = eventToRemove.id;
+        if (!draftId) {
+            var actualIndex = DRAFTS.indexOf(eventToRemove);
+            if (actualIndex > -1) DRAFTS.splice(actualIndex, 1);
+            renderCards();
+            return;
         }
+
+        fetch('/posts/' + draftId + '?_method=DELETE', { method: 'POST' })
+            .then(function(response) {
+                if (!response.ok) throw new Error('Failed to delete draft');
+                DRAFTS = DRAFTS.filter(function(d) { return d.id !== draftId; });
+                renderCards();
+            })
+            .catch(function() {
+                alert('Failed to delete draft. Please try again.');
+            });
+        return;
     }
     
     // Re-render the cards

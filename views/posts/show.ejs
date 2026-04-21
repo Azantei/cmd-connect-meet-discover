@@ -32,8 +32,8 @@
         </div>
     </nav>
 
-    <% if (success && success.length && success !== 'RSVP cancelled.') { %><div class="flash success"><%= success %></div><% } %>
-    <% if (error && error.length) { %><div class="flash error"><%= error %></div><% } %>
+    <% if (success && success.length && !(rsvpConfirmed && rsvpConfirmed.length) && !(rsvpCancelled && rsvpCancelled.length)) { %><div class="flash success"><%= success %></div><% } %>
+    <% if (error && error.length && !(rsvpFull && rsvpFull.length)) { %><div class="flash error"><%= error %></div><% } %>
 
     <div class="banner">
         <% if (post.imageUrl) { %>
@@ -200,13 +200,37 @@
     </div>
     <% } %>
 
-    <% if (success && success === 'RSVP cancelled.') { %>
+    <% if (rsvpCancelled && rsvpCancelled.length) { %>
     <div class="modal-overlay" id="rsvpCancelledModal" style="display:flex;">
         <div class="modal">
             <div class="modal-title">RSVP Cancelled</div>
             <div class="modal-desc">Your RSVP has been cancelled.</div>
             <div class="modal-actions" style="justify-content:center;">
                 <button type="button" class="btn-submit" onclick="document.getElementById('rsvpCancelledModal').style.display='none'">OK</button>
+            </div>
+        </div>
+    </div>
+    <% } %>
+
+    <% if (rsvpConfirmed && rsvpConfirmed.length) { %>
+    <div class="modal-overlay" id="rsvpConfirmedModal" style="display:flex;">
+        <div class="modal">
+            <div class="modal-title">RSVP Confirmed</div>
+            <div class="modal-desc">RSVP'd &#10003;</div>
+            <div class="modal-actions" style="justify-content:center;">
+                <button type="button" class="btn-submit" onclick="document.getElementById('rsvpConfirmedModal').style.display='none'">OK</button>
+            </div>
+        </div>
+    </div>
+    <% } %>
+
+    <% if (rsvpFull && rsvpFull.length) { %>
+    <div class="modal-overlay" id="rsvpFullModal" style="display:flex;">
+        <div class="modal">
+            <div class="modal-title">RSVP Unavailable</div>
+            <div class="modal-desc">This event is full. You can no longer RSVP.</div>
+            <div class="modal-actions" style="justify-content:center;">
+                <button type="button" class="btn-submit" onclick="document.getElementById('rsvpFullModal').style.display='none'">OK</button>
             </div>
         </div>
     </div>

@@ -82,27 +82,38 @@ module.exports = (sequelize, DataTypes) => {
      ======================================== */
   Post.search = async function(q, categories, dateFrom, dateTo) {
     const { Op } = require('sequelize');
+    const dbSequelize = Post.sequelize;
     const now = new Date();
 
-    // When a dateFrom is given use it as the lower bound; otherwise hide past events
-    const effectiveFrom = dateFrom ? new Date(dateFrom) : now;
-    const dateFilter = { [Op.gte]: effectiveFrom };
-    if (dateTo) {
-      const end = new Date(dateTo);
-      end.setHours(23, 59, 59, 999);
-      dateFilter[Op.lte] = end;
+    const hasDateFilter = !!(dateFrom || dateTo);
+    let dateCondition;
+    if (hasDateFilter) {
+      const dateFilter = {};
+      if (dateFrom) {
+        const start = new Date(dateFrom);
+        start.setHours(0, 0, 0, 0);
+        dateFilter[Op.gte] = start;
+      }
+      if (dateTo) {
+        const end = new Date(dateTo);
+        end.setHours(23, 59, 59, 999);
+        dateFilter[Op.lte] = end;
+      }
+      // With an active date filter, only return posts whose date is inside the selected window.
+      dateCondition = { date: dateFilter };
+    } else {
+      // Default browse behavior: keep undated posts and hide posts whose date has already passed.
+      dateCondition = {
+        [Op.or]: [
+          { date: null },
+          { date: { [Op.gte]: now } }
+        ]
+      };
     }
 
     const conditions = [
       { isHidden: false, status: 'published' },
-      // Activities and undated posts always show; events must pass the date window
-      {
-        [Op.or]: [
-          { type: 'activity' },
-          { date: null },
-          { date: dateFilter }
-        ]
-      }
+      dateCondition
     ];
 
     if (q && q.trim()) {
@@ -115,11 +126,21 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     if (categories && categories.length > 0) {
-      conditions.push({
-        [Op.or]: categories.map(cat => ({
-          category: { [Op.like]: `%"${cat.trim().replace(/["%_\\]/g, '\\$&')}"%` }
-        }))
-      });
+      const normalizedCategories = categories
+        .map(cat => String(cat || '').trim().toLowerCase())
+        .filter(Boolean);
+
+      if (normalizedCategories.length > 0) {
+        conditions.push({
+          [Op.or]: normalizedCategories.map(cat => {
+            const escaped = cat.replace(/[%_\\]/g, '\\$&');
+            return dbSequelize.where(
+              dbSequelize.fn('LOWER', dbSequelize.cast(dbSequelize.col('category'), 'CHAR')),
+              { [Op.like]: `%"${escaped}"%` }
+            );
+          })
+        });
+      }
     }
 
     const User = Post.sequelize.models.User;

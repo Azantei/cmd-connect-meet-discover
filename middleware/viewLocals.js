@@ -7,6 +7,9 @@ exports.injectBaseLocals = (req, res, next) => {
   res.locals.success = req.flash('success');
   res.locals.error = req.flash('error');
   res.locals.reportSuccess = req.flash('reportSuccess');
+  res.locals.rsvpConfirmed = req.flash('rsvpConfirmed');
+  res.locals.rsvpCancelled = req.flash('rsvpCancelled');
+  res.locals.rsvpFull = req.flash('rsvpFull');
   res.locals.loginError = req.flash('loginError');
   res.locals.loginEmail = req.flash('loginEmail')[0] || '';
   res.locals.catSuccess = req.flash('catSuccess');

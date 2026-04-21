@@ -107,10 +107,14 @@ async function deletePost(post) {
 async function createRsvp(postId, userId) {
   const post = await Post.findByPk(postId);
   if (!post) return { error: 'not_found' };
-  if (post.date && new Date(post.date) < new Date()) return { error: 'This event has already taken place.' };
+  if (post.date && new Date(post.date) < new Date()) {
+    return { errorCode: 'past_event', error: 'This event has already taken place.' };
+  }
   if (post.rsvpEnabled && post.maxAttendees) {
     const count = await RSVP.count({ where: { postId: post.id } });
-    if (count >= post.maxAttendees) return { error: 'This event is full.' };
+    if (count >= post.maxAttendees) {
+      return { errorCode: 'event_full', error: 'This event is full. You can no longer RSVP.' };
+    }
   }
   await RSVP.findOrCreate({ where: { postId, userId } });
   return { success: 'RSVP confirmed!' };

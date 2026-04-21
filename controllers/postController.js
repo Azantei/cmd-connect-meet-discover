@@ -92,8 +92,16 @@ exports.createRsvp = async (req, res, next) => {
   try {
     const result = await postService.createRsvp(req.params.id, req.session.userId);
     if (result.error === 'not_found') return res.redirect('/posts');
-    if (result.error) req.flash('error', result.error);
-    else req.flash('success', result.success);
+    if (result.error) {
+      req.flash('error', result.error);
+      if (result.errorCode === 'event_full') {
+        req.flash('rsvpFull', '1');
+      }
+    }
+    else {
+      req.flash('success', result.success);
+      req.flash('rsvpConfirmed', '1');
+    }
     res.redirect(`/posts/${req.params.id}`);
   } catch (err) { next(err); }
 };
@@ -102,6 +110,7 @@ exports.deleteRsvp = async (req, res, next) => {
   try {
     await postService.deleteRsvp(req.params.id, req.session.userId);
     req.flash('success', 'RSVP cancelled.');
+    req.flash('rsvpCancelled', '1');
     res.redirect(`/posts/${req.params.id}`);
   } catch (err) { next(err); }
 };

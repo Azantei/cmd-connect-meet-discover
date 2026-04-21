@@ -21,7 +21,11 @@ function relativeTime(date) {
    submitted a single string or an array
    ======================================== */
 function normalizeCategoryArray(category) {
-  return Array.isArray(category) ? category : (category ? [category] : []);
+  const raw = Array.isArray(category) ? category : (category ? [category] : []);
+  const cleaned = raw
+    .map(item => String(item || '').trim())
+    .filter(Boolean);
+  return Array.from(new Set(cleaned));
 }
 
 /* ========================================
