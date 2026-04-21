@@ -1,6 +1,16 @@
 const { User, Post, Report, Category, RSVP, PlatformSetting, ModerationLog } = require('../models');
 const { Op } = require('sequelize');
 
+function toRelativeTime(dateValue) {
+  const diff = Date.now() - new Date(dateValue).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 60) return `${mins} min ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs} ${hrs > 1 ? 'hrs' : 'hr'} ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days} ${days > 1 ? 'days' : 'day'} ago`;
+}
+
 /* ========================================
    USER MANAGEMENT
    GET /admin/users
@@ -157,7 +167,26 @@ exports.getEscalated = async (req, res, next) => {
       });
     }
 
-    res.render('admin/escalated', { title: 'Escalated Reports', reports, escalatedCount: reports.length });
+    const escalatedRows = reports.map(r => ({
+      id: r.id,
+      type: r.type,
+      targetId: r.targetId,
+      title: r.targetName || (r.type === 'post' ? `Post #${r.targetId}` : 'Unknown User'),
+      reporterName: r.reporterName,
+      escalatedBy: r.escalatedBy,
+      originalReason: r.originalReason,
+      moderatorNotes: r.moderatorNotes,
+      status: r.status === 'escalated' ? 'open' : 'resolved',
+      createdAt: r.createdAt,
+      timeAgo: toRelativeTime(r.createdAt)
+    }));
+
+    res.render('admin/escalated', {
+      title: 'Escalated Reports',
+      reports,
+      escalatedRows,
+      escalatedCount: reports.length
+    });
   } catch (err) { next(err); }
 };
 

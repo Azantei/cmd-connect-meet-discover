@@ -1,5 +1,5 @@
-const bcrypt = require('bcrypt');
 const { User, Category } = require('../models');
+const { authenticateByEmailPassword } = require('../services/authService');
 
 /* ========================================
    ROLE-BASED REDIRECT MAP
@@ -46,19 +46,19 @@ exports.postLogin = async (req, res, next) => {
       return res.redirect('/login');
     }
 
-    const user = await User.findOne({ where: { email } });
-
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    const authResult = await authenticateByEmailPassword(email, password);
+    if (!authResult.ok && authResult.reason === 'invalid_credentials') {
       req.flash('loginError', 'Invalid email or password.');
       req.flash('loginEmail', email);
       return res.redirect('/login');
     }
-
-    if (user.isBanned) {
+    if (!authResult.ok && authResult.reason === 'banned') {
       req.flash('loginError', 'Your account has been banned.');
       req.flash('loginEmail', email);
       return res.redirect('/login');
     }
+
+    const user = authResult.user;
 
     req.session.userId = user.id;
     req.session.role = user.role;

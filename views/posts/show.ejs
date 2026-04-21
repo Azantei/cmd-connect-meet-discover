@@ -99,7 +99,7 @@
 
                 <div class="action-row">
                     <% if (currentUser && currentUser !== post.userId) { %>
-                        <button class="btn-interested" id="interestedBtn"
+                        <button class="btn-interested <%= isInterested ? 'active' : '' %>" id="interestedBtn"
                                 data-post-id="<%= post.id %>"
                                 data-post-title="<%= post.title.replace(/"/g, '&quot;') %>"
                                 data-post-desc="<%= post.description ? post.description.substring(0,100).replace(/"/g,'&quot;') : '' %>"
@@ -108,8 +108,8 @@
                                 data-post-max="<%= post.maxAttendees || '' %>"
                                 data-post-tags="<%= JSON.stringify(Array.isArray(post.category) ? post.category : []) %>"
                                 data-post-image="<%= post.imageUrl || '' %>"
-                                onclick="toggleInterested()">&#9733; Interested</button>
-                        <button class="btn-report" id="reportBtn" onclick="document.getElementById('reportModal').style.display='flex'">&#9889; Report Post</button>
+                            onclick="toggleInterested()">&#9733; Interested<%= isInterested ? ' (saved)' : '' %></button>
+                            <button class="btn-report" id="reportBtn" onclick="document.getElementById('reportModal').style.display='flex'">&#9889; Report Post</button>
                     <% } %>
                     <% if (currentUser === post.userId || currentRole === 'admin' || currentRole === 'moderator') { %>
                         <form action="/posts/<%= post.id %>?_method=DELETE" method="POST" style="display:inline"

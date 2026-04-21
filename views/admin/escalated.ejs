@@ -122,30 +122,7 @@
   </footer>
 
   <script>
-    function _relTime(d) {
-      var diff = Date.now() - new Date(d).getTime();
-      var mins = Math.floor(diff / 60000);
-      if (mins < 60) return mins + ' min ago';
-      var hrs = Math.floor(mins / 60);
-      if (hrs < 24) return hrs + (hrs > 1 ? ' hrs ago' : ' hr ago');
-      var days = Math.floor(hrs / 24);
-      return days + (days > 1 ? ' days ago' : ' day ago');
-    }
-    window.ADMIN_ESCALATED = <%- JSON.stringify(reports.map(function(r) {
-      return {
-        id: r.id,
-        type: r.type,
-        targetId: r.targetId,
-        title: r.targetName || (r.type === 'post' ? 'Post #' + r.targetId : 'Unknown User'),
-        reporterName: r.reporterName,
-        escalatedBy: r.escalatedBy,
-        originalReason: r.originalReason,
-        moderatorNotes: r.moderatorNotes,
-        status: r.status === 'escalated' ? 'open' : 'resolved',
-        createdAt: r.createdAt
-      };
-    })) %>;
-    window.ADMIN_ESCALATED.forEach(function(r) { r.timeAgo = _relTime(r.createdAt); });
+    window.ADMIN_ESCALATED = <%- JSON.stringify(escalatedRows) %>;
   </script>
   <script src="/js/AD_EscalatedReports.js"></script>
 </body>

@@ -16,6 +16,7 @@ const postRoutes = require('./routes/postRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const moderatorRoutes = require('./routes/moderatorRoutes');
+const { injectBaseLocals, attachUnreadWarnings } = require('./middleware/viewLocals');
 
 const app = express();
 
@@ -56,39 +57,18 @@ app.use(flash());
    Injects session user info and flash
    messages into every EJS template
    ======================================== */
-app.use(async (req, res, next) => {
-  res.locals.currentUser = req.session.userId || null;
-  res.locals.currentRole = req.session.role || null;
-  res.locals.currentUsername = req.session.username || null;
-  res.locals.success       = req.flash('success');
-  res.locals.error         = req.flash('error');
-  res.locals.reportSuccess = req.flash('reportSuccess');
-  res.locals.loginError    = req.flash('loginError');
-  res.locals.loginEmail    = req.flash('loginEmail')[0] || '';
-  res.locals.catSuccess    = req.flash('catSuccess');
-  res.locals.userWarnings  = [];
-  if (req.session.userId) {
-    try {
-      const { UserWarning } = require('./models');
-      res.locals.userWarnings = await UserWarning.findAll({
-        where: { userId: req.session.userId, isRead: false },
-        order: [['createdAt', 'DESC']]
-      });
-    } catch (_) { /* ignore — table may not exist yet on first boot */ }
-  }
-  next();
-});
+app.use(injectBaseLocals);
 
 /* ========================================
    ROUTE MOUNTING
    Each router is scoped to its base path
    ======================================== */
 app.use('/', authRoutes);
-app.use('/users', userRoutes);
-app.use('/posts', postRoutes);
-app.use('/events', eventRoutes);
-app.use('/admin', adminRoutes);
-app.use('/moderator', moderatorRoutes);
+app.use('/users', attachUnreadWarnings, userRoutes);
+app.use('/posts', attachUnreadWarnings, postRoutes);
+app.use('/events', attachUnreadWarnings, eventRoutes);
+app.use('/admin', attachUnreadWarnings, adminRoutes);
+app.use('/moderator', attachUnreadWarnings, moderatorRoutes);
 
 /* ========================================
    ERROR HANDLERS

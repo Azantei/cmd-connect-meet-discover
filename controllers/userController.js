@@ -1,5 +1,6 @@
-const { User, Post, RSVP, Report, UserWarning, sequelize } = require('../models');
+const { User, Post, RSVP, Report, UserWarning, Category, Interest } = require('../models');
 const { Op } = require('sequelize');
+const { buildOwnProfileViewData, buildOtherProfilePostCards } = require('../services/profileService');
 
 /* ========================================
    OWN PROFILE
@@ -12,69 +13,18 @@ const { Op } = require('sequelize');
    ======================================== */
 exports.getOwnProfile = async (req, res, next) => {
   try {
-    const now = new Date();
-    const [user, posts, rsvps, drafts, pastCreated] = await Promise.all([
-      User.findByPk(req.session.userId, {
-        attributes: ['id', 'name', 'email', 'location', 'interests', 'role', 'profilePic']
-      }),
-      Post.findAll({
-        where: { userId: req.session.userId, isHidden: false, status: 'published' },
-        order: [['createdAt', 'DESC']]
-      }),
-      RSVP.findAll({
-        where: { userId: req.session.userId },
-        include: [{ model: Post, where: { isHidden: false, status: 'published' }, required: true }],
-        order: [['createdAt', 'DESC']]
-      }),
-      Post.findAll({
-        where: { userId: req.session.userId, status: 'draft' },
-        order: [['createdAt', 'DESC']]
-      }),
-      // Events this user created that have already passed (regardless of RSVP)
-      Post.findAll({
-        where: {
-          userId:   req.session.userId,
-          type:     'event',
-          status:   'published',
-          isHidden: false,
-          date:     { [Op.lt]: now }
-        },
-        order: [['date', 'DESC']]
-      })
-    ]);
-
-    // Upcoming RSVPs: events the user RSVP'd to that haven't happened yet
-    const upcomingRsvps = rsvps.filter(r => !r.Post.date || new Date(r.Post.date) > now);
-
-    // Past events: merge RSVP'd past events + created past events, deduplicated by post id
-    const pastRsvpPosts = rsvps
-      .filter(r => r.Post.date && new Date(r.Post.date) <= now)
-      .map(r => r.Post);
-    const pastRsvpIds = new Set(pastRsvpPosts.map(p => p.id));
-    const pastEvents = [
-      ...pastRsvpPosts,
-      ...pastCreated.filter(p => !pastRsvpIds.has(p.id))
-    ];
-
-    // Fetch RSVP counts for all relevant posts in one query
-    const allPostIds = [
-      ...posts.map(p => p.id),
-      ...rsvps.map(r => r.Post.id),
-      ...pastCreated.map(p => p.id)
-    ].filter((id, i, arr) => arr.indexOf(id) === i);
-
-    const rsvpCounts = {};
-    if (allPostIds.length > 0) {
-      const counts = await RSVP.findAll({
-        where: { postId: allPostIds },
-        attributes: ['postId', [sequelize.fn('COUNT', sequelize.col('id')), 'count']],
-        group: ['postId'],
-        raw: true
-      });
-      counts.forEach(row => { rsvpCounts[row.postId] = parseInt(row.count, 10); });
-    }
-
-    res.render('users/profile', { title: 'My Profile', profileUser: user, posts, upcomingRsvps, pastEvents, drafts, rsvpCounts });
+    const data = await buildOwnProfileViewData(req.session.userId);
+    res.render('users/profile', {
+      title: 'My Profile',
+      profileUser: data.profileUser,
+      posts: data.posts,
+      upcomingRsvps: data.upcomingRsvps,
+      pastEvents: data.pastEvents,
+      drafts: data.drafts,
+      rsvpCounts: data.rsvpCounts,
+      profileInitials: data.profileInitials,
+      profileClientData: data.profileClientData
+    });
   } catch (err) { next(err); }
 };
 
@@ -91,7 +41,7 @@ exports.getUserById = async (req, res, next) => {
       attributes: ['id', 'name', 'location', 'interests', 'profilePic', 'showLocation', 'showInterests']
     });
     if (!user) { req.flash('error', 'User not found.'); return res.redirect('/posts'); }
-    const [posts, attendedRsvps] = await Promise.all([
+    const [posts, attendedRsvps, categories] = await Promise.all([
       Post.findAll({
         where: { userId: user.id, isHidden: false, status: 'published' },
         order: [['createdAt', 'DESC']]
@@ -104,15 +54,39 @@ exports.getUserById = async (req, res, next) => {
           required: true
         }],
         order: [[Post, 'date', 'DESC']]
-      })
+      }),
+      Category.findAll({ order: [['name', 'ASC']] })
     ]);
     const attendedEvents = attendedRsvps.map(r => r.Post);
+    const profilePostsCards = buildOtherProfilePostCards(posts);
     res.render('users/otherProfile', {
       title: `${user.name}'s Profile`,
       profileUser: user,
       posts,
-      attendedEvents
+      attendedEvents,
+      categories,
+      profilePostsCards
     });
+  } catch (err) { next(err); }
+};
+
+exports.addInterestedPost = async (req, res, next) => {
+  try {
+    const postId = parseInt(req.params.postId, 10);
+    const post = await Post.findByPk(postId);
+    if (!post || post.isHidden || post.status !== 'published') {
+      return res.status(404).json({ ok: false, message: 'Post not found' });
+    }
+    await Interest.findOrCreate({ where: { userId: req.session.userId, postId } });
+    return res.json({ ok: true });
+  } catch (err) { next(err); }
+};
+
+exports.removeInterestedPost = async (req, res, next) => {
+  try {
+    const postId = parseInt(req.params.postId, 10);
+    await Interest.destroy({ where: { userId: req.session.userId, postId } });
+    return res.json({ ok: true });
   } catch (err) { next(err); }
 };
 

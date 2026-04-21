@@ -90,14 +90,9 @@
             <div class="filter-panel" id="filterPanel" style="display:none;">
                 <div class="filter-title">CATEGORIES</div>
                 <div class="filter-pills">
-                    <span class="fpill" data-cat="Outdoors" onclick="toggleCatFilter(this)">Outdoors</span>
-                    <span class="fpill" data-cat="Music" onclick="toggleCatFilter(this)">Music</span>
-                    <span class="fpill" data-cat="Food" onclick="toggleCatFilter(this)">Food</span>
-                    <span class="fpill" data-cat="Fitness" onclick="toggleCatFilter(this)">Fitness</span>
-                    <span class="fpill" data-cat="Sports" onclick="toggleCatFilter(this)">Sports</span>
-                    <span class="fpill" data-cat="Arts" onclick="toggleCatFilter(this)">Arts</span>
-                    <span class="fpill" data-cat="Social" onclick="toggleCatFilter(this)">Social</span>
-                    <span class="fpill" data-cat="Tech" onclick="toggleCatFilter(this)">Tech</span>
+                    <% categories.forEach(function(cat) { %>
+                        <span class="fpill" data-cat="<%= cat.name %>" onclick="toggleCatFilter(this)"><%= cat.name %></span>
+                    <% }); %>
                 </div>
             </div>
             <div class="scrollable-content">
@@ -148,17 +143,7 @@
 
     <script src="/js/CM_OtherUserProfile.js"></script>
     <script>
-      ATTENDED_EVENTS = <%- JSON.stringify(posts.map(function(p, i) {
-        return {
-          id: p.id,
-          title: p.title || '',
-          desc: p.description || '',
-          date: p.date ? new Date(p.date).toDateString() : 'Date not set',
-          color: ['#2e3a4e','#3b4a2e','#3b2e4a','#4a3b2e','#2e4a3b'][i % 5],
-          tags: Array.isArray(p.category) ? p.category : [],
-          imageUrl: p.imageUrl || null
-        };
-      })) %>;
+            PROFILE_POSTS = <%- JSON.stringify(profilePostsCards) %>;
       renderCards();
     </script>
     <% if (attendedEvents && attendedEvents.length > 0) { %>

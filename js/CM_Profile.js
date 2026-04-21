@@ -6,52 +6,16 @@
 */
 /* ==========================================
    C.M.D. - USER PROFILE
-   Mock event cards, filtering, and tab switching
+   Profile cards, filtering, and tab switching
 ========================================== */
 
-// Mock event data for "My Posts" - events the user created
-var MY_POSTS = [
-    { title: "Morning Trail Hike", desc: "Join us for a scenic morning hike through the local trails. All skill levels welcome.", date: "Sat Mar 7", going: 12, maxAttendees: null, color: "#2e3a4e", tags: ["Outdoors"], status: "Published" },
-    { title: "Community Picnic", desc: "A relaxed afternoon picnic in the park. Food, games, and good company.", date: "Sat Mar 14", going: 20, maxAttendees: 30, color: "#3b2e4a", tags: ["Food"], status: "Published" },
-    { title: "Coffee Tasting", desc: "Explore local roasters and taste a variety of single-origin coffees.", date: "Sun Mar 22", going: 10, maxAttendees: 12, color: "#4a3b2e", tags: ["Coffee"], status: "Published" },
-];
-
-// Mock event data for "Upcoming Events" - events user is attending (Going)
-var UPCOMING_EVENTS = [
-    { title: "Acoustic Jam Session", desc: "Bring your instrument or just your ears. Casual outdoor music gathering.", date: "Sun Mar 8", going: 8, maxAttendees: 15, color: "#3b4a2e", tags: ["Music"], rsvp: "Going" },
-    { title: "5K Fun Run", desc: "A casual community run through Capitol Hill. All paces welcome!", date: "Sat Mar 21", going: 30, maxAttendees: null, color: "#3b4a2e", tags: ["Running", "Outdoors"], rsvp: "Going" },
-];
-
-// Mock event data for "Interested" - events user marked with star (Interested)
-var INTERESTED_EVENTS = [
-    { title: "Sunset Yoga", desc: "Wind down with a group yoga session as the sun sets over the park.", date: "Fri Mar 13", going: 15, maxAttendees: 20, color: "#2e3a4e", tags: ["Fitness"] },
-    { title: "Art Gallery Opening", desc: "Celebrate local artists at the community gallery's spring exhibition.", date: "Thu Mar 19", going: 25, maxAttendees: null, color: "#4a2e3b", tags: ["Arts"] },
-    { title: "Community Picnic", desc: "A relaxed afternoon picnic in the park. Food, games, and good company.", date: "Sat Mar 14", going: 20, maxAttendees: 30, color: "#3b2e4a", tags: ["Food"] },
-];
-
-// Mock event data for "Drafts" - unpublished events user created
-var DRAFTS = [
-    { title: "Book Club Meetup", desc: "Monthly book discussion over coffee. This month: 'The Great Gatsby'", date: "TBD", going: 0, color: "#3b3b3b", tags: ["Coffee", "Arts"], status: "Draft" },
-    { title: "Neighborhood Clean-up", desc: "Help keep our community beautiful. Supplies provided.", date: "TBD", going: 0, color: "#2e4a3b", tags: ["Outdoors"], status: "Draft" },
-];
-
-// Mock event data for "Previous Events" - past events user created or attended
-var PREVIOUS_EVENTS = [
-    { title: "Morning Trail Hike", desc: "Join us for a scenic morning hike through the local trails. All skill levels welcome.", date: "Sat Feb 28", going: 12, color: "#2e3a4e", tags: ["Outdoors"], type: "attended" },
-    { title: "Coffee & Coding Workshop", desc: "Learn the basics of web development in this beginner-friendly workshop.", date: "Thu Feb 26", going: 18, color: "#4a3b2e", tags: ["Tech", "Coffee"], type: "created" },
-    { title: "Acoustic Jam Session", desc: "Bring your instrument or just your ears. Casual outdoor music gathering.", date: "Sun Feb 22", going: 8, color: "#3b4a2e", tags: ["Music"], type: "attended" },
-    { title: "Community Picnic", desc: "A relaxed afternoon picnic in the park. Food, games, and good company.", date: "Sat Feb 14", going: 20, color: "#3b2e4a", tags: ["Food"], type: "created" },
-    { title: "Sunset Yoga", desc: "Wind down with a group yoga session as the sun sets over the park.", date: "Fri Feb 6", going: 15, color: "#2e3a4e", tags: ["Fitness"], type: "attended" },
-    { title: "Tech Meetup: AI in 2026", desc: "Discussion on AI trends and practical applications in our daily lives.", date: "Wed Jan 28", going: 35, color: "#2e4a4e", tags: ["Tech"], type: "created" },
-];
-
-// Mock event data for "Previously Attended Events" - used in guest view
-var ATTENDED_EVENTS = [
-    { title: "Morning Trail Hike", desc: "Join us for a scenic morning hike through the local trails. All skill levels welcome.", date: "Sat Feb 28", going: 12, color: "#2e3a4e", tags: ["Outdoors"] },
-    { title: "Acoustic Jam Session", desc: "Bring your instrument or just your ears. Casual outdoor music gathering.", date: "Sun Feb 22", going: 8, color: "#3b4a2e", tags: ["Music"] },
-    { title: "Community Picnic", desc: "A relaxed afternoon picnic in the park. Food, games, and good company.", date: "Sat Feb 14", going: 20, color: "#3b2e4a", tags: ["Food"] },
-    { title: "Sunset Yoga", desc: "Wind down with a group yoga session as the sun sets over the park.", date: "Fri Feb 6", going: 15, color: "#2e3a4e", tags: ["Fitness"] },
-];
+// Data arrays are seeded by server-rendered JSON in the profile view.
+var MY_POSTS = [];
+var UPCOMING_EVENTS = [];
+var INTERESTED_EVENTS = [];
+var DRAFTS = [];
+var PREVIOUS_EVENTS = [];
+var ATTENDED_EVENTS = [];
 
 // Active filter categories
 var activeFilters = [];
@@ -303,8 +267,21 @@ function removeEvent(tab, index) {
             console.log('Removed from Upcoming Events:', eventToRemove.title);
         }
     } else if (tab === 'interested') {
-        INTERESTED_EVENTS = INTERESTED_EVENTS.filter(function(e) { return e.title !== eventToRemove.title; });
-        localStorage.setItem('cmd_interested_events', JSON.stringify(INTERESTED_EVENTS));
+        if (!eventToRemove.id) {
+            INTERESTED_EVENTS = INTERESTED_EVENTS.filter(function(e) { return e.title !== eventToRemove.title; });
+            renderCards();
+            return;
+        }
+        fetch('/users/interests/' + eventToRemove.id, { method: 'DELETE' })
+            .then(function(response) {
+                if (!response.ok) throw new Error('Failed to remove interested post');
+                INTERESTED_EVENTS = INTERESTED_EVENTS.filter(function(e) { return e.id !== eventToRemove.id; });
+                renderCards();
+            })
+            .catch(function() {
+                alert('Failed to remove interested event. Please try again.');
+            });
+        return;
     } else if (tab === 'drafts') {
         var actualIndex = DRAFTS.indexOf(eventToRemove);
         if (actualIndex > -1) {

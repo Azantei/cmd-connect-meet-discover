@@ -31,10 +31,13 @@
         </div>
     </nav>
 
-    <div class="search-bar">
-        <input type="text" id="search-input" placeholder="🔍  Search activities, events, or people..." oninput="performSearch()" onkeypress="handleSearchKeypress(event)" />
-        <button class="btn-create" onclick="performSearch()">Search</button>
-    </div>
+    <form class="search-bar" action="/events" method="GET">
+        <input type="text" name="q" id="search-input" value="<%= q %>" placeholder="🔍  Search activities, events, or people..." />
+        <% if (selectedCategory) { %>
+            <input type="hidden" name="category" value="<%= selectedCategory %>">
+        <% } %>
+        <button class="btn-create" type="submit">Search</button>
+    </form>
 
     <div class="filters-section">
         <button class="btn-filters" onclick="toggleFilterPanel()">
@@ -47,9 +50,9 @@
                 <circle cx="12" cy="18" r="2" fill="currentColor"></circle>
             </svg>
             Filters
-            <span class="filter-count" id="filterCount" style="display: none;">0</span>
+            <span class="filter-count" id="filterCount" style="display: <%= selectedCategory ? 'inline-block' : 'none' %>;"><%= selectedCategory ? 1 : 0 %></span>
         </button>
-        <button class="btn-clear-filters" id="clearFiltersBtn" onclick="clearAllFilters()" style="display: none;">Clear All</button>
+        <a class="btn-clear-filters" id="clearFiltersBtn" href="/events<%= q ? ('?q=' + encodeURIComponent(q)) : '' %>" style="display: <%= selectedCategory ? 'block' : 'none' %>;">Clear All</a>
     </div>
 
     <div class="filter-panel" id="filterPanel" style="display: none;">
@@ -61,45 +64,9 @@
             <div class="filter-group">
                 <label class="filter-label">Categories</label>
                 <div class="filter-pills" id="categoryFilters">
-                    <button class="filter-pill" data-category="Outdoors" onclick="toggleFilterPill(this)">Outdoors</button>
-                    <button class="filter-pill" data-category="Music" onclick="toggleFilterPill(this)">Music</button>
-                    <button class="filter-pill" data-category="Sports" onclick="toggleFilterPill(this)">Sports</button>
-                    <button class="filter-pill" data-category="Food" onclick="toggleFilterPill(this)">Food</button>
-                    <button class="filter-pill" data-category="Arts" onclick="toggleFilterPill(this)">Arts</button>
-                    <button class="filter-pill" data-category="Tech" onclick="toggleFilterPill(this)">Tech</button>
-                    <button class="filter-pill" data-category="Fitness" onclick="toggleFilterPill(this)">Fitness</button>
-                    <button class="filter-pill" data-category="Games" onclick="toggleFilterPill(this)">Games</button>
-                </div>
-            </div>
-            <div class="filter-group">
-                <label class="filter-label">Distance</label>
-                <div class="filter-distance">
-                    <select id="distanceFilter" onchange="applyFilters()">
-                        <option value="all">All distances</option>
-                        <option value="1">Within 1 mile</option>
-                        <option value="2">Within 2 miles</option>
-                        <option value="5">Within 5 miles</option>
-                        <option value="10">Within 10 miles</option>
-                        <option value="25">Within 25 miles</option>
-                    </select>
-                </div>
-            </div>
-            <div class="filter-group">
-                <label class="filter-label">Date</label>
-                <div class="filter-date">
-                    <select id="dateFilter" onchange="applyFilters()">
-                        <option value="all">Any time</option>
-                        <option value="today">Today</option>
-                        <option value="tomorrow">Tomorrow</option>
-                        <option value="thisweek">This week</option>
-                        <option value="thismonth">This month</option>
-                        <option value="custom">Custom range...</option>
-                    </select>
-                    <div id="customDateRange" style="display: none; margin-top: 12px;">
-                        <input type="date" id="startDate" onchange="applyFilters()">
-                        <span style="margin: 0 8px;">to</span>
-                        <input type="date" id="endDate" onchange="applyFilters()">
-                    </div>
+                    <% categories.forEach(function(cat) { %>
+                        <a class="filter-pill <%= selectedCategory === cat.name ? 'active' : '' %>" href="/events?<%= q ? ('q=' + encodeURIComponent(q) + '&') : '' %>category=<%= encodeURIComponent(cat.name) %>"><%= cat.name %></a>
+                    <% }); %>
                 </div>
             </div>
         </div>
@@ -117,12 +84,13 @@
                 <% var colors = ['#2e3a4e','#3b4a2e','#3b2e4a','#2e4a3b','#4a3b2e','#4a2e3b']; %>
                 <% posts.forEach(function(post, i) { %>
                 <%
-                  var rsvpCount = post.RSVPs ? post.RSVPs.length : 0;
+                                    var rsvpCount = rsvpCounts[post.id] || 0;
                   var rsvpLabel = post.maxAttendees ? (rsvpCount + '/' + post.maxAttendees) : (rsvpCount + ' going');
                   var postColor = colors[i % colors.length];
                   var postTags = Array.isArray(post.category) ? post.category : [];
                   var postDesc = post.description ? post.description.substring(0, 100) : '';
                   var postDate = post.date ? new Date(post.date).toDateString() : 'Date TBD';
+                                    var isInterested = interestedPostIds && interestedPostIds.includes(post.id);
                 %>
                 <div class="card"
                      data-post-id="<%= post.id %>"
@@ -150,7 +118,7 @@
                         </div>
                         <div class="card-tags-right">
                             <span class="rsvp-count"><%= rsvpLabel %></span>
-                            <button class="star-btn" onclick="event.stopPropagation(); toggleStar(this)" aria-label="Mark as interested">
+                            <button class="star-btn <%= isInterested ? 'interested' : '' %>" onclick="event.stopPropagation(); toggleStar(this)" aria-label="Mark as interested">
                                 <svg class="star-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                                 </svg>
@@ -173,8 +141,8 @@
                 <% if (posts.length === 0) { %>
                 <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#666;">
                     <div style="font-size:3rem;margin-bottom:16px;">📭</div>
-                    <h3 style="margin-bottom:8px;">No posts yet</h3>
-                    <p>Be the first to <a href="/posts/create" style="color:hsl(20,90%,55%);">create a post</a>!</p>
+                    <h3 style="margin-bottom:8px;">No posts found</h3>
+                    <p>Try changing your search or filter, or <a href="/posts/create" style="color:hsl(20,90%,55%);">create a post</a>.</p>
                 </div>
                 <% } %>
 

@@ -1,7 +1,25 @@
-const { Post, User, RSVP, Report, Category } = require('../models');
+const { Post, User, RSVP, Report, Category, Interest } = require('../models');
 const { normalizeCategoryArray, parseCombinedDate } = require('../utils/helpers');
+const { getPostStatus, createAutoModerationReport } = require('../services/postModerationService');
 
-const PROFANITY_RE = /\b(fuck|shit|ass)\b/i;
+async function getAuthorizedPostForModification(req, res) {
+  const post = await Post.findByPk(req.params.id);
+  if (!post) {
+    req.flash('error', 'Post not found.');
+    res.redirect('/posts');
+    return null;
+  }
+
+  const isOwner = req.session.userId === post.userId;
+  const isStaff = ['admin', 'moderator'].includes(req.session.role);
+  if (!isOwner && !isStaff) {
+    req.flash('error', 'Unauthorized.');
+    res.redirect(`/posts/${post.id}`);
+    return null;
+  }
+
+  return post;
+}
 
 /* ========================================
    FEED
@@ -44,10 +62,13 @@ exports.getPost = async (req, res, next) => {
       return res.redirect('/posts');
     }
 
-    const [rsvpCount, existingRsvp] = await Promise.all([
+    const [rsvpCount, existingRsvp, existingInterest] = await Promise.all([
       RSVP.count({ where: { postId: post.id } }),
       req.session.userId
         ? RSVP.findOne({ where: { postId: post.id, userId: req.session.userId } })
+        : Promise.resolve(null),
+      req.session.userId
+        ? Interest.findOne({ where: { postId: post.id, userId: req.session.userId } })
         : Promise.resolve(null)
     ]);
 
@@ -55,7 +76,8 @@ exports.getPost = async (req, res, next) => {
       title: post.title,
       post,
       rsvpCount,
-      hasRsvp: !!existingRsvp
+      hasRsvp: !!existingRsvp,
+      isInterested: !!existingInterest
     });
   } catch (err) { next(err); }
 };
@@ -94,20 +116,13 @@ exports.createPost = async (req, res, next) => {
       return res.redirect('/posts/new');
     }
 
-    const hasProfanity = PROFANITY_RE.test(title.trim()) ||
-                         (description && PROFANITY_RE.test(description));
-
     const categoryArray = normalizeCategoryArray(category);
     const isEvent = rsvpEnabled === 'on';
-
-    let status;
-    if (req.body.status === 'draft') {
-      status = 'draft';
-    } else if (hasProfanity) {
-      status = 'pending';
-    } else {
-      status = 'published';
-    }
+    const status = getPostStatus({
+      requestedStatus: req.body.status,
+      title: title.trim(),
+      description
+    });
 
     const post = await Post.create({
       title:        title.trim(),
@@ -128,12 +143,7 @@ exports.createPost = async (req, res, next) => {
       return res.redirect('/users/profile');
     }
     if (status === 'pending') {
-      await Report.create({
-        reporterId: req.session.userId,
-        targetType: 'post',
-        targetId:   post.id,
-        reason:     'Auto-flagged by content filter: potential profanity detected.'
-      });
+      await createAutoModerationReport({ postId: post.id, reporterId: req.session.userId });
       req.flash('success', 'Your post is under review and will be published once approved.');
       return res.redirect('/posts');
     }
@@ -146,13 +156,16 @@ exports.createPost = async (req, res, next) => {
    EDIT POST FORM
    GET /posts/:id/edit
    Renders the edit form pre-populated with
-   the existing post (attached to req.post
-   by the canModifyPost middleware)
+   the existing post after ownership/staff
+   authorization in controller logic
    ======================================== */
 exports.getEditPost = async (req, res, next) => {
   try {
+    const post = await getAuthorizedPostForModification(req, res);
+    if (!post) return;
+
     const categories = await Category.findAll({ order: [['name', 'ASC']] });
-    res.render('posts/edit', { title: 'Edit Post', post: req.post, categories });
+    res.render('posts/edit', { title: 'Edit Post', post, categories });
   } catch (err) { next(err); }
 };
 
@@ -165,7 +178,9 @@ exports.getEditPost = async (req, res, next) => {
    ======================================== */
 exports.updatePost = async (req, res, next) => {
   try {
-    const post = req.post;
+    const post = await getAuthorizedPostForModification(req, res);
+    if (!post) return;
+
     const { title, description, category, location, date, time, rsvpEnabled, maxAttendees } = req.body;
     const categoryArray = normalizeCategoryArray(category);
     const status = req.body.status === 'draft' ? 'draft' : 'published';
@@ -248,7 +263,9 @@ exports.deleteRsvp = async (req, res, next) => {
    ======================================== */
 exports.deletePost = async (req, res, next) => {
   try {
-    const post = req.post;
+    const post = await getAuthorizedPostForModification(req, res);
+    if (!post) return;
+
     await post.destroy();
     await Report.update(
       { status: 'resolved', notes: 'Auto-dismissed: post deleted by author.' },

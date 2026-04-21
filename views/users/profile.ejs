@@ -31,17 +31,12 @@
         </div>
     </nav>
 
-    <%
-      const nameParts = (profileUser.name || '').split(' ').filter(Boolean);
-      const initials = nameParts.slice(0,2).map(p => p[0].toUpperCase()).join('') || '?';
-    %>
-
     <div class="profile-header">
         <div class="profile-left">
             <% if (profileUser.profilePic) { %>
                 <img src="<%= profileUser.profilePic %>" class="avatar" style="object-fit:cover;" alt="Profile picture">
             <% } else { %>
-                <div class="avatar"><%= initials %></div>
+                <div class="avatar"><%= profileInitials %></div>
             <% } %>
             <div class="profile-info">
                 <div class="profile-name-row">
@@ -118,65 +113,11 @@
 
     <script src="/js/CM_Profile.js"></script>
     <script>
-      // Seed JS data arrays with real server data then re-render
-      var _rsvpCounts = <%- JSON.stringify(rsvpCounts) %>;
-      MY_POSTS = <%- JSON.stringify(posts.map(function(p) {
-        return {
-          title: p.title || '',
-          desc:  p.description || '',
-          date:  p.date ? new Date(p.date).toDateString() : 'Date TBD',
-          going: rsvpCounts[p.id] || 0,
-          maxAttendees: null,
-          color: '#2e3a4e',
-          tags:  Array.isArray(p.category) ? p.category : [],
-          status: 'Published',
-          id: p.id,
-          imageUrl: p.imageUrl || null
-        };
-      })) %>;
-      UPCOMING_EVENTS = <%- JSON.stringify(upcomingRsvps.map(function(r) {
-        var p = r.Post || {};
-        return {
-          title: p.title || '',
-          desc:  p.description || '',
-          date:  p.date ? new Date(p.date).toDateString() : 'Date TBD',
-          going: rsvpCounts[p.id] || 0,
-          maxAttendees: p.maxAttendees || null,
-          color: '#3b4a2e',
-          tags:  Array.isArray(p.category) ? p.category : [],
-          rsvp:  'Going',
-          id:    p.id,
-          imageUrl: p.imageUrl || null
-        };
-      })) %>;
-      PREVIOUS_EVENTS = <%- JSON.stringify(pastEvents.map(function(p) {
-        return {
-          title: p.title || '',
-          desc:  p.description || '',
-          date:  p.date ? new Date(p.date).toDateString() : 'Date TBD',
-          going: rsvpCounts[p.id] || 0,
-          maxAttendees: p.maxAttendees || null,
-          color: '#2e3a4e',
-          tags:  Array.isArray(p.category) ? p.category : [],
-          type:  'attended',
-          id:    p.id,
-          imageUrl: p.imageUrl || null
-        };
-      })) %>;
-      INTERESTED_EVENTS = JSON.parse(localStorage.getItem('cmd_interested_events') || '[]');
-      DRAFTS = <%- JSON.stringify(drafts.map(function(p) {
-        return {
-          title: p.title || '',
-          desc:  p.description || '',
-          date:  'Draft',
-          going: 0,
-          color: '#3b3b3b',
-          tags:  Array.isArray(p.category) ? p.category : [],
-          status: 'Draft',
-          id: p.id,
-          imageUrl: p.imageUrl || null
-        };
-      })) %>;
+            MY_POSTS = <%- JSON.stringify(profileClientData.myPosts) %>;
+            UPCOMING_EVENTS = <%- JSON.stringify(profileClientData.upcomingEvents) %>;
+            PREVIOUS_EVENTS = <%- JSON.stringify(profileClientData.previousEvents) %>;
+            INTERESTED_EVENTS = <%- JSON.stringify(profileClientData.interestedEvents) %>;
+            DRAFTS = <%- JSON.stringify(profileClientData.drafts) %>;
       renderCards();
     </script>
 </body>

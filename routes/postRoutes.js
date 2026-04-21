@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const postController = require('../controllers/postController');
-const { requireAuth, canModifyPost } = require('../middleware/authMiddleware');
+const { requireAuth } = require('../middleware/authMiddleware');
 const { postUpload } = require('../middleware/upload');
 
 function uploadImage(field) {
@@ -42,9 +42,9 @@ router.get('/:id',     postController.getPost);
    POST   /posts/:id/edit - update post fields in DB (with optional new image)
    DELETE /posts/:id      - permanently remove post from DB
    ======================================== */
-router.get('/:id/edit',  requireAuth, canModifyPost, postController.getEditPost);
-router.post('/:id/edit', requireAuth, canModifyPost, uploadImage('imageUrl'), postController.updatePost);
-router.delete('/:id',  requireAuth, canModifyPost, postController.deletePost);
+router.get('/:id/edit',  requireAuth, postController.getEditPost);
+router.post('/:id/edit', requireAuth, uploadImage('imageUrl'), postController.updatePost);
+router.delete('/:id',  requireAuth, postController.deletePost);
 
 /* ========================================
    RSVP ROUTES

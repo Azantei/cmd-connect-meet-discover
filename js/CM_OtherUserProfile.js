@@ -9,11 +9,7 @@
    View another user's previously attended events
 ========================================== */
 
-// Mock posts data for Dylan Parker
-var ATTENDED_EVENTS = [
-    { title: "Pickup Basketball at Cal Anderson", desc: "Casual pickup basketball at the Cal Anderson Park courts. All skill levels welcome — just bring your sneakers!", date: "Sun Mar 9", going: 10, maxAttendees: 12, color: "#2e4a3b", tags: ["Sports"] },
-    { title: "Live Music Listening Party", desc: "Gathering at my place to listen to new releases and share favorite tracks. Bring headphones or just your ears.", date: "Fri Mar 21", going: 6, maxAttendees: null, color: "#3b4a2e", tags: ["Music"] },
-];
+var PROFILE_POSTS = [];
 
 // Active filter categories
 var activeFilters = [];
@@ -27,28 +23,31 @@ function renderCards() {
     var noResults = document.getElementById('noResults');
     
     var filtered = activeFilters.length === 0
-        ? ATTENDED_EVENTS
-        : ATTENDED_EVENTS.filter(function(c) { return c.tags.some(function(t) { return activeFilters.includes(t); }); });
+        ? PROFILE_POSTS
+        : PROFILE_POSTS.filter(function(c) { return c.tags.some(function(t) { return activeFilters.includes(t); }); });
 
     if (filtered.length === 0) {
         grid.style.display = 'none';
         noResults.style.display = 'block';
         if (activeFilters.length > 0) {
-            noResults.textContent = "No attended events match the selected filters.";
+            noResults.textContent = "No posts match the selected filters.";
         }
     } else {
         grid.style.display = 'grid';
         noResults.style.display = 'none';
         grid.innerHTML = filtered.map(function(card) {
-            var statusBadge = '<span class="status-badge" style="background-color: #5a7a9e;">👤 Created</span>';
-            var attendeeText = card.maxAttendees ? (card.going + '/' + card.maxAttendees + ' going') : (card.going + ' going');
-
-            return '<div class="card">' +
-                '<div class="card-img" style="background-color:' + card.color + '"><div class="card-img-icon"></div></div>' +
-                '<div class="card-tags">' + card.tags.map(function(t) { return '<span class="card-tag">' + t + '</span>'; }).join('') + statusBadge + '</div>' +
+            var imgHtml = card.imageUrl
+                ? '<div class="card-img" style="background-color:' + card.color + '"><img src="' + card.imageUrl + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"></div>'
+                : '<div class="card-img" style="background-color:' + card.color + '"><div class="card-img-icon"></div></div>';
+            var link = card.id ? '/posts/' + card.id : '#';
+            return '<a href="' + link + '" style="text-decoration:none;color:inherit;display:block;">' +
+                '<div class="card">' +
+                imgHtml +
+                '<div class="card-tags">' + card.tags.map(function(t) { return '<span class="card-tag">' + t + '</span>'; }).join('') + '</div>' +
                 '<div class="card-body"><div class="card-title">' + card.title + '</div><div class="card-desc">' + card.desc + '</div></div>' +
-                '<div class="card-footer"><span>📅 ' + card.date + '</span><span>👥 ' + attendeeText + '</span></div>' +
-                '</div>';
+                '<div class="card-footer"><span>📅 ' + card.date + '</span></div>' +
+                '</div>' +
+                '</a>';
         }).join('');
     }
 }
@@ -130,72 +129,13 @@ function updateFilterUI() {
     }
 }
 
-/**
- * Open report user modal
- * Prevents opening if user already reported
- */
-function openReportModal() {
-    var btn = document.getElementById('reportBtn');
-    if (btn.classList.contains('reported')) return;
-    document.getElementById('reportModal').style.display = 'flex';
-}
-
-/**
- * Close report user modal
- */
-function closeReportModal() {
-    document.getElementById('reportModal').style.display = 'none';
-    // Clear form when closing
-    document.querySelectorAll('input[name="reason"]').forEach(function(radio) {
-        radio.checked = false;
-    });
-    document.getElementById('reportComment').value = '';
-}
-
-/**
- * Submit report for this user
- * Shows confirmation dialog before submitting
- * Updates button to show reported state
- */
-function submitReport() {
-    // Get selected reason
-    var selectedReason = document.querySelector('input[name="reason"]:checked');
-    if (!selectedReason) {
-        alert('Please select a reason for reporting this user.');
-        return;
-    }
-    
-    // Get optional comment
-    var comment = document.getElementById('reportComment').value.trim();
-    
-    var confirmed = confirm(
-        "Are you sure you wish to report this user?\n\n" +
-        "This action cannot be undone. Our moderation team will review your report and take appropriate action. " +
-        "False reports may result in penalties to your account."
-    );
-    
-    if (confirmed) {
-        // In a real implementation, this would send the report to the backend
-        console.log('Report submitted:', {
-            reason: selectedReason.nextSibling.textContent.trim(),
-            comment: comment || '(No additional comments)'
-        });
-        
-        closeReportModal();
-        
-        // Mark button as reported
-        var btn = document.getElementById('reportBtn');
-        btn.classList.add('reported');
-        btn.innerHTML = 'Reported';
-        
-        alert('Thank you for your report. Our moderation team will review this user.');
-    }
-}
-
 // Close modal on overlay click
-document.getElementById('reportModal').addEventListener('click', function(e) {
-    if (e.target === this) closeReportModal();
-});
+var _reportModal = document.getElementById('reportModal');
+if (_reportModal) {
+    _reportModal.addEventListener('click', function(e) {
+        if (e.target === this) _reportModal.style.display = 'none';
+    });
+}
 
 // Close dropdowns when clicking outside
 document.addEventListener('click', function(e) {
@@ -207,5 +147,4 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// Initial render
-renderCards();
+// renderCards() is called by the inline script after PROFILE_POSTS is populated

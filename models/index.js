@@ -36,6 +36,7 @@ db.Category       = require('./Category')(sequelize, Sequelize.DataTypes);
 db.ModerationLog      = require('./ModerationLog')(sequelize, Sequelize.DataTypes);
 db.PlatformSetting    = require('./PlatformSetting')(sequelize, Sequelize.DataTypes);
 db.UserWarning        = require('./UserWarning')(sequelize, Sequelize.DataTypes);
+db.Interest           = require('./Interest')(sequelize, Sequelize.DataTypes);
 
 /* ========================================
    MODEL ASSOCIATIONS
@@ -55,6 +56,12 @@ db.RSVP.belongsTo(db.User, { foreignKey: 'userId', as: 'attendee' });
 // ── Post ↔ RSVP ─────────────────────────────────────────────
 db.Post.hasMany(db.RSVP, { foreignKey: 'postId', onDelete: 'CASCADE' });
 db.RSVP.belongsTo(db.Post, { foreignKey: 'postId' });
+
+// ── User ↔ Interest ↔ Post ──────────────────────────────────
+db.User.hasMany(db.Interest, { foreignKey: 'userId', onDelete: 'CASCADE' });
+db.Interest.belongsTo(db.User, { foreignKey: 'userId', as: 'user' });
+db.Post.hasMany(db.Interest, { foreignKey: 'postId', onDelete: 'CASCADE' });
+db.Interest.belongsTo(db.Post, { foreignKey: 'postId', as: 'post' });
 
 // ── User ↔ Report (as reporter) ─────────────────────────────
 db.User.hasMany(db.Report, { foreignKey: 'reporterId', onDelete: 'CASCADE' });

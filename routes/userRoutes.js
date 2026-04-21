@@ -14,6 +14,8 @@ const upload = require('../middleware/upload');
 router.get('/profile',          requireAuth, userController.getOwnProfile);
 router.get('/settings',         requireAuth, userController.getSettings);
 router.post('/settings',        requireAuth, upload.single('profilePic'), userController.updateSettings);
+router.post('/interests/:postId', requireAuth, userController.addInterestedPost);
+router.delete('/interests/:postId', requireAuth, userController.removeInterestedPost);
 
 /* ========================================
    OTHER USER PROFILE ROUTES
