@@ -9,20 +9,95 @@
    Category filtering, search, and card display
 ========================================== */
 
+var selectedCategories = new Set(window.INIT_CATEGORIES || []);
+var filterDateFrom = window.INIT_DATE_FROM || '';
+var filterDateTo   = window.INIT_DATE_TO   || '';
+
 /**
  * Toggle filter panel visibility
  */
 function toggleFilterPanel() {
-    const panel = document.getElementById('filterPanel');
-    const overlay = document.getElementById('filterOverlay');
-    
+    var panel   = document.getElementById('filterPanel');
+    var overlay = document.getElementById('filterOverlay');
     if (panel.style.display === 'none' || !panel.style.display) {
-        panel.style.display = 'flex';
+        panel.style.display   = 'flex';
         if (overlay) overlay.style.display = 'block';
     } else {
-        panel.style.display = 'none';
+        panel.style.display   = 'none';
         if (overlay) overlay.style.display = 'none';
     }
+}
+
+/**
+ * Update the filter count badge and Clear All button visibility
+ */
+function updateFilterBadge() {
+    var count    = selectedCategories.size + (filterDateFrom ? 1 : 0) + (filterDateTo ? 1 : 0);
+    var badge    = document.getElementById('filterCount');
+    var clearBtn = document.getElementById('clearFiltersBtn');
+    if (count > 0) {
+        badge.textContent    = count;
+        badge.style.display  = 'inline-block';
+        clearBtn.style.display = 'block';
+    } else {
+        badge.style.display    = 'none';
+        clearBtn.style.display = 'none';
+    }
+}
+
+/**
+ * Inject active filter values as hidden inputs before the search form submits,
+ * so the search term and all active filters travel together.
+ */
+function injectHiddenFilterInputs() {
+    var container = document.getElementById('hiddenFilterInputs');
+    container.innerHTML = '';
+    selectedCategories.forEach(function(cat) {
+        var input  = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'category';
+        input.value = cat;
+        container.appendChild(input);
+    });
+    if (filterDateFrom) {
+        var input  = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'dateFrom';
+        input.value = filterDateFrom;
+        container.appendChild(input);
+    }
+    if (filterDateTo) {
+        var input  = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'dateTo';
+        input.value = filterDateTo;
+        container.appendChild(input);
+    }
+}
+
+/**
+ * Build URL from current selections and navigate (called by Apply Filters button)
+ */
+function applyFilters() {
+    filterDateFrom = document.getElementById('filterDateFrom').value;
+    filterDateTo   = document.getElementById('filterDateTo').value;
+
+    var params = new URLSearchParams();
+    var q = document.getElementById('search-input').value.trim();
+    if (q) params.set('q', q);
+    selectedCategories.forEach(function(cat) { params.append('category', cat); });
+    if (filterDateFrom) params.set('dateFrom', filterDateFrom);
+    if (filterDateTo)   params.set('dateTo',   filterDateTo);
+
+    window.location.href = '/events' + (params.toString() ? '?' + params.toString() : '');
+}
+
+/**
+ * Clear all active filters and reload (preserving search term)
+ */
+function clearAllFilters() {
+    var q = document.getElementById('search-input').value.trim();
+    window.location.href = '/events' + (q ? '?q=' + encodeURIComponent(q) : '');
 }
 
 /**
@@ -31,7 +106,7 @@ function toggleFilterPanel() {
  * @param {HTMLElement} button - The star button element
  */
 function toggleStar(button) {
-    var card = button.closest('.card');
+    var card   = button.closest('.card');
     var postId = card.dataset.postId;
     var wasInterested = button.classList.contains('interested');
     var method = wasInterested ? 'DELETE' : 'POST';
@@ -47,5 +122,34 @@ function toggleStar(button) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Reserved for page-level initialization.
+    // Mark pills that are already active from server state
+    document.querySelectorAll('.filter-pill').forEach(function(pill) {
+        if (selectedCategories.has(pill.dataset.cat)) {
+            pill.classList.add('active');
+        }
+        pill.addEventListener('click', function() {
+            var cat = this.dataset.cat;
+            if (selectedCategories.has(cat)) {
+                selectedCategories.delete(cat);
+                this.classList.remove('active');
+            } else {
+                selectedCategories.add(cat);
+                this.classList.add('active');
+            }
+            updateFilterBadge();
+        });
+    });
+
+    // Restore date inputs from server state
+    var fromInput = document.getElementById('filterDateFrom');
+    var toInput   = document.getElementById('filterDateTo');
+    if (filterDateFrom) fromInput.value = filterDateFrom;
+    if (filterDateTo)   toInput.value   = filterDateTo;
+    fromInput.addEventListener('change', function() { filterDateFrom = this.value; updateFilterBadge(); });
+    toInput.addEventListener('change',   function() { filterDateTo   = this.value; updateFilterBadge(); });
+
+    // Carry active filters when the search form submits
+    document.getElementById('searchForm').addEventListener('submit', injectHiddenFilterInputs);
+
+    updateFilterBadge();
 });

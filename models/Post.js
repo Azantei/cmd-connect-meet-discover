@@ -80,18 +80,27 @@ module.exports = (sequelize, DataTypes) => {
      Category filter uses a JSON LIKE match
      against the stored array string.
      ======================================== */
-  Post.search = async function(q, category) {
+  Post.search = async function(q, categories, dateFrom, dateTo) {
     const { Op } = require('sequelize');
     const now = new Date();
 
+    // When a dateFrom is given use it as the lower bound; otherwise hide past events
+    const effectiveFrom = dateFrom ? new Date(dateFrom) : now;
+    const dateFilter = { [Op.gte]: effectiveFrom };
+    if (dateTo) {
+      const end = new Date(dateTo);
+      end.setHours(23, 59, 59, 999);
+      dateFilter[Op.lte] = end;
+    }
+
     const conditions = [
       { isHidden: false, status: 'published' },
-      // Hide events whose date has already passed; activities and undated posts always show
+      // Activities and undated posts always show; events must pass the date window
       {
         [Op.or]: [
           { type: 'activity' },
           { date: null },
-          { date: { [Op.gte]: now } }
+          { date: dateFilter }
         ]
       }
     ];
@@ -104,9 +113,13 @@ module.exports = (sequelize, DataTypes) => {
         ]
       });
     }
-    if (category && category.trim()) {
-      const safe = category.trim().replace(/["%_\\]/g, '\\$&');
-      conditions.push({ category: { [Op.like]: `%"${safe}"%` } });
+
+    if (categories && categories.length > 0) {
+      conditions.push({
+        [Op.or]: categories.map(cat => ({
+          category: { [Op.like]: `%"${cat.trim().replace(/["%_\\]/g, '\\$&')}"%` }
+        }))
+      });
     }
 
     const User = Post.sequelize.models.User;

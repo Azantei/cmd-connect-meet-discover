@@ -34,8 +34,9 @@ async function getPostWithDetails(postId, userId) {
 }
 
 async function getFeedData(q, category) {
+  const cats = category ? [category] : [];
   const [posts, categories] = await Promise.all([
-    Post.search(q, category),
+    Post.search(q, cats),
     Category.findAll({ order: [['name', 'ASC']] })
   ]);
   return { posts, categories };
@@ -119,9 +120,9 @@ async function deleteRsvp(postId, userId) {
   await RSVP.destroy({ where: { postId, userId } });
 }
 
-async function getEventsData(userId, q, category) {
+async function getEventsData(userId, q, selectedCategories, dateFrom, dateTo) {
   const [posts, categories] = await Promise.all([
-    Post.search(q, category),
+    Post.search(q, selectedCategories || [], dateFrom, dateTo),
     Category.findAll({ order: [['name', 'ASC']] })
   ]);
 

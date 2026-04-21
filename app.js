@@ -58,17 +58,18 @@ app.use(flash());
    messages into every EJS template
    ======================================== */
 app.use(injectBaseLocals);
+app.use(attachUnreadWarnings);
 
 /* ========================================
    ROUTE MOUNTING
    Each router is scoped to its base path
    ======================================== */
 app.use('/', authRoutes);
-app.use('/users', attachUnreadWarnings, userRoutes);
-app.use('/posts', attachUnreadWarnings, postRoutes);
-app.use('/events', attachUnreadWarnings, eventRoutes);
-app.use('/admin', attachUnreadWarnings, adminRoutes);
-app.use('/moderator', attachUnreadWarnings, moderatorRoutes);
+app.use('/users', userRoutes);
+app.use('/posts', postRoutes);
+app.use('/events', eventRoutes);
+app.use('/admin', adminRoutes);
+app.use('/moderator', moderatorRoutes);
 
 /* ========================================
    ERROR HANDLERS

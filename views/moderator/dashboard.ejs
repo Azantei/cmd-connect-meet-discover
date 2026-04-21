@@ -11,15 +11,15 @@
     <link rel="stylesheet" href="/css/moderator.css">
     <style>
         .warning-indicator { position:relative; display:inline-block; vertical-align:middle; margin-left:0.75rem; }
-        .warning-dot { display:inline-block; width:12px; height:12px; background:#e53e3e; border-radius:50%; cursor:pointer; animation:pulse 1.5s infinite; vertical-align:middle; }
+        .warning-dot { display:inline-block; width:12px; height:12px; background:#e87000; border-radius:50%; cursor:pointer; animation:pulse 1.5s infinite; vertical-align:middle; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
-        .warning-popup { position:absolute; top:1.8rem; right:0; background:#fff; border:1px solid #e53e3e; border-radius:8px; padding:1rem; min-width:280px; max-width:360px; box-shadow:0 4px 20px rgba(0,0,0,.15); z-index:9999; }
-        .warning-popup h4 { margin:0 0 .5rem; color:#e53e3e; font-size:.95rem; }
+        .warning-popup { position:absolute; top:1.8rem; right:0; background:#fff; border:1px solid #e87000; border-radius:8px; padding:1rem; min-width:280px; max-width:360px; box-shadow:0 4px 20px rgba(0,0,0,.15); z-index:9999; }
+        .warning-popup h4 { margin:0 0 .5rem; color:#e87000; font-size:.95rem; }
         .warning-item { border-bottom:1px solid #f0f0f0; padding:.5rem 0; font-size:.85rem; color:#333; }
         .warning-item:last-of-type { border-bottom:none; }
         .warning-item small { color:#888; display:block; margin-top:.2rem; }
-        .warning-dismiss-btn { margin-top:.75rem; background:#e53e3e; color:#fff; border:none; border-radius:5px; padding:.35rem .8rem; font-size:.8rem; cursor:pointer; width:100%; }
-        .warning-dismiss-btn:hover { background:#c53030; }
+        .warning-dismiss-btn { margin-top:.75rem; background:#e87000; color:#fff; border:none; border-radius:5px; padding:.35rem .8rem; font-size:.8rem; cursor:pointer; width:100%; }
+        .warning-dismiss-btn:hover { background:#c56000; }
         .mod-success-popup { position:fixed; top:1.5rem; left:50%; transform:translateX(-50%); background:#276749; color:#fff; padding:.75rem 1.5rem; border-radius:8px; font-size:.95rem; font-weight:600; box-shadow:0 4px 16px rgba(0,0,0,.2); z-index:10000; animation:fadeInDown .3s ease; }
         .mod-error-popup { position:fixed; top:1.5rem; left:50%; transform:translateX(-50%); background:#c53030; color:#fff; padding:.75rem 1.5rem; border-radius:8px; font-size:.95rem; font-weight:600; box-shadow:0 4px 16px rgba(0,0,0,.2); z-index:10000; animation:fadeInDown .3s ease; }
         @keyframes fadeInDown { from{opacity:0;transform:translateX(-50%) translateY(-12px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }

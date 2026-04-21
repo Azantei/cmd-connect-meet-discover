@@ -32,11 +32,9 @@
         </div>
     </nav>
 
-    <form class="search-bar" action="/events" method="GET">
+    <form class="search-bar" id="searchForm" action="/events" method="GET">
         <input type="text" name="q" id="search-input" value="<%= q %>" placeholder="🔍  Search activities, events, or people..." />
-        <% if (selectedCategory) { %>
-            <input type="hidden" name="category" value="<%= selectedCategory %>">
-        <% } %>
+        <div id="hiddenFilterInputs"></div>
         <button class="btn-create" type="submit">Search</button>
     </form>
 
@@ -51,9 +49,9 @@
                 <circle cx="12" cy="18" r="2" fill="currentColor"></circle>
             </svg>
             Filters
-            <span class="filter-count" id="filterCount" style="display: <%= selectedCategory ? 'inline-block' : 'none' %>;"><%= selectedCategory ? 1 : 0 %></span>
+            <span class="filter-count" id="filterCount" style="display:none;">0</span>
         </button>
-        <a class="btn-clear-filters" id="clearFiltersBtn" href="/events<%= q ? ('?q=' + encodeURIComponent(q)) : '' %>" style="display: <%= selectedCategory ? 'block' : 'none' %>;">Clear All</a>
+        <button class="btn-clear-filters" id="clearFiltersBtn" onclick="clearAllFilters()" style="display:none;">Clear All</button>
     </div>
 
     <div class="filter-panel" id="filterPanel" style="display: none;">
@@ -66,17 +64,45 @@
                 <label class="filter-label">Categories</label>
                 <div class="filter-pills" id="categoryFilters">
                     <% categories.forEach(function(cat) { %>
-                        <a class="filter-pill <%= selectedCategory === cat.name ? 'active' : '' %>" href="/events?<%= q ? ('q=' + encodeURIComponent(q) + '&') : '' %>category=<%= encodeURIComponent(cat.name) %>"><%= cat.name %></a>
+                        <button type="button" class="filter-pill" data-cat="<%= cat.name %>"><%= cat.name %></button>
                     <% }); %>
+                </div>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Date Range</label>
+                <div id="customDateRange">
+                    <input type="date" id="filterDateFrom" />
+                    <span style="color:#888;font-size:0.85rem;flex-shrink:0;">to</span>
+                    <input type="date" id="filterDateTo" />
+                </div>
+            </div>
+            <div class="filter-group filter-group--disabled">
+                <label class="filter-label">
+                    Distance
+                    <span class="filter-tag-coming-soon">Coming soon</span>
+                </label>
+                <div class="filter-distance">
+                    <select disabled>
+                        <option>Within 5 miles</option>
+                        <option>Within 10 miles</option>
+                        <option>Within 25 miles</option>
+                        <option>Within 50 miles</option>
+                    </select>
                 </div>
             </div>
         </div>
         <div class="filter-panel-footer">
-            <button class="btn-apply-filters" onclick="toggleFilterPanel()">Apply Filters</button>
+            <button class="btn-apply-filters" onclick="applyFilters()">Apply Filters</button>
         </div>
     </div>
 
     <div class="filter-overlay" id="filterOverlay" onclick="toggleFilterPanel()"></div>
+
+    <script>
+        window.INIT_CATEGORIES = <%- JSON.stringify(selectedCategories) %>;
+        window.INIT_DATE_FROM  = '<%- dateFrom %>';
+        window.INIT_DATE_TO    = '<%- dateTo %>';
+    </script>
 
     <div class="main-content">
         <div class="cards-panel">

@@ -346,6 +346,27 @@ body {
     background-color: #a04422;
 }
 
+/* Disabled filter group (distance — no map yet) */
+.filter-group--disabled {
+    opacity: 0.45;
+}
+.filter-group--disabled select {
+    cursor: not-allowed;
+}
+
+/* "Coming soon" inline badge */
+.filter-tag-coming-soon {
+    font-size: 0.7rem;
+    background: #f0f0f0;
+    color: #888;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-weight: 500;
+    margin-left: 6px;
+    vertical-align: middle;
+    font-family: 'DM Sans', sans-serif;
+}
+
 /* Overlay for filter panel */
 .filter-overlay {
     position: fixed;
