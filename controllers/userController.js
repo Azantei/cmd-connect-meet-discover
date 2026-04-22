@@ -4,6 +4,9 @@ const userService = require('../services/userService');
 const { createUserReport } = require('../services/reportService');
 const { addInterest, removeInterest } = require('../services/postService');
 
+/* ========================================
+   PROFILE VIEWS
+   ======================================== */
 exports.getOwnProfile = async (req, res, next) => {
   try {
     const data = await buildOwnProfileData(req.session.userId);
@@ -53,6 +56,9 @@ exports.updateSettings = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   INTEREST ACTIONS
+   ======================================== */
 exports.addInterestedPost = async (req, res, next) => {
   try {
     const result = await addInterest(req.session.userId, parseInt(req.params.postId, 10));

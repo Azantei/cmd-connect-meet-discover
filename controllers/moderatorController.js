@@ -1,5 +1,8 @@
 const moderatorService = require('../services/moderatorService');
 
+/* ========================================
+   DASHBOARD & REPORT VIEWS
+   ======================================== */
 exports.getDashboard = async (req, res, next) => {
   try {
     const data = await moderatorService.getDashboardData(req.session.userId, req.query.type);
@@ -24,6 +27,9 @@ exports.getReport = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   REPORT ACTIONS
+   ======================================== */
 exports.warnReport = async (req, res, next) => {
   try {
     const result = await moderatorService.warnUser(req.params.id, req.session.userId, req.body.notes);

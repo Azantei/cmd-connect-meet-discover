@@ -6,6 +6,10 @@ const ROLE_REDIRECTS = {
   admin: '/admin/users'
 };
 
+/* ========================================
+   PUBLIC PAGES
+   ======================================== */
+
 exports.getHome = (req, res) => {
   res.render('index', { title: 'C.M.D. - Connect, Meet, Discover' });
 };
@@ -18,6 +22,9 @@ exports.getLogin = (req, res) => {
   res.render('auth/login', { title: 'Login' });
 };
 
+/* ========================================
+   AUTHENTICATION FLOW
+   ======================================== */
 exports.postLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -49,6 +56,9 @@ exports.getRegister = (req, res) => {
   res.render('auth/register', { title: 'Register' });
 };
 
+/* ========================================
+   REGISTRATION FLOW
+   ======================================== */
 exports.postRegister = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
@@ -85,6 +95,9 @@ exports.getSetup = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   PROFILE SETUP FLOW
+   ======================================== */
 exports.postSetup = async (req, res, next) => {
   try {
     let interests = [];
