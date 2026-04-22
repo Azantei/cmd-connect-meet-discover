@@ -87,9 +87,10 @@
             <div class="right-column">
                 <h1 class="event-title"><%= post.title %></h1>
 
-                <% if (post.category && post.category.length) { %>
+                <% const postCategories = Array.isArray(post.category) ? post.category : []; %>
+                <% if (postCategories.length) { %>
                 <div class="tags">
-                    <% post.category.forEach(cat => { %><span class="tag"><%= cat %></span><% }) %>
+                    <% postCategories.forEach(cat => { %><span class="tag"><%= cat %></span><% }) %>
                 </div>
                 <% } %>
 

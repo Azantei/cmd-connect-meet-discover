@@ -74,6 +74,17 @@ module.exports = (sequelize, DataTypes) => {
      field whenever it changes before saving,
      so plain-text passwords are never stored
      ======================================== */
+  User.addHook('afterFind', (result) => {
+    if (!result) return;
+    const normalize = (instance) => {
+      if (typeof instance.interests === 'string') {
+        try { instance.setDataValue('interests', JSON.parse(instance.interests)); }
+        catch { instance.setDataValue('interests', []); }
+      }
+    };
+    Array.isArray(result) ? result.forEach(normalize) : normalize(result);
+  });
+
   User.addHook('beforeSave', async (user) => {
     if (user.changed('password')) {
       user.password = await bcrypt.hash(user.password, 12);

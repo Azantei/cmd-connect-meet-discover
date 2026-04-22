@@ -72,6 +72,17 @@ module.exports = (sequelize, DataTypes) => {
     timestamps: true
   });
 
+  Post.addHook('afterFind', (result) => {
+    if (!result) return;
+    const normalize = (instance) => {
+      if (typeof instance.category === 'string') {
+        try { instance.setDataValue('category', JSON.parse(instance.category)); }
+        catch { instance.setDataValue('category', []); }
+      }
+    };
+    Array.isArray(result) ? result.forEach(normalize) : normalize(result);
+  });
+
   /* ========================================
      POST.SEARCH STATIC METHOD
      Queries published, visible posts with
