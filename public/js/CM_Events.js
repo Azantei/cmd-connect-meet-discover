@@ -268,6 +268,147 @@ function initMap() {
 }
 
 /* ------------------------------------------
+   DISTANCE FILTER  (UC-CM-02 Alternative Flow 1)
+   Client-side only — filters the rendered card grid
+   using the user's geolocation + Mapbox geocoding.
+   No server round-trip; window.POSTS_DATA supplies
+   the location strings already sent by the controller.
+------------------------------------------ */
+
+var geocodeCache = {}; // location string → [lng, lat] | null  (avoids duplicate API calls)
+
+/**
+ * Haversine formula — straight-line distance between two lat/lng points in miles.
+ */
+function haversineDistance(lat1, lng1, lat2, lng2) {
+    var R    = 3958.8; // Earth radius in miles
+    var dLat = (lat2 - lat1) * Math.PI / 180;
+    var dLng = (lng2 - lng1) * Math.PI / 180;
+    var a    = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+               Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+               Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+/**
+ * Geocode a location string via Mapbox Geocoding API.
+ * Returns a Promise that resolves to [lng, lat] or null.
+ * Caches results so each unique location string is only fetched once per session.
+ */
+function geocodeLocation(locationStr) {
+    if (geocodeCache.hasOwnProperty(locationStr)) {
+        return Promise.resolve(geocodeCache[locationStr]);
+    }
+    var url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/' +
+        encodeURIComponent(locationStr) +
+        '.json?access_token=' + window.MAPBOX_TOKEN + '&limit=1';
+    return fetch(url)
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            var coords = (data.features && data.features.length)
+                ? data.features[0].center  // [lng, lat]
+                : null;
+            geocodeCache[locationStr] = coords;
+            return coords;
+        })
+        .catch(function() {
+            geocodeCache[locationStr] = null;
+            return null;
+        });
+}
+
+/**
+ * Inject (or reuse) an inline message element below the distance select.
+ */
+function showDistanceMsg(text) {
+    var msgEl = document.getElementById('distance-msg');
+    if (!msgEl) {
+        msgEl = document.createElement('p');
+        msgEl.id = 'distance-msg';
+        msgEl.style.cssText = 'font-size:0.82rem;color:#c0392b;margin-top:6px;margin-bottom:0;';
+        var container = document.querySelector('.filter-distance');
+        if (container) container.appendChild(msgEl);
+    }
+    msgEl.textContent = text;
+    msgEl.style.display = 'block';
+}
+
+function hideDistanceMsg() {
+    var msgEl = document.getElementById('distance-msg');
+    if (msgEl) msgEl.style.display = 'none';
+}
+
+/**
+ * Geocode every card's post location and show/hide each card based on
+ * whether it falls within maxMiles of the user's coordinates.
+ * Cards whose post has no location are always shown (no data to filter on).
+ * Cards whose location fails to geocode are also shown (fail open, not closed).
+ */
+function filterCardsByDistance(userLat, userLng, maxMiles) {
+    var posts   = window.POSTS_DATA || [];
+    var postMap = {};
+    posts.forEach(function(p) { postMap[String(p.id)] = p; });
+
+    var cards = Array.from(document.querySelectorAll('.cards-grid .card'));
+    var promises = cards.map(function(card) {
+        var post = postMap[String(card.dataset.postId)];
+        if (!post || !post.location) {
+            card.style.display = '';
+            return Promise.resolve();
+        }
+        return geocodeLocation(post.location).then(function(coords) {
+            if (!coords) {
+                card.style.display = ''; // geocoding failed → show rather than silently drop
+                return;
+            }
+            var dist = haversineDistance(userLat, userLng, coords[1], coords[0]);
+            card.style.display = dist <= maxMiles ? '' : 'none';
+        });
+    });
+    return Promise.all(promises);
+}
+
+/**
+ * Called when the distance select changes.
+ * Overrides the inline onchange="applyFilters()" set on the select element
+ * so distance filtering stays client-side and never triggers a page navigation.
+ *
+ * Alt Flow 1  — geolocation granted → geocode cards → show/hide by distance.
+ * Exception 3 — geolocation denied  → inline message, select reset to "all".
+ */
+function applyDistanceFilter() {
+    var distEl = document.getElementById('distanceFilter');
+    var miles  = distEl ? distEl.value : 'all';
+
+    if (miles === 'all') {
+        document.querySelectorAll('.cards-grid .card').forEach(function(c) {
+            c.style.display = '';
+        });
+        hideDistanceMsg();
+        return;
+    }
+
+    if (!navigator.geolocation) {
+        showDistanceMsg('Enable location access to use distance filtering.');
+        if (distEl) distEl.value = 'all';
+        return;
+    }
+
+    var maxMiles = parseFloat(miles);
+
+    navigator.geolocation.getCurrentPosition(
+        function(pos) {
+            hideDistanceMsg();
+            filterCardsByDistance(pos.coords.latitude, pos.coords.longitude, maxMiles);
+        },
+        function() {
+            showDistanceMsg('Enable location access to use distance filtering.');
+            if (distEl) distEl.value = 'all';
+        }
+    );
+}
+
+/* ------------------------------------------
    INIT
 ------------------------------------------ */
 
@@ -284,6 +425,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var endEl   = document.getElementById('endDate');
     if (startEl) startEl.addEventListener('change', applyCustomDateFilter);
     if (endEl)   endEl.addEventListener('change', applyCustomDateFilter);
+
+    // Override the inline onchange="applyFilters()" on the distance select so
+    // distance filtering stays client-side and never triggers a page navigation.
+    var distEl = document.getElementById('distanceFilter');
+    if (distEl) distEl.onchange = applyDistanceFilter;
 
     updateFilterBadge();
     initMap();
