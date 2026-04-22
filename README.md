@@ -32,6 +32,7 @@ DB_PASS=your_mysql_root_password
 DB_HOST=localhost
 SESSION_SECRET=any_long_random_string_here
 PORT=3000
+MAPBOX_TOKEN=pk.eyJ1IjoiY2VvcmVnbyIsImEiOiJjbW85ZG81Y2IwMGI3MzJwdzhzaTlmMmZ1In0.z-kgBSQQZhrxL4m03wmQbQ
 ```
 
 | Variable | Description |
@@ -42,6 +43,7 @@ PORT=3000
 | `DB_HOST` | MySQL host (default: `localhost`) |
 | `SESSION_SECRET` | Any long random string used to sign session cookies |
 | `PORT` | Port the server listens on (default: `3000`) |
+| `MAPBOX_TOKEN` | Mapbox public token for the feed map and GPS features (the token above is the project token and can be used as-is) |
 
 ---
 
@@ -91,6 +93,37 @@ UPDATE users SET role = 'admin'     WHERE email = 'your@email.com';
 ```
 
 3. Categories for posts must be seeded via the admin panel at `/admin/settings` before community members can tag their posts.
+
+---
+
+## Map Features
+
+The feed page (`/posts`) includes an interactive Mapbox GL JS map powered by the `MAPBOX_TOKEN` environment variable.
+
+### Feed Map
+- Posts that have a location field are geocoded automatically and shown as pins on the map.
+- Clicking a pin opens a popup with the post title, date, and a "View Post" link.
+- The map centers on Everett, WA by default.
+
+### Distance Filter
+The **Distance** filter in the filter panel lets users narrow the card grid by proximity:
+
+1. Open the filter panel (Filters button in the top bar).
+2. Choose a distance from the **Distance** dropdown (e.g. "Within 5 miles").
+3. The browser will prompt for location access — click **Allow**.
+4. Cards outside the selected radius are hidden immediately; no page reload occurs.
+5. Selecting **All distances** restores all cards.
+
+If location access is denied, an inline message appears and the filter resets to "All distances."
+
+### GPS Autofill on Registration
+When creating a new account, the profile setup page includes a **Use My Location** button next to the location field. Clicking it:
+
+1. Requests browser geolocation.
+2. Reverse-geocodes the coordinates via Mapbox to a readable "City, ST" string.
+3. Autofills the location input — no typing required.
+
+If geolocation is unavailable or denied, an inline message is shown and the field can be filled manually.
 
 ---
 
