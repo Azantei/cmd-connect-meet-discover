@@ -88,10 +88,13 @@ function renderHiddenPostCard(post) {
 function renderReportCard(report) {
     const typeLabel = report.type === 'post' ? 'Post' : 'User';
     const displayTitle = report.type === 'post' ? `'${report.title}'` : report.title;
+    const targetUrl = report.type === 'post'
+        ? `/posts/${report.targetId}`
+        : `/users/profile/${report.targetId}`;
 
     return `
         <div class="report-card" data-id="${report.id}">
-            <h3 class="report-card-title">${typeLabel}: ${displayTitle}</h3>
+            <h3 class="report-card-title">${typeLabel}: <a href="${targetUrl}" onclick="event.stopPropagation()" style="color:inherit;text-decoration:underline;">${displayTitle}</a></h3>
             <p class="report-card-meta">Reported by @${report.reporter} · ${report.time}</p>
             <div class="report-card-preview">${report.reason || report.note || "No details provided."}</div>
             <div class="report-card-actions">

@@ -114,14 +114,17 @@ function renderReports() {
         
         const titlePrefix = report.type === 'post' ? 'Post: ' : 'User: ';
         const statusBadge = `<span class="status-badge ${report.status}">${report.status}</span>`;
-        
+        const targetUrl = report.type === 'post'
+            ? `/posts/${report.targetId}`
+            : `/users/profile/${report.targetId}`;
+
         const notesPreview = report.moderatorNotes
             ? (report.moderatorNotes.substring(0, 100) + (report.moderatorNotes.length > 100 ? '...' : ''))
             : 'No moderator notes.';
 
         card.innerHTML = `
             <div class="report-header">
-                <div class="report-title">${titlePrefix}'${report.title}' ${statusBadge}</div>
+                <div class="report-title">${titlePrefix}<a href="${targetUrl}" onclick="event.stopPropagation()" style="color:inherit;text-decoration:underline;">'${report.title}'</a> ${statusBadge}</div>
                 <div class="report-meta">
                     <span>Escalated by ${report.escalatedBy}</span>
                     <span class="separator">·</span>
@@ -165,8 +168,11 @@ function openReportDetail(reportId) {
     document.getElementById('modalReportTitle').textContent = `${titlePrefix}"${report.title}"`;
 
     const subjectLabel = report.type === 'post' ? 'Reported Post' : 'Reported User';
+    const modalTargetUrl = report.type === 'post'
+        ? `/posts/${report.targetId}`
+        : `/users/profile/${report.targetId}`;
     document.getElementById('modalReportMeta').innerHTML = `
-        <span><strong>${subjectLabel}:</strong> ${report.title}</span>
+        <span><strong>${subjectLabel}:</strong> <a href="${modalTargetUrl}" target="_blank" style="color:hsl(20,90%,55%);text-decoration:underline;">${report.title} ↗</a></span>
         <span><strong>Reported by:</strong> ${report.reporterName}</span>
         <span><strong>Escalated by:</strong> ${report.escalatedBy}</span>
         <span><strong>Time:</strong> ${report.timeAgo}</span>
