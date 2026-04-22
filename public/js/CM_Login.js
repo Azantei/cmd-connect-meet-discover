@@ -274,8 +274,81 @@ function isPasswordStrong(password) {
 }
 
 /**
- * Request GPS location (placeholder for future implementation)
+ * Called by the "Use My Location" button on the setup form.
+ * UC-CM-01 Alternative Flow 1: browser grants geolocation — coordinates are
+ * reverse-geocoded via Mapbox and the readable address autofills the input.
+ * UC-CM-01 Exception Flow 3: permission denied — inline denial message shown.
  */
 function requestGPSLocation() {
-    alert('GPS location feature is not yet available. Please enter your location manually.');
+    var input = document.getElementById('location');
+    var msg   = document.getElementById('location-msg');
+    var btn   = document.querySelector('.btn-gps');
+
+    if (!navigator.geolocation) {
+        showLocationMsg('Geolocation is not supported by your browser. Please enter your location manually.');
+        return;
+    }
+
+    if (btn) { btn.disabled = true; btn.style.opacity = '0.6'; }
+    if (msg) { msg.style.display = 'none'; msg.textContent = ''; }
+
+    navigator.geolocation.getCurrentPosition(
+        function(pos) {
+            var lat = pos.coords.latitude;
+            var lng = pos.coords.longitude;
+
+            if (!window.MAPBOX_TOKEN) {
+                if (input) input.value = lat.toFixed(4) + ', ' + lng.toFixed(4);
+                resetGPSButton(btn);
+                return;
+            }
+
+            // Reverse geocode: lng,lat order required by Mapbox.
+            // types=place restricts results to city level so we get "Everett, WA"
+            // rather than a full street address.
+            var geocodeUrl =
+                'https://api.mapbox.com/geocoding/v5/mapbox.places/' +
+                lng + ',' + lat +
+                '.json?access_token=' + window.MAPBOX_TOKEN + '&limit=1&types=place';
+
+            fetch(geocodeUrl)
+                .then(function(r) {
+                    if (!r.ok) throw new Error('HTTP ' + r.status);
+                    return r.json();
+                })
+                .then(function(data) {
+                    if (data.features && data.features.length) {
+                        var feature = data.features[0];
+                        var city = feature.text;
+                        var regionCtx = feature.context && feature.context.find(function(c) {
+                            return c.id.indexOf('region.') === 0;
+                        });
+                        var state = regionCtx
+                            ? (regionCtx.short_code || regionCtx.text).replace(/^US-/i, '')
+                            : '';
+                        if (input) input.value = state ? city + ', ' + state : city;
+                    } else {
+                        if (input) input.value = lat.toFixed(4) + ', ' + lng.toFixed(4);
+                    }
+                    resetGPSButton(btn);
+                })
+                .catch(function() {
+                    if (input) input.value = lat.toFixed(4) + ', ' + lng.toFixed(4);
+                    resetGPSButton(btn);
+                });
+        },
+        function() {
+            showLocationMsg('Location access denied. Please enter your location manually.');
+            resetGPSButton(btn);
+        }
+    );
+}
+
+function showLocationMsg(text) {
+    var msg = document.getElementById('location-msg');
+    if (msg) { msg.textContent = text; msg.style.display = 'block'; }
+}
+
+function resetGPSButton(btn) {
+    if (btn) { btn.disabled = false; btn.style.opacity = ''; }
 }

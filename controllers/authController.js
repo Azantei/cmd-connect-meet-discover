@@ -81,7 +81,7 @@ exports.postRegister = async (req, res, next) => {
 exports.getSetup = async (req, res, next) => {
   try {
     const categories = await getSetupCategories();
-    res.render('auth/setup', { title: 'Set Up Your Profile', categories });
+    res.render('auth/setup', { title: 'Set Up Your Profile', categories, mapboxToken: process.env.MAPBOX_TOKEN || '' });
   } catch (err) { next(err); }
 };
 
