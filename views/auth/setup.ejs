@@ -79,9 +79,10 @@
                                 <circle cx="12" cy="12" r="10"></circle>
                                 <circle cx="12" cy="12" r="3"></circle>
                             </svg>
-                            Use GPS
+                            Use My Location
                         </button>
                     </div>
+                    <p id="location-msg" style="display:none;margin-top:6px;font-size:0.82rem;color:#c0392b;"></p>
                 </div>
 
                 <button type="button" class="btn-primary" onclick="submitSetup()">Finish Setup</button>
@@ -108,18 +109,10 @@
             document.getElementById('setupForm').submit();
         }
 
-        function requestGPSLocation() {
-            if (!navigator.geolocation) {
-                alert('Geolocation is not supported by your browser.');
-                return;
-            }
-            navigator.geolocation.getCurrentPosition(function(pos) {
-                document.getElementById('location').value =
-                    pos.coords.latitude.toFixed(4) + ', ' + pos.coords.longitude.toFixed(4);
-            }, function() {
-                alert('Unable to retrieve your location. Please enter it manually.');
-            });
-        }
     </script>
+    <script>
+      window.MAPBOX_TOKEN = '<%- locals.mapboxToken || "" %>';
+    </script>
+    <script src="/js/CM_Login.js"></script>
 </body>
 </html>
