@@ -228,7 +228,7 @@ function handleCancel() {
     
     if (confirmed) {
         // Redirect to events page or previous page
-        window.location.href = '/events';
+        window.location.href = '/feed';
     }
 }
 

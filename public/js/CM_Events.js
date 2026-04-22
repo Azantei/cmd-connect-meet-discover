@@ -177,9 +177,21 @@ function escapeHtml(str) {
  * string, and place a marker + popup for every post that resolves.
  * Token and post data are injected by the EJS template as
  * window.MAPBOX_TOKEN and window.POSTS_DATA.
+ *
+ * Geocoding and marker placement run inside map.on('load') so the map's
+ * rendering pipeline is fully ready before any markers are added.
  */
 function initMap() {
-    if (!window.MAPBOX_TOKEN || typeof mapboxgl === 'undefined') return;
+    console.log('[CMD Map] initMap() called');
+
+    if (!window.MAPBOX_TOKEN) {
+        console.warn('[CMD Map] window.MAPBOX_TOKEN is missing — map aborted');
+        return;
+    }
+    if (typeof mapboxgl === 'undefined') {
+        console.warn('[CMD Map] mapboxgl not defined — CDN may not have loaded');
+        return;
+    }
 
     mapboxgl.accessToken = window.MAPBOX_TOKEN;
 
@@ -193,42 +205,65 @@ function initMap() {
     map.addControl(new mapboxgl.NavigationControl());
 
     var posts = window.POSTS_DATA || [];
-    posts.forEach(function(post) {
-        if (!post.location) return;
+    var locatedPosts = posts.filter(function(p) { return p.location; });
 
-        var geocodeUrl =
-            'https://api.mapbox.com/geocoding/v5/mapbox.places/' +
-            encodeURIComponent(post.location) +
-            '.json?access_token=' + window.MAPBOX_TOKEN + '&limit=1';
+    console.log('[CMD Map] POSTS_DATA total:', posts.length, '| with location:', locatedPosts.length);
+    if (locatedPosts.length === 0) {
+        console.warn('[CMD Map] No posts have a location value — no markers will appear');
+    }
 
-        fetch(geocodeUrl)
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
-                if (!data.features || !data.features.length) return;
-                var coords = data.features[0].center; // [lng, lat]
+    // Wait for the map style to fully load before adding markers so the
+    // rendering pipeline is ready to accept and display them.
+    map.on('load', function() {
+        console.log('[CMD Map] Map style loaded — starting geocoding');
 
-                var dateStr = post.date
-                    ? new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                    : 'Date TBD';
+        locatedPosts.forEach(function(post) {
+            var geocodeUrl =
+                'https://api.mapbox.com/geocoding/v5/mapbox.places/' +
+                encodeURIComponent(post.location) +
+                '.json?access_token=' + window.MAPBOX_TOKEN + '&limit=1';
 
-                var popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
-                    '<div style="font-family:\'DM Sans\',sans-serif;padding:4px 2px;min-width:160px;">' +
-                    '<strong style="font-size:0.9rem;display:block;margin-bottom:4px;">' +
-                        escapeHtml(post.title) +
-                    '</strong>' +
-                    '<span style="color:#666;font-size:0.8rem;">&#128197; ' + dateStr + '</span><br>' +
-                    '<a href="/posts/' + post.id + '" ' +
-                       'style="color:hsl(20,90%,55%);font-size:0.85rem;text-decoration:none;">' +
-                       'View Post &#8594;</a>' +
-                    '</div>'
-                );
+            console.log('[CMD Map] Geocoding post', post.id, '— "' + post.location + '"');
 
-                new mapboxgl.Marker({ color: 'hsl(20,90%,55%)' })
-                    .setLngLat(coords)
-                    .setPopup(popup)
-                    .addTo(map);
-            })
-            .catch(function() {});
+            fetch(geocodeUrl)
+                .then(function(r) {
+                    if (!r.ok) throw new Error('Geocode API returned HTTP ' + r.status);
+                    return r.json();
+                })
+                .then(function(data) {
+                    if (!data.features || !data.features.length) {
+                        console.warn('[CMD Map] No geocode result for "' + post.location + '"');
+                        return;
+                    }
+
+                    var coords = data.features[0].center; // [lng, lat]
+                    console.log('[CMD Map] Placing marker for "' + post.title + '" at', coords);
+
+                    var dateStr = post.date
+                        ? new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                        : 'Date TBD';
+
+                    var popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+                        '<div style="font-family:\'DM Sans\',sans-serif;padding:4px 2px;min-width:160px;">' +
+                        '<strong style="font-size:0.9rem;display:block;margin-bottom:4px;">' +
+                            escapeHtml(post.title) +
+                        '</strong>' +
+                        '<span style="color:#666;font-size:0.8rem;">&#128197; ' + dateStr + '</span><br>' +
+                        '<a href="/posts/' + post.id + '" ' +
+                           'style="color:hsl(20,90%,55%);font-size:0.85rem;text-decoration:none;">' +
+                           'View Post &#8594;</a>' +
+                        '</div>'
+                    );
+
+                    new mapboxgl.Marker({ color: 'hsl(20,90%,55%)' })
+                        .setLngLat(coords)
+                        .setPopup(popup)
+                        .addTo(map);
+                })
+                .catch(function(err) {
+                    console.error('[CMD Map] Geocode failed for "' + post.location + '":', err);
+                });
+        });
     });
 }
 

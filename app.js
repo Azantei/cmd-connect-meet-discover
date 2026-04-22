@@ -67,6 +67,7 @@ app.use(attachUnreadWarnings);
 app.use('/', authRoutes);
 app.use('/users', userRoutes);
 app.use('/posts', postRoutes);
+app.use('/feed', postRoutes);
 app.use('/events', eventRoutes);
 app.use('/admin', adminRoutes);
 app.use('/moderator', moderatorRoutes);
