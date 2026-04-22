@@ -1,22 +1,23 @@
 <%- include('../partials/header', { pageCSS: 'moderator' }) %>
 <main>
-  <h1>Pending Reports</h1>
-  <% reports.forEach(report => { %>
-    <div>
-      <p><strong>Post:</strong> <a href="/posts/<%= report.Post.id %>"><%= report.Post.title %></a></p>
-      <p><strong>Reported by:</strong> <%= report.reporter.username %></p>
-      <p><strong>Reason:</strong> <%= report.reason %></p>
-      <form action="/moderator/reports/<%= report.id %>/review?_method=PUT" method="POST" style="display:inline">
-        <textarea name="moderatorNote" placeholder="Note (optional)"></textarea>
-        <button type="submit">Mark Reviewed</button>
-      </form>
-      <form action="/moderator/reports/<%= report.id %>/escalate?_method=PUT" method="POST" style="display:inline">
-        <button type="submit">Escalate to Admin</button>
-      </form>
-      <form action="/moderator/posts/<%= report.Post.id %>/hide?_method=PUT" method="POST" style="display:inline">
-        <button type="submit">Hide Post</button>
-      </form>
-    </div>
-  <% }) %>
+  <h1>Report Detail</h1>
+  <div>
+    <p><strong>Target:</strong> <%= report.title %></p>
+    <p><strong>Reported by:</strong> <%= report.reporter %></p>
+    <p><strong>Reason:</strong> <%= report.reason %></p>
+    <form action="/moderator/reports/<%= report.id %>/warn" method="POST" style="display:inline">
+      <textarea name="notes" placeholder="Note (optional)"></textarea>
+      <button type="submit">Warn User</button>
+    </form>
+    <form action="/moderator/reports/<%= report.id %>/dismiss" method="POST" style="display:inline">
+      <textarea name="notes" placeholder="Note (optional)"></textarea>
+      <button type="submit">Dismiss</button>
+    </form>
+    <form action="/moderator/reports/<%= report.id %>/escalate" method="POST" style="display:inline">
+      <input type="hidden" name="escalationReason" value="Policy violation">
+      <textarea name="notes" placeholder="Note (optional)"></textarea>
+      <button type="submit">Escalate to Admin</button>
+    </form>
+  </div>
 </main>
 <%- include('../partials/footer') %>
