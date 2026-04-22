@@ -5,7 +5,13 @@ exports.getFeed = async (req, res, next) => {
   try {
     const { q, category } = req.query;
     const data = await postService.getFeedData(q, category);
-    res.render('posts/index', { title: 'Feed', ...data, q: q || '', selectedCategory: category || '' });
+    res.render('posts/index', {
+      title: 'Feed',
+      ...data,
+      q: q || '',
+      selectedCategory: category || '',
+      mapboxToken: process.env.MAPBOX_TOKEN || ''
+    });
   } catch (err) { next(err); }
 };
 
