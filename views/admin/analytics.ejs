@@ -48,6 +48,7 @@
         <label for="dateRange">Date range:</label>
         <select id="dateRange" class="date-filter">
           <option value="all">All Time</option>
+          <option value="today">Today</option>
           <option value="week">This Week</option>
           <option value="month">This Month</option>
           <option value="quarter">This Quarter</option>
@@ -71,7 +72,7 @@
       </div>
       <div class="stat-card gray">
         <div class="stat-label">Reports</div>
-        <div class="stat-value" id="reports"><%= pendingReportCount %></div>
+        <div class="stat-value" id="reports"><%= reportCount %></div>
       </div>
     </section>
 

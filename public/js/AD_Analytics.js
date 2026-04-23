@@ -14,21 +14,30 @@
 // DATE RANGE HELPERS
 // ==========================================
 
-var RANGE_DAYS = { week: 7, month: 30, quarter: 90, year: 365 };
+var RANGE_DAYS = { today: 0, week: 7, month: 30, quarter: 90, year: 365 };
+
+function localDateStr(d) {
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+}
 
 function getRangeDates(range) {
     var end = new Date();
     var start = new Date();
-    start.setDate(start.getDate() - (RANGE_DAYS[range] || 7));
+    var days = (range in RANGE_DAYS) ? RANGE_DAYS[range] : 7;
+    start.setDate(start.getDate() - days);
     return {
-        startDate: start.toISOString().slice(0, 10),
-        endDate: end.toISOString().slice(0, 10)
+        startDate: localDateStr(start),
+        endDate: localDateStr(end)
     };
 }
 
 function detectRange(startDate) {
     if (!startDate) return null;
     var diffDays = Math.round((new Date() - new Date(startDate)) / 86400000);
+    if (diffDays <= 1)  return 'today';
     if (diffDays <= 8)  return 'week';
     if (diffDays <= 31) return 'month';
     if (diffDays <= 92) return 'quarter';

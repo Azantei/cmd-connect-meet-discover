@@ -172,10 +172,10 @@ async function getAnalyticsData({ startDate, endDate }) {
       dateWhere.createdAt[Op.lte] = end;
     }
   }
-  const [userCount, activePosts, pendingReportCount, rsvpCount, escalatedCount] = await Promise.all([
+  const [userCount, activePosts, reportCount, rsvpCount, escalatedCount] = await Promise.all([
     User.count({ where: dateWhere }),
     Post.findAll({ where: { ...dateWhere, status: 'published', isHidden: false }, attributes: ['category'] }),
-    Report.count({ where: { ...dateWhere, status: 'pending' } }),
+    Report.count({ where: dateWhere }),
     RSVP.count({ where: dateWhere }),
     Report.count({ where: { status: 'escalated' } })
   ]);
@@ -217,7 +217,7 @@ async function getAnalyticsData({ startDate, endDate }) {
     date: new Date(log.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   }));
 
-  return { userCount, postCount, pendingReportCount, rsvpCount, escalatedCount, topCategories, growthData, recentActivity };
+  return { userCount, postCount, reportCount, rsvpCount, escalatedCount, topCategories, growthData, recentActivity };
 }
 
 async function getSettingsData() {
