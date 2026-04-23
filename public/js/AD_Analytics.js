@@ -75,6 +75,7 @@ function updateActivityLog() {
 
 function setupEventListeners() {
     document.getElementById('dateRange').addEventListener('change', (e) => {
+        if (e.target.value === 'all') { window.location.href = '/admin/analytics'; return; }
         var dates = getRangeDates(e.target.value);
         window.location.href = '/admin/analytics?startDate=' + dates.startDate + '&endDate=' + dates.endDate;
     });

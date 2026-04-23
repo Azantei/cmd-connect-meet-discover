@@ -47,6 +47,7 @@
       <div class="date-selector">
         <label for="dateRange">Date range:</label>
         <select id="dateRange" class="date-filter">
+          <option value="all">All Time</option>
           <option value="week">This Week</option>
           <option value="month">This Month</option>
           <option value="quarter">This Quarter</option>
@@ -81,20 +82,16 @@
       </div>
       <div class="chart-container" id="userGrowthChart">
         <div class="chart-placeholder">
-          <div class="bar-chart">
-            <div class="bar" style="height:40%"></div>
-            <div class="bar" style="height:45%"></div>
-            <div class="bar" style="height:50%"></div>
-            <div class="bar" style="height:55%"></div>
-            <div class="bar" style="height:60%"></div>
-            <div class="bar" style="height:65%"></div>
-            <div class="bar" style="height:70%"></div>
-            <div class="bar" style="height:75%"></div>
-            <div class="bar" style="height:80%"></div>
-            <div class="bar" style="height:85%"></div>
-            <div class="bar" style="height:90%"></div>
-            <div class="bar" style="height:95%"></div>
-          </div>
+          <% if (growthData.length) { %>
+            <% const maxGrowth = Math.max(...growthData.map(d => d.count), 1); %>
+            <div class="bar-chart">
+              <% growthData.forEach(function(d) { %>
+                <div class="bar" style="height:<%= Math.round((d.count / maxGrowth) * 100) %>%" title="<%= d.date %>: <%= d.count %> new user<%= d.count !== 1 ? 's' : '' %>"></div>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <p style="color:#888;font-size:0.9rem;text-align:center;padding:2rem 0;">No new registrations in this period.</p>
+          <% } %>
         </div>
       </div>
     </section>
@@ -106,22 +103,17 @@
           <h3>Top Categories</h3>
         </div>
         <div class="categories-list">
-          <div class="category-item">
-            <span class="category-label">Outdoors</span>
-            <div class="category-bar" style="width:100%"></div>
-          </div>
-          <div class="category-item">
-            <span class="category-label">Music</span>
-            <div class="category-bar" style="width:75%"></div>
-          </div>
-          <div class="category-item">
-            <span class="category-label">Food &amp; Drink</span>
-            <div class="category-bar" style="width:60%"></div>
-          </div>
-          <div class="category-item">
-            <span class="category-label">Sports</span>
-            <div class="category-bar" style="width:50%"></div>
-          </div>
+          <% if (topCategories.length) { %>
+            <% const maxCount = topCategories[0].count; %>
+            <% topCategories.forEach(function(cat) { %>
+              <div class="category-item">
+                <span class="category-label"><%= cat.name %></span>
+                <div class="category-bar" style="width:<%= Math.round((cat.count / maxCount) * 100) %>%"></div>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <p style="color:#888;font-size:0.9rem;">No category data available.</p>
+          <% } %>
         </div>
       </div>
 
@@ -131,11 +123,21 @@
           <h3>Recent Activity Log</h3>
         </div>
         <div class="activity-list" id="activityLog">
-          <div class="activity-item">
-            <span class="activity-date">—</span>
-            <span class="activity-separator">—</span>
-            <span class="activity-text">Loading activity...</span>
-          </div>
+          <% if (recentActivity.length) { %>
+            <% recentActivity.forEach(function(log) { %>
+              <div class="activity-item">
+                <span class="activity-date"><%= log.date %></span>
+                <span class="activity-separator">—</span>
+                <span class="activity-text"><%= log.moderatorName %> <%= log.action %>d a <%= log.targetType %></span>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <div class="activity-item">
+              <span class="activity-date">—</span>
+              <span class="activity-separator">—</span>
+              <span class="activity-text" style="color:#888;">No recent moderation activity.</span>
+            </div>
+          <% } %>
         </div>
       </div>
     </section>

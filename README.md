@@ -65,8 +65,14 @@ CREATE DATABASE cmd_db;
 
 ## 4. Start the Application
 
+For grading / production:
 ```bash
 node app.js
+```
+
+For development (auto-restarts on file changes):
+```bash
+npm run dev
 ```
 
 You should see:
@@ -145,14 +151,13 @@ cmd-connect-meet-discover/
 │   ├── users/              profile.ejs, otherProfile.ejs, settings.ejs
 │   ├── posts/              index.ejs, show.ejs, create.ejs, edit.ejs
 │   ├── events/             index.ejs
-│   ├── moderator/          dashboard.ejs, reports.ejs, history.ejs
+│   ├── moderator/          dashboard.ejs, reports.ejs
 │   ├── admin/              users.ejs, escalated.ejs, analytics.ejs, settings.ejs
 │   └── partials/           Shared header, warning indicator, topbars
 ├── public/                 Served static assets
 │   ├── css/                Per-page stylesheets
 │   ├── js/                 Per-page client-side scripts
 │   └── uploads/            User-uploaded images (profile pics, post images)
-└── pages/                  Legacy static HTML mockups (not served by Express)
 ```
 
 ---

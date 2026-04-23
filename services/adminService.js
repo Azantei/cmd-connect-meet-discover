@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { User, Post, Report, Category, RSVP, PlatformSetting, ModerationLog } = require('../models');
+const { User, Post, Report, Category, RSVP, PlatformSetting, ModerationLog, sequelize, Sequelize } = require('../models');
 
 async function getUsersData() {
   const [users, activePosts, reportCount, escalatedCount] = await Promise.all([
@@ -172,14 +172,52 @@ async function getAnalyticsData({ startDate, endDate }) {
       dateWhere.createdAt[Op.lte] = end;
     }
   }
-  const [userCount, postCount, pendingReportCount, rsvpCount, escalatedCount] = await Promise.all([
+  const [userCount, activePosts, pendingReportCount, rsvpCount, escalatedCount] = await Promise.all([
     User.count({ where: dateWhere }),
-    Post.count({ where: dateWhere }),
-    Report.count({ where: dateWhere }),
+    Post.findAll({ where: { ...dateWhere, status: 'published', isHidden: false }, attributes: ['category'] }),
+    Report.count({ where: { ...dateWhere, status: 'pending' } }),
     RSVP.count({ where: dateWhere }),
     Report.count({ where: { status: 'escalated' } })
   ]);
-  return { userCount, postCount, pendingReportCount, rsvpCount, escalatedCount };
+
+  const postCount = activePosts.length;
+
+  const catCounts = {};
+  activePosts.forEach(p => {
+    (Array.isArray(p.category) ? p.category : []).forEach(cat => {
+      catCounts[cat] = (catCounts[cat] || 0) + 1;
+    });
+  });
+  const topCategories = Object.entries(catCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([name, count]) => ({ name, count }));
+
+  const chartEnd = endDate ? (() => { const d = new Date(endDate); d.setHours(23, 59, 59, 999); return d; })() : new Date();
+  const chartStart = startDate ? new Date(startDate) : (() => { const d = new Date(); d.setDate(d.getDate() - 29); return d; })();
+
+  const [growthRows, activityLogs] = await Promise.all([
+    sequelize.query(
+      'SELECT DATE(createdAt) AS date, COUNT(*) AS count FROM users WHERE createdAt >= :start AND createdAt <= :end GROUP BY DATE(createdAt) ORDER BY date ASC',
+      { replacements: { start: chartStart, end: chartEnd }, type: Sequelize.QueryTypes.SELECT }
+    ),
+    ModerationLog.findAll({
+      include: [{ model: User, as: 'moderator', attributes: ['id', 'name'] }],
+      order: [['createdAt', 'DESC']],
+      limit: 10
+    })
+  ]);
+
+  const growthData = growthRows.map(r => ({ date: r.date, count: parseInt(r.count, 10) }));
+
+  const recentActivity = activityLogs.map(log => ({
+    action: log.action,
+    targetType: log.targetType,
+    moderatorName: log.moderator ? log.moderator.name : 'Moderator',
+    date: new Date(log.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  }));
+
+  return { userCount, postCount, pendingReportCount, rsvpCount, escalatedCount, topCategories, growthData, recentActivity };
 }
 
 async function getSettingsData() {
