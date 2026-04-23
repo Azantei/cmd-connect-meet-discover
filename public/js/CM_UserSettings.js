@@ -9,11 +9,9 @@
    Settings page with interest selection and section switching
 ========================================== */
 
-// All available interest categories
-var ALL_INTERESTS = ["Outdoors", "Running", "Coffee", "Music", "Sports", "Food", "Arts", "Tech", "Fitness", "Games", "Photography", "Travel"];
-
-// User's currently selected interests
-var activeInterests = ["Outdoors", "Running", "Coffee", "Music"];
+// ALL_INTERESTS is injected by the server via settings.ejs before this file loads
+// activeInterests is seeded by the inline script in settings.ejs from the user's saved data
+var activeInterests = [];
 
 /**
  * Build and render interest selection pills

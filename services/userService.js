@@ -32,9 +32,13 @@ async function getOtherProfileData(userId) {
 }
 
 async function getUserSettings(userId) {
-  return User.findByPk(userId, {
-    attributes: ['id', 'name', 'email', 'location', 'interests', 'profilePic', 'showLocation', 'showInterests']
-  });
+  const [user, categories] = await Promise.all([
+    User.findByPk(userId, {
+      attributes: ['id', 'name', 'email', 'location', 'interests', 'profilePic', 'showLocation', 'showInterests']
+    }),
+    Category.findAll({ order: [['name', 'ASC']] })
+  ]);
+  return { user, categories };
 }
 
 async function updateUserSettings(userId, body, imageFile) {

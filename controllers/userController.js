@@ -38,8 +38,8 @@ exports.getUserById = async (req, res, next) => {
 
 exports.getSettings = async (req, res, next) => {
   try {
-    const user = await userService.getUserSettings(req.session.userId);
-    res.render('users/settings', { title: 'Settings', user });
+    const { user, categories } = await userService.getUserSettings(req.session.userId);
+    res.render('users/settings', { title: 'Settings', user, categories });
   } catch (err) { next(err); }
 };
 

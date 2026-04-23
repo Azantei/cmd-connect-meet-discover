@@ -59,6 +59,10 @@ CREATE DATABASE cmd_db;
 > ```bash
 > mysql -u root -p cmd_db < dump.sql
 > ```
+> **Windows users:** If `mysql` is not recognized, use the full path in PowerShell:
+> ```powershell
+> Get-Content dump.sql | & "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -p cmd_db
+> ```
 > If no dump is provided, skip this step — Sequelize will create all tables automatically on first run, and the database will start empty.
 
 ---
