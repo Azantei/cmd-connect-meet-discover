@@ -344,11 +344,19 @@ function requestGPSLocation() {
     );
 }
 
+/**
+ * Display an inline message below the location input.
+ * @param {string} text - Message to display
+ */
 function showLocationMsg(text) {
     var msg = document.getElementById('location-msg');
     if (msg) { msg.textContent = text; msg.style.display = 'block'; }
 }
 
+/**
+ * Re-enable the "Use My Location" button after a geolocation attempt resolves.
+ * @param {HTMLElement} btn - The GPS button element
+ */
 function resetGPSButton(btn) {
     if (btn) { btn.disabled = false; btn.style.opacity = ''; }
 }

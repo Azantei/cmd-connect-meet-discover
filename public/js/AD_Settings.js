@@ -53,6 +53,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+/**
+ * Open the category removal confirmation modal.
+ * @param {number} catId - ID of the category to remove
+ * @param {string} catName - Display name shown in the confirmation message
+ */
 function openRemoveModal(catId, catName) {
     document.getElementById('removeModalMsg').textContent =
         `Are you sure you want to remove "${catName}"? This cannot be undone.`;
@@ -63,6 +68,9 @@ function openRemoveModal(catId, catName) {
     document.getElementById('removeConfirmBtn').focus();
 }
 
+/**
+ * Close the category removal modal and clear its pending form action.
+ */
 function closeRemoveModal() {
     document.getElementById('removeModal').style.display = 'none';
     document.getElementById('removeForm').action = '';
@@ -112,6 +120,11 @@ function setupEventListeners() {
 // TAB SWITCHING
 // ==========================================
 
+/**
+ * Switch the active settings tab and persist the selection to sessionStorage
+ * so the correct tab is restored after a category add/remove redirect.
+ * @param {string} tabName - Tab identifier matching a data-tab attribute
+ */
 function switchTab(tabName) {
     // Update tab buttons
     document.querySelectorAll('.tab-button').forEach(button => {
@@ -132,6 +145,11 @@ function switchTab(tabName) {
 // SAVE & DISCARD CHANGES
 // ==========================================
 
+/**
+ * Validate platform name and distance radius inputs.
+ * Distance radius must be a number optionally followed by a unit (e.g. "10 mi", "5 km").
+ * @returns {string[]} Array of field IDs that failed validation
+ */
 function validateSettings() {
     const platformName = document.getElementById('platformName').value.trim();
     const distanceRadius = document.getElementById('distanceRadius').value.trim();
@@ -153,16 +171,27 @@ function validateSettings() {
     return invalidFields;
 }
 
+/**
+ * Apply .invalid class to fields that failed validation.
+ * @param {string[]} invalidFields - Array of field IDs to highlight
+ */
 function highlightInvalidFields(invalidFields) {
     document.getElementById('platformName').classList.toggle('invalid', invalidFields.includes('platformName'));
     document.getElementById('distanceRadius').classList.toggle('invalid', invalidFields.includes('distanceRadius'));
 }
 
+/**
+ * Remove .invalid class from all settings fields.
+ */
 function clearInvalidHighlights() {
     document.getElementById('platformName').classList.remove('invalid');
     document.getElementById('distanceRadius').classList.remove('invalid');
 }
 
+/**
+ * Validate and submit the general settings form.
+ * Highlights invalid fields instead of submitting if validation fails.
+ */
 function saveChanges() {
     settings.platformName = document.getElementById('platformName').value;
     settings.distanceRadius = document.getElementById('distanceRadius').value;
@@ -177,6 +206,9 @@ function saveChanges() {
     document.getElementById('generalSettingsForm').submit();
 }
 
+/**
+ * Reset settings fields to their last saved values and clear any validation errors.
+ */
 function discardChanges() {
     settings = { ...originalSettings };
     document.getElementById('platformName').value = settings.platformName;
@@ -188,6 +220,11 @@ function discardChanges() {
 // TAG MANAGEMENT
 // ==========================================
 
+/**
+ * Add a new tag chip to the UI.
+ * Note: this is a client-side-only preview; the actual category is persisted
+ * via the server-side form submit on the categories tab.
+ */
 function addTag() {
     const input = document.getElementById('newTagInput');
     const tagName = input.value.trim();
@@ -231,6 +268,10 @@ function addTag() {
     // TODO: Send new tag to backend API
 }
 
+/**
+ * Remove a tag chip from the UI after confirmation.
+ * @param {string} tagName - Name of the tag to remove
+ */
 function removeTag(tagName) {
     if (!confirm(`Are you sure you want to remove the "${tagName}" tag?`)) {
         return;

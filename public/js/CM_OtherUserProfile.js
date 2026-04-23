@@ -129,6 +129,11 @@ function updateFilterUI() {
     }
 }
 
+/**
+ * Confirm before submitting a user report.
+ * Called via onsubmit on the report form to prevent accidental submissions.
+ * @returns {boolean} True if user confirms, false to cancel submission
+ */
 function confirmUserReportSubmission() {
     return window.confirm('This action cannot be undone!');
 }

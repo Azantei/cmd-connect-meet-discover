@@ -79,12 +79,11 @@ function renderHiddenPostCard(post) {
 }
 
 /**
- * Render a single report card with action buttons
- * Creates HTML for an active report in the Reports Queue
+ * Render a single report card with action buttons.
+ * Creates HTML for an active report in the Reports Queue.
  * @param {Object} report - Report data
  * @returns {string} HTML string for the report card
  */
-// Render a single report card (with action buttons)
 function renderReportCard(report) {
     const typeLabel = report.type === 'post' ? 'Post' : 'User';
     const displayTitle = report.type === 'post' ? `'${report.title}'` : report.title;
@@ -107,10 +106,9 @@ function renderReportCard(report) {
 }
 
 /**
- * Render hidden posts view
- * Displays all posts that have been hidden by moderator
+ * Render the hidden posts view.
+ * Displays all posts that have been hidden by a moderator.
  */
-// Render hidden posts view
 function renderHiddenPosts() {
     const container = document.getElementById('reportCards');
     const emptyState = document.getElementById('emptyState');
@@ -127,12 +125,11 @@ function renderHiddenPosts() {
 }
 
 /**
- * Render a single moderation history entry
- * Creates HTML for a past moderation action
+ * Render a single moderation history entry.
+ * Creates HTML for a past moderation action.
  * @param {Object} entry - History entry data
  * @returns {string} HTML string for the history card
  */
-// Render a single moderation history entry
 function renderHistoryEntry(entry) {
     const actionLabels = {
         dismiss: 'Dismissed',
@@ -158,10 +155,9 @@ function renderHistoryEntry(entry) {
 }
 
 /**
- * Render moderation history view
- * Displays all past moderation actions taken
+ * Render the moderation history view.
+ * Displays all past moderation actions taken.
  */
-// Render moderation history view
 function renderModerationHistory() {
     const container = document.getElementById('reportCards');
     const emptyState = document.getElementById('emptyState');
@@ -178,10 +174,9 @@ function renderModerationHistory() {
 }
 
 /**
- * Render all report cards in the Reports Queue
- * Displays active reports with action buttons
+ * Render all report cards in the Reports Queue.
+ * Displays active reports with action buttons.
  */
-// Render all report cards
 function renderReports() {
     const container = document.getElementById('reportCards');
     const emptyState = document.getElementById('emptyState');
@@ -204,11 +199,10 @@ function renderReports() {
 }
 
 /**
- * Handle action button clicks on report cards
- * Processes moderation actions (warn, hide, escalate, dismiss)
+ * Handle action button clicks on report cards.
+ * Processes moderation actions (warn, escalate, dismiss).
  * @param {Event} e - Click event
  */
-// Handle action button clicks
 function handleAction(e) {
     const btn = e.target;
     const action = btn.dataset.action;
@@ -244,10 +238,9 @@ function handleAction(e) {
 }
 
 /**
- * Complete escalation process with reason and note
- * Moves report to escalated queue and hidden posts with moderator's note
+ * Complete escalation process with reason and note.
+ * Called when the escalate modal's Submit button is clicked.
  */
-// Complete escalate (called when modal Submit is clicked)
 function completeEscalate() {
     if (!pendingEscalateReport) return;
 
@@ -283,9 +276,8 @@ function completeEscalate() {
 }
 
 /**
- * Close escalate modal and reset state
+ * Close the escalate modal and reset pending state.
  */
-// Close escalate modal
 function closeEscalateModal() {
     document.getElementById('escalateModal').classList.remove('is-open');
     pendingEscalateReport = null;
@@ -371,21 +363,18 @@ function completeWarn() {
 
 
 /**
- * Update report count badge in sidebar
- * Shows number of active reports in queue
+ * Update the report count badge in the sidebar.
+ * Shows the number of active reports in the queue.
  */
-// Update badge count
 function updateBadge() {
     const badge = document.getElementById('reportCount');
     if (badge) badge.textContent = activeReports.length;
 }
 
 /**
- * Apply filter to reports queue
- * Filters reports by type or reason
- * @param {string} value - Filter value (all, post, user, spam, harassment, etc.)
+ * Apply a filter to the reports queue and sort results by date submitted (newest first).
+ * @param {string} value - Filter value: 'all', 'post', 'user', or a reason string (e.g. 'spam')
  */
-// Apply filter (filters active reports in queue) and sort by date submitted (newest first)
 function applyFilter(value) {
     currentFilter = value;
 
@@ -411,10 +400,9 @@ function applyFilter(value) {
 }
 
 /**
- * Initialize sidebar navigation
- * Sets up click handlers for switching between views
+ * Initialize sidebar navigation.
+ * Sets up click handlers for switching between Reports Queue, History, and other views.
  */
-// Sidebar navigation (switch active view)
 function initSidebar() {
     document.querySelectorAll('.mod-nav-item').forEach(item => {
         item.addEventListener('click', function () {
@@ -447,10 +435,9 @@ function initSidebar() {
 }
 
 /**
- * Initialize page on DOM ready
- * Sets up initial state, event listeners, and renders reports queue
+ * Initialize the moderation dashboard on DOM ready.
+ * Populates the reports queue, wires up modal controls and filter/sidebar events.
  */
-// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     applyFilter('all');  // Populate filteredReports from activeReports
     initSidebar();
