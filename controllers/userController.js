@@ -7,6 +7,7 @@ const { addInterest, removeInterest } = require('../services/postService');
 /* ========================================
    PROFILE VIEWS
    ======================================== */
+// Builds and renders the logged-in user's own profile page.
 exports.getOwnProfile = async (req, res, next) => {
   try {
     const data = await buildOwnProfileData(req.session.userId);
@@ -24,6 +25,7 @@ exports.getOwnProfile = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// Renders another user's public profile page; redirects if not found.
 exports.getUserById = async (req, res, next) => {
   try {
     const data = await userService.getOtherProfileData(req.params.id);
@@ -36,6 +38,9 @@ exports.getUserById = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   USER SETTINGS
+   ======================================== */
 exports.getSettings = async (req, res, next) => {
   try {
     const { user, categories } = await userService.getUserSettings(req.session.userId);
@@ -43,6 +48,7 @@ exports.getSettings = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// Saves profile changes (name, password, interests, location, privacy, avatar) and redirects to profile.
 exports.updateSettings = async (req, res, next) => {
   try {
     const result = await userService.updateUserSettings(req.session.userId, req.body, req.file);
@@ -59,6 +65,7 @@ exports.updateSettings = async (req, res, next) => {
 /* ========================================
    INTEREST ACTIONS
    ======================================== */
+// Marks a post as interested for the current user; returns JSON.
 exports.addInterestedPost = async (req, res, next) => {
   try {
     const result = await addInterest(req.session.userId, parseInt(req.params.postId, 10));
@@ -67,6 +74,7 @@ exports.addInterestedPost = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// Removes a post from the current user's interested list; returns JSON.
 exports.removeInterestedPost = async (req, res, next) => {
   try {
     await removeInterest(req.session.userId, parseInt(req.params.postId, 10));
@@ -74,6 +82,10 @@ exports.removeInterestedPost = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   REPORTING & WARNINGS
+   ======================================== */
+// Submits a moderation report against another user with a required reason.
 exports.reportUser = async (req, res, next) => {
   try {
     const { reason } = req.body;
@@ -89,6 +101,7 @@ exports.reportUser = async (req, res, next) => {
 
 exports.dismissWarnings = async (req, res, next) => {
   try {
+    // Clears unread warning indicators for the signed-in user.
     await userService.dismissWarnings(req.session.userId);
     res.redirect(req.get('Referer') || '/');
   } catch (err) { next(err); }

@@ -3,6 +3,7 @@ const moderatorService = require('../services/moderatorService');
 /* ========================================
    DASHBOARD & REPORT VIEWS
    ======================================== */
+// Renders the moderation dashboard with pending reports and the moderator's action history.
 exports.getDashboard = async (req, res, next) => {
   try {
     const data = await moderatorService.getDashboardData(req.session.userId, req.query.type);
@@ -16,6 +17,7 @@ exports.getDashboard = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// Renders the detail view for a single report; redirects if not found.
 exports.getReport = async (req, res, next) => {
   try {
     const report = await moderatorService.getReportData(req.params.id);
@@ -30,6 +32,7 @@ exports.getReport = async (req, res, next) => {
 /* ========================================
    REPORT ACTIONS
    ======================================== */
+// Issues a warning to the user behind the report and marks the report as reviewed.
 exports.warnReport = async (req, res, next) => {
   try {
     const result = await moderatorService.warnUser(req.params.id, req.session.userId, req.body.notes);
@@ -39,6 +42,7 @@ exports.warnReport = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// Dismisses a report without action and marks it resolved.
 exports.dismissReport = async (req, res, next) => {
   try {
     const result = await moderatorService.dismissReport(req.params.id, req.session.userId, req.body.notes);
@@ -48,8 +52,10 @@ exports.dismissReport = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// Escalates a report to admin with a required reason and optional moderator notes.
 exports.escalateReport = async (req, res, next) => {
   try {
+    // Escalation stores both the formal reason and optional moderator notes.
     const result = await moderatorService.escalateReport(
       req.params.id, req.session.userId,
       req.body.escalationReason, req.body.notes
@@ -60,6 +66,10 @@ exports.escalateReport = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   MODERATION HISTORY
+   ======================================== */
+// Renders the moderator's full action log.
 exports.getHistory = async (req, res, next) => {
   try {
     const logs = await moderatorService.getModerationHistory(req.session.userId);

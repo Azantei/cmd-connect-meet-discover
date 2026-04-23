@@ -1,6 +1,7 @@
 const { Op } = require('sequelize');
 const { User, Post, Report, Category, RSVP, PlatformSetting, ModerationLog, sequelize, Sequelize } = require('../models');
 
+// Fetches all users, active post count, total report count, and escalated report count.
 async function getUsersData() {
   const [users, activePosts, reportCount, escalatedCount] = await Promise.all([
     User.findAll({ attributes: ['id', 'name', 'email', 'role', 'isBanned', 'createdAt'], order: [['createdAt', 'DESC']] }),
@@ -11,6 +12,7 @@ async function getUsersData() {
   return { users, totalUsers: users.length, activePosts, reportCount, escalatedCount };
 }
 
+// Sets isBanned to true on the target user; returns an error string if already banned or not found.
 async function banUser(id) {
   const user = await User.findByPk(id);
   if (!user) return { error: 'User not found.' };
@@ -19,6 +21,7 @@ async function banUser(id) {
   return { success: 'User banned.' };
 }
 
+// Clears isBanned on the target user; returns an error string if not banned or not found.
 async function unbanUser(id) {
   const user = await User.findByPk(id);
   if (!user) return { error: 'User not found.' };
@@ -27,6 +30,7 @@ async function unbanUser(id) {
   return { success: 'User unbanned.' };
 }
 
+// Elevates a community member to the moderator role; guards against promoting admins or banned users.
 async function promoteUser(id) {
   const user = await User.findByPk(id);
   if (!user) return { error: 'User not found.' };
@@ -37,6 +41,7 @@ async function promoteUser(id) {
   return { success: `${user.name} has been promoted to Moderator.` };
 }
 
+// Reverts a moderator's role to community_member; errors if the user is not a moderator.
 async function demoteUser(id) {
   const user = await User.findByPk(id);
   if (!user) return { error: 'User not found.' };
@@ -118,6 +123,7 @@ async function getEscalatedData() {
   return { reports, escalatedCount: reports.length };
 }
 
+// Permanently deletes the post behind an escalated report and marks the report resolved.
 async function removeEscalatedReport(id) {
   const report = await Report.findByPk(id);
   if (!report) return { error: 'Report not found.' };
@@ -129,6 +135,7 @@ async function removeEscalatedReport(id) {
   return { success: 'Post removed successfully!' };
 }
 
+// Marks the escalated report resolved and unhides any content that was hidden during escalation.
 async function dismissEscalatedReport(id) {
   const report = await Report.findByPk(id);
   if (!report) return { error: 'Report not found.' };
@@ -142,6 +149,7 @@ async function dismissEscalatedReport(id) {
   return { success: 'Report dismissed.' };
 }
 
+// Bans the user behind an escalated report (resolving post ownership if needed) and marks the report resolved.
 async function banEscalatedUser(id) {
   const report = await Report.findByPk(id);
   if (!report) return { error: 'Report not found.' };
@@ -161,6 +169,7 @@ async function banEscalatedUser(id) {
   return { success: 'User banned and report resolved.' };
 }
 
+// Aggregates platform stats (users, posts, reports, RSVPs, top categories, growth chart, activity log) scoped to an optional date range.
 async function getAnalyticsData({ startDate, endDate }) {
   const dateWhere = {};
   if (startDate || endDate) {
@@ -220,6 +229,7 @@ async function getAnalyticsData({ startDate, endDate }) {
   return { userCount, postCount, reportCount, rsvpCount, escalatedCount, topCategories, growthData, recentActivity };
 }
 
+// Fetches all categories, platform settings key-value pairs, and escalated report count.
 async function getSettingsData() {
   const [categories, settingRows, escalatedCount] = await Promise.all([
     Category.findAll({ order: [['name', 'ASC']] }),
@@ -229,11 +239,13 @@ async function getSettingsData() {
   return { categories, platformSettings: Object.fromEntries(settingRows.map(s => [s.key, s.value])), escalatedCount };
 }
 
+// Upserts platformName and distanceRadius into the PlatformSetting table.
 async function savePlatformSettings(body) {
   const allowed = ['platformName', 'distanceRadius'];
   await Promise.all(allowed.map(key => PlatformSetting.upsert({ key, value: body[key] ?? '' })));
 }
 
+// Creates a new category; returns an error if the name is blank or already exists.
 async function addCategory(name) {
   if (!name || !name.trim()) return { error: 'Category name is required.' };
   try {
@@ -245,6 +257,7 @@ async function addCategory(name) {
   }
 }
 
+// Permanently removes a category by ID.
 async function deleteCategory(id) {
   await Category.destroy({ where: { id } });
 }

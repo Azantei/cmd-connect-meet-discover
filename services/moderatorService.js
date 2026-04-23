@@ -70,6 +70,7 @@ async function getDashboardData(moderatorId, typeFilter) {
   return { reportsData, historyData, pendingReportCount: reportsData.length };
 }
 
+// Fetches a single report enriched with its target name and reporter info.
 async function getReportData(reportId) {
   const report = await Report.findByPk(reportId, {
     include: [{ model: User, as: 'reporter', attributes: ['id', 'name'] }]
@@ -79,6 +80,7 @@ async function getReportData(reportId) {
   return resolved;
 }
 
+// Issues a warning to the user behind a report, logs the action, and marks the report reviewed.
 async function warnUser(reportId, moderatorId, notes) {
   const report = await Report.findByPk(reportId);
   if (!report) return { error: 'Report not found.' };
@@ -109,6 +111,7 @@ async function warnUser(reportId, moderatorId, notes) {
   return { success: 'Warning issued and report marked as reviewed.' };
 }
 
+// Logs a dismiss action, marks the report resolved, and publishes pending posts.
 async function dismissReport(reportId, moderatorId, notes) {
   const report = await Report.findByPk(reportId);
   if (!report) return { error: 'Report not found.' };
@@ -123,6 +126,7 @@ async function dismissReport(reportId, moderatorId, notes) {
   return { success: 'Report dismissed.' };
 }
 
+// Escalates a report to admin, hides the related content, and logs the action with reason and notes.
 async function escalateReport(reportId, moderatorId, escalationReason, notes) {
   const report = await Report.findByPk(reportId);
   if (!report) return { error: 'Report not found.' };
@@ -142,6 +146,7 @@ async function escalateReport(reportId, moderatorId, escalationReason, notes) {
   return { success: 'This report has been sent to a system admin for review.' };
 }
 
+// Returns all moderation log entries for the given moderator, newest first.
 async function getModerationHistory(moderatorId) {
   return ModerationLog.findAll({
     where: { moderatorId },

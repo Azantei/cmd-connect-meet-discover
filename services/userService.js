@@ -31,6 +31,7 @@ async function getOtherProfileData(userId) {
   };
 }
 
+// Fetches the user's settings data and all available categories in parallel.
 async function getUserSettings(userId) {
   const [user, categories] = await Promise.all([
     User.findByPk(userId, {
@@ -41,6 +42,7 @@ async function getUserSettings(userId) {
   return { user, categories };
 }
 
+// Validates and persists profile changes (name, password, interests, location, privacy flags, avatar).
 async function updateUserSettings(userId, body, imageFile) {
   const { location, interests, newPassword, confirmPassword, showLocation, showInterests } = body;
   const rawName = Array.isArray(body.name) ? body.name[0] : body.name;
@@ -67,6 +69,7 @@ async function updateUserSettings(userId, body, imageFile) {
   return { success: 'Settings updated.', updatedName: rawName && rawName.trim() ? rawName.trim() : null };
 }
 
+// Marks all unread warnings as read for the given user.
 async function dismissWarnings(userId) {
   await UserWarning.update({ isRead: true }, { where: { userId, isRead: false } });
 }

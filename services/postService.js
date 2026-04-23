@@ -18,6 +18,7 @@ async function findAuthorizedPost(postId, userId, role) {
   return { post, error: null };
 }
 
+// Fetches a post with its author, RSVP count, and the current user's RSVP/interest state.
 async function getPostWithDetails(postId, userId) {
   const post = await Post.findByPk(postId, {
     include: [{ model: User, as: 'author', attributes: ['id', 'name'] }]
@@ -33,6 +34,7 @@ async function getPostWithDetails(postId, userId) {
   return { post, rsvpCount, hasRsvp: !!existingRsvp, isInterested: !!existingInterest };
 }
 
+// Fetches posts matching optional search query and category filter, plus all categories.
 async function getFeedData(q, category) {
   const cats = category ? [category] : [];
   const [posts, categories] = await Promise.all([
@@ -42,10 +44,12 @@ async function getFeedData(q, category) {
   return { posts, categories };
 }
 
+// Returns all categories sorted alphabetically by name.
 async function getCategories() {
   return Category.findAll({ order: [['name', 'ASC']] });
 }
 
+// Validates and creates a post; auto-flags for moderation if content filter triggers.
 async function createPost({ title, description, category, location, date, time, rsvpEnabled, maxAttendees, status: requestedStatus, imageFile, userId }) {
   const combinedDate = parseCombinedDate(date, time);
   if (combinedDate && combinedDate < new Date()) {
@@ -75,6 +79,7 @@ async function createPost({ title, description, category, location, date, time, 
   return { post, status };
 }
 
+// Persists edits to an existing post and returns the resulting status (draft or published).
 async function updatePost(existingPost, { title, description, category, location, date, time, rsvpEnabled, maxAttendees, status: requestedStatus, imageFile }) {
   const categoryArray = normalizeCategoryArray(category);
   const status = requestedStatus === 'draft' ? 'draft' : 'published';
@@ -96,6 +101,7 @@ async function updatePost(existingPost, { title, description, category, location
   return { status };
 }
 
+// Deletes a post and auto-resolves any pending reports against it.
 async function deletePost(post) {
   await post.destroy();
   await Report.update(
@@ -104,6 +110,7 @@ async function deletePost(post) {
   );
 }
 
+// Creates an RSVP after checking that the event is not past, full, or missing.
 async function createRsvp(postId, userId) {
   const post = await Post.findByPk(postId);
   if (!post) return { error: 'not_found' };
@@ -120,10 +127,12 @@ async function createRsvp(postId, userId) {
   return { success: 'RSVP confirmed!' };
 }
 
+// Removes a user's RSVP from a post.
 async function deleteRsvp(postId, userId) {
   await RSVP.destroy({ where: { postId, userId } });
 }
 
+// Fetches filtered events with per-post RSVP counts and the current user's interested post IDs.
 async function getEventsData(userId, q, selectedCategories, dateFrom, dateTo) {
   const [posts, categories] = await Promise.all([
     Post.search(q, selectedCategories || [], dateFrom, dateTo),
@@ -151,6 +160,7 @@ async function getEventsData(userId, q, selectedCategories, dateFrom, dateTo) {
   return { posts, categories, rsvpCounts, interestedPostIds: interestedRows.map(r => r.postId) };
 }
 
+// Marks a published, visible post as interested for the user; errors if the post is not found.
 async function addInterest(userId, postId) {
   const post = await Post.findByPk(postId);
   if (!post || post.isHidden || post.status !== 'published') return { error: 'Post not found' };
@@ -158,6 +168,7 @@ async function addInterest(userId, postId) {
   return { ok: true };
 }
 
+// Removes a user's interest record for a post.
 async function removeInterest(userId, postId) {
   await Interest.destroy({ where: { userId, postId } });
   return { ok: true };

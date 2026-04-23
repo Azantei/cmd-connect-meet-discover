@@ -1,5 +1,6 @@
 const { authenticateByEmailPassword, registerUser, getSetupCategories, saveProfileSetup } = require('../services/authService');
 
+// Role-specific landing pages after successful login.
 const ROLE_REDIRECTS = {
   community_member: '/users/profile',
   moderator: '/moderator/dashboard',
@@ -10,14 +11,17 @@ const ROLE_REDIRECTS = {
    PUBLIC PAGES
    ======================================== */
 
+// Renders the home landing page.
 exports.getHome = (req, res) => {
   res.render('index', { title: 'C.M.D. - Connect, Meet, Discover' });
 };
 
+// Renders the about us page.
 exports.getAbout = (req, res) => {
   res.render('about', { title: 'About Us' });
 };
 
+// Renders the login/register form.
 exports.getLogin = (req, res) => {
   res.render('auth/login', { title: 'Login' });
 };
@@ -25,6 +29,7 @@ exports.getLogin = (req, res) => {
 /* ========================================
    AUTHENTICATION FLOW
    ======================================== */
+// Authenticates credentials, starts session, and redirects by role.
 exports.postLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -52,6 +57,7 @@ exports.postLogin = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// Renders the registration page.
 exports.getRegister = (req, res) => {
   res.render('auth/register', { title: 'Register' });
 };
@@ -59,6 +65,7 @@ exports.getRegister = (req, res) => {
 /* ========================================
    REGISTRATION FLOW
    ======================================== */
+// Validates input, creates a new user account, starts a session, and redirects to setup.
 exports.postRegister = async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
@@ -88,9 +95,11 @@ exports.postRegister = async (req, res, next) => {
   }
 };
 
+// Renders the post-registration profile setup form with available categories.
 exports.getSetup = async (req, res, next) => {
   try {
     const categories = await getSetupCategories();
+    // Include token for client-side map rendering in setup form.
     res.render('auth/setup', { title: 'Set Up Your Profile', categories, mapboxToken: process.env.MAPBOX_TOKEN || '' });
   } catch (err) { next(err); }
 };
@@ -98,6 +107,7 @@ exports.getSetup = async (req, res, next) => {
 /* ========================================
    PROFILE SETUP FLOW
    ======================================== */
+// Validates and saves interests and location from the setup form, then redirects to the user's profile.
 exports.postSetup = async (req, res, next) => {
   try {
     let interests = [];
@@ -113,6 +123,7 @@ exports.postSetup = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// Destroys the session and redirects to login.
 exports.logout = (req, res) => {
   req.session.destroy(() => res.redirect('/login'));
 };

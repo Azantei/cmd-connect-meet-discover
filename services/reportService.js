@@ -53,10 +53,12 @@ async function resolveTargets(reports) {
   });
 }
 
+// Creates a moderation report targeting a post.
 async function createPostReport(reporterId, targetId, reason) {
   return Report.create({ reporterId, targetType: 'post', targetId, reason });
 }
 
+// Creates a moderation report targeting a user.
 async function createUserReport(reporterId, targetId, reason) {
   return Report.create({ reporterId, targetType: 'user', targetId, reason });
 }
