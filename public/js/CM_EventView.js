@@ -9,6 +9,11 @@
     Interested button interaction
 ========================================== */
 
+/**
+ * Toggle the Interested state for the current post.
+ * Sends POST to save interest, DELETE to remove interest,
+ * then updates button text/style to match server state.
+ */
 function toggleInterested() {
     var btn = document.getElementById('interestedBtn');
     if (!btn) return;
@@ -28,6 +33,7 @@ function toggleInterested() {
         });
 }
 
+// Confirmation guard for the post report submission flow.
 function confirmReportSubmission() {
     return window.confirm('This action cannot be undone!');
 }

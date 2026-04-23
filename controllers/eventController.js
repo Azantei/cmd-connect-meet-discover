@@ -1,9 +1,13 @@
 const { getEventsData } = require('../services/postService');
 
+/* ========================================
+   EVENT DISCOVERY VIEW
+   ======================================== */
 exports.getAllEvents = async (req, res, next) => {
   try {
     const { q, dateFrom, dateTo } = req.query;
     const raw = req.query.category;
+    // Normalize category filters so the service always receives an array.
     const categories = raw ? (Array.isArray(raw) ? raw : [raw]) : [];
     let effectiveDateFrom = dateFrom || '';
     let effectiveDateTo = dateTo || '';

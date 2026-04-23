@@ -1,6 +1,10 @@
 const postService = require('../services/postService');
 const { createPostReport } = require('../services/reportService');
 
+/* ========================================
+   FEED & DETAILS VIEWS
+   ======================================== */
+// Renders the main feed with optional text/category filters.
 exports.getFeed = async (req, res, next) => {
   try {
     const { q, category } = req.query;
@@ -15,6 +19,7 @@ exports.getFeed = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// Renders a single post page with RSVP/report state for the current user.
 exports.getPost = async (req, res, next) => {
   try {
     const data = await postService.getPostWithDetails(req.params.id, req.session.userId);
@@ -26,6 +31,10 @@ exports.getPost = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   POST CREATION & EDITING
+   ======================================== */
+// Shows the create form with available categories.
 exports.getCreatePost = async (req, res, next) => {
   try {
     const categories = await postService.getCategories();
@@ -33,6 +42,7 @@ exports.getCreatePost = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// Creates a post from form input and routes based on resulting publish status.
 exports.createPost = async (req, res, next) => {
   try {
     const { title } = req.body;
@@ -45,10 +55,12 @@ exports.createPost = async (req, res, next) => {
       req.flash('error', result.error);
       return res.redirect('/posts/new');
     }
+    // Drafts stay private and return to the owner's profile workspace.
     if (result.status === 'draft') {
       req.flash('success', 'Draft saved!');
       return res.redirect('/users/profile');
     }
+    // Pending posts require moderation before appearing publicly.
     if (result.status === 'pending') {
       req.flash('success', 'Your post is under review and will be published once approved.');
       return res.redirect('/posts');
@@ -58,6 +70,7 @@ exports.createPost = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// Loads an editable post only when the current user is authorized to edit it.
 exports.getEditPost = async (req, res, next) => {
   try {
     const { post, error } = await postService.findAuthorizedPost(req.params.id, req.session.userId, req.session.role);
@@ -68,6 +81,7 @@ exports.getEditPost = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// Persists post edits and redirects based on whether the post remains draft or is published.
 exports.updatePost = async (req, res, next) => {
   try {
     const { post, error } = await postService.findAuthorizedPost(req.params.id, req.session.userId, req.session.role);
@@ -83,6 +97,10 @@ exports.updatePost = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   POST DELETION
+   ======================================== */
+// Deletes a post after ownership/role authorization checks.
 exports.deletePost = async (req, res, next) => {
   try {
     const { post, error } = await postService.findAuthorizedPost(req.params.id, req.session.userId, req.session.role);
@@ -94,6 +112,10 @@ exports.deletePost = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   RSVP ACTIONS
+   ======================================== */
+// Creates an RSVP and sets flash flags used by the post page UI states.
 exports.createRsvp = async (req, res, next) => {
   try {
     const result = await postService.createRsvp(req.params.id, req.session.userId);
@@ -112,6 +134,7 @@ exports.createRsvp = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// Cancels an RSVP and sets UI flags for cancellation feedback.
 exports.deleteRsvp = async (req, res, next) => {
   try {
     await postService.deleteRsvp(req.params.id, req.session.userId);
@@ -121,11 +144,16 @@ exports.deleteRsvp = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/* ========================================
+   REPORTING
+   ======================================== */
+// Submits a report for a post using a required reason with optional extra context.
 exports.reportPost = async (req, res, next) => {
   try {
     const { reason, comment } = req.body;
     const trimmedReason = reason && reason.trim() ? reason.trim() : '';
     const trimmedComment = comment && comment.trim() ? comment.trim() : '';
+    // Store reason + optional details in a single human-readable report string.
     const fullReason = trimmedReason && trimmedComment
       ? `${trimmedReason} — ${trimmedComment}`
       : trimmedReason || trimmedComment;

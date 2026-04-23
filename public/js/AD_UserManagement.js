@@ -45,6 +45,7 @@ function renderUsers() {
     filteredUsers.forEach(user => {
         const row = document.createElement('tr');
         const fullName = user.lastName ? `${user.firstName} ${user.lastName}` : user.firstName;
+        // Escape quotes before embedding in data-* attributes.
         const safeName = fullName.replace(/"/g, '&quot;');
 
         const userCell = `
@@ -57,6 +58,7 @@ function renderUsers() {
             </div>`;
 
         let actionButtons = '';
+        // Actions reflect business rules for role/status combinations.
         if (user.status === 'banned') {
             actionButtons = `<button class="action-btn" data-action="unban" data-id="${user.id}" data-name="${safeName}">Unban</button>`;
         } else if (user.role === 'Member') {
@@ -87,6 +89,7 @@ function renderUsers() {
 // ==========================================
 
 function submitAction(path) {
+    // Use form submission so server routes can rely on standard POST handlers.
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = path;
@@ -164,6 +167,7 @@ function setupModalButtons() {
 
 function applySearch() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    // Search matches either full name or email.
     filteredUsers = users.filter(user => {
         const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
         return fullName.includes(searchTerm) || user.email.toLowerCase().includes(searchTerm);
@@ -182,6 +186,7 @@ function setupEventListeners() {
     searchInput.addEventListener('input', applySearch);
 
     document.getElementById('usersTableBody').addEventListener('click', (e) => {
+        // Delegate button clicks from dynamically rendered table rows.
         const btn = e.target.closest('button[data-action]');
         if (!btn) return;
 

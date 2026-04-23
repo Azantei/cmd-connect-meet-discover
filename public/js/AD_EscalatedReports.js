@@ -80,6 +80,7 @@ function generateSampleReports() {
 // ==========================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Prefer server-provided payload; fallback sample data supports static preview/testing.
     reports = window.ADMIN_ESCALATED || generateSampleReports();
     filteredReports = [...reports];
 
@@ -118,6 +119,7 @@ function renderReports() {
             ? `/posts/${report.targetId}`
             : `/users/profile/${report.targetId}`;
 
+        // Keep cards compact by trimming long moderator notes in list view.
         const notesPreview = report.moderatorNotes
             ? (report.moderatorNotes.substring(0, 100) + (report.moderatorNotes.length > 100 ? '...' : ''))
             : 'No moderator notes.';
@@ -212,6 +214,7 @@ function closeReportDetail() {
 }
 
 function showConfirmation(message, action) {
+    // Store callback so one shared modal can confirm multiple action types.
     pendingAction = action;
     document.getElementById('confirmationMessage').textContent = message;
     document.getElementById('confirmationModal').classList.add('active');
@@ -236,6 +239,7 @@ function closeConfirmation() {
 // ==========================================
 
 function _submitPost(action) {
+    // Submit a plain POST form to keep behavior aligned with server routes.
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = action;

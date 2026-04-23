@@ -16,6 +16,7 @@
 
 var RANGE_DAYS = { today: 0, week: 7, month: 30, quarter: 90, year: 365 };
 
+// Formats a Date as YYYY-MM-DD for query-string compatibility.
 function localDateStr(d) {
     var y = d.getFullYear();
     var m = String(d.getMonth() + 1).padStart(2, '0');
@@ -23,6 +24,7 @@ function localDateStr(d) {
     return y + '-' + m + '-' + day;
 }
 
+// Builds a start/end range ending today from a preset key (week, month, etc.).
 function getRangeDates(range) {
     var end = new Date();
     var start = new Date();
@@ -34,6 +36,7 @@ function getRangeDates(range) {
     };
 }
 
+// Infers which preset most closely matches the current analytics start date.
 function detectRange(startDate) {
     if (!startDate) return null;
     var diffDays = Math.round((new Date() - new Date(startDate)) / 86400000);
@@ -84,7 +87,10 @@ function updateActivityLog() {
 
 function setupEventListeners() {
     document.getElementById('dateRange').addEventListener('change', (e) => {
+        // "All time" clears date filters and loads the base analytics route.
         if (e.target.value === 'all') { window.location.href = '/admin/analytics'; return; }
+
+        // Preset ranges are converted to explicit start/end query params.
         var dates = getRangeDates(e.target.value);
         window.location.href = '/admin/analytics?startDate=' + dates.startDate + '&endDate=' + dates.endDate;
     });
